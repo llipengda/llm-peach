@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -41,7 +41,6 @@ namespace Peach.Pro.Core.Runtime
 
 		protected void PrepareLicensing(string pitLibraryPath, bool forceActivation, bool deactivate = false)
 		{
-			var config = new LicenseConfig();
 			_logger.Trace("Using NullLicense");
 			_license = new NullLicense();
 		}
