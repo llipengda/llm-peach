@@ -124,3 +124,5 @@ paket/.paket/Paket.Restore.targets
 
 # vim swapfiles
 *.swp
+
+/*/logs/
