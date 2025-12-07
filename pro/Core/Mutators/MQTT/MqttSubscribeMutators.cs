@@ -11,9 +11,12 @@ using Peach.Core.IO;
 using SysRandom = System.Random;
 using SysEncoding = System.Text.Encoding;
 
+using static Peach.Pro.Core.Mutators.MQTT.MqttUtils;
+
 namespace Peach.Pro.Core.Mutators.MQTT
 {
     [Mutator("MqttSubscribeMutatePacketIdentifier")]
+    [CMutator("mutate_subscribe_packet_identifier")]
     [Description("Mutates MQTT Subscribe Packet Identifier")]
     public class MqttSubscribeMutatePacketIdentifier : Mutator
     {
@@ -22,7 +25,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
         public new static bool supportedDataElement(DataElement obj)
         {
             return obj is Peach.Core.Dom.Number && obj.Name == "packet_identifier" &&
-                   obj.parent != null && obj.parent.Name == "mqtt_subscribe_variable_header_t";
+                   obj.IsIn("subscribe");
         }
 
         public override int count => 10;
@@ -43,7 +46,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
 
         private void PerformMutation(DataElement obj, int strategy)
         {
-            uint orig = (uint)((Peach.Core.Dom.Number)obj).DefaultValue;
+            uint orig = (uint)((Peach.Core.Dom.Number)obj).InternalValue;
             uint mutated = orig;
 
             switch (strategy)
@@ -61,23 +64,10 @@ namespace Peach.Pro.Core.Mutators.MQTT
             }
             obj.MutatedValue = new Variant(mutated & 0xFFFF);
         }
-
-        private int PickWeighted(int[] weights)
-        {
-            int sum = 0;
-            foreach (int w in weights) sum += w;
-            if (sum <= 0) return 0;
-            int r = context.Random.Next(sum);
-            for (int i = 0; i < weights.Length; i++)
-            {
-                if (r < weights[i]) return i;
-                r -= weights[i];
-            }
-            return weights.Length - 1;
-        }
     }
 
     [Mutator("MqttSubscribeMutateProperties")]
+    [CMutator("mutate_subscribe_properties")]
     [Description("Mutates MQTT Subscribe Properties (Rebuild)")]
     public class MqttSubscribeMutateProperties : Mutator
     {
@@ -86,10 +76,10 @@ namespace Peach.Pro.Core.Mutators.MQTT
         public new static bool supportedDataElement(DataElement obj)
         {
             return obj is Blob && obj.Name == "properties" &&
-                   obj.parent != null && obj.parent.Name.Contains("subscribe");
+                   obj.IsIn("subscribe");
         }
 
-        public override int count => 1; 
+        public override int count => 1;
         public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
@@ -127,7 +117,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
 
         private void WriteVarInt(BinaryWriter writer, int val)
         {
-            do {
+            do
+            {
                 byte b = (byte)(val % 128);
                 val /= 128;
                 if (val > 0) b |= 0x80;
@@ -145,6 +136,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     }
 
     [Mutator("MqttSubscribeAddProperties")]
+    [CMutator("add_subscribe_properties")]
     [Description("Adds MQTT Subscribe Properties")]
     public class MqttSubscribeAddProperties : Mutator
     {
@@ -152,7 +144,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
         public new static bool supportedDataElement(DataElement obj)
         {
             return obj is Blob && obj.Name == "properties" &&
-                   obj.parent != null && obj.parent.Name.Contains("subscribe");
+                   obj.IsIn("subscribe");
         }
         public override int count => 1;
         public override uint mutation { get; set; }
@@ -170,18 +162,19 @@ namespace Peach.Pro.Core.Mutators.MQTT
             // Need to parse original props.
             bool has_sid = false;
             int pos = 0;
-            while(pos < original.Length)
+            while (pos < original.Length)
             {
                 byte id = original[pos];
-                if(id == 0x0B) { has_sid = true; break; }
-                else if(id == 0x26) {
-                     // skip user prop
-                     pos++; if(pos+2 > original.Length) break; 
-                     int k = (original[pos]<<8)|original[pos+1]; pos+=2+k;
-                     if(pos+2 > original.Length) break;
-                     int v = (original[pos]<<8)|original[pos+1]; pos+=2+v;
+                if (id == 0x0B) { has_sid = true; break; }
+                else if (id == 0x26)
+                {
+                    // skip user prop
+                    pos++; if (pos + 2 > original.Length) break;
+                    int k = (original[pos] << 8) | original[pos + 1]; pos += 2 + k;
+                    if (pos + 2 > original.Length) break;
+                    int v = (original[pos] << 8) | original[pos + 1]; pos += 2 + v;
                 }
-                else { has_sid=true; break; } // Unknown, treat as has_sid to avoid mess
+                else { has_sid = true; break; } // Unknown, treat as has_sid to avoid mess
             }
 
             using (var ms = new MemoryStream())
@@ -204,7 +197,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
         }
         private void WriteVarInt(BinaryWriter writer, int val)
         {
-            do {
+            do
+            {
                 byte b = (byte)(val % 128);
                 val /= 128;
                 if (val > 0) b |= 0x80;
@@ -218,13 +212,15 @@ namespace Peach.Pro.Core.Mutators.MQTT
             writer.Write((byte)(b.Length & 0xFF));
             writer.Write(b);
         }
-        
+
         private byte[] GetOriginalBytes(DataElement obj)
         {
-            try { return (byte[])obj.DefaultValue; } catch { }
-            try { 
-                var bs = (BitwiseStream)obj.DefaultValue; 
-                if(bs != null) {
+            try { return (byte[])obj.InternalValue; } catch { }
+            try
+            {
+                var bs = (BitwiseStream)obj.InternalValue;
+                if (bs != null)
+                {
                     long pos = bs.PositionBits;
                     bs.SeekBits(0, SeekOrigin.Begin);
                     var ms = new MemoryStream();
@@ -232,12 +228,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     bs.SeekBits(pos, SeekOrigin.Begin);
                     return ms.ToArray();
                 }
-            } catch { }
+            }
+            catch { }
             return null;
         }
     }
 
     [Mutator("MqttSubscribeDeleteProperties")]
+    [CMutator("delete_subscribe_properties")]
     [Description("Deletes MQTT Subscribe Properties")]
     public class MqttSubscribeDeleteProperties : Mutator
     {
@@ -245,7 +243,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
         public new static bool supportedDataElement(DataElement obj)
         {
             return obj is Blob && obj.Name == "properties" &&
-                   obj.parent != null && obj.parent.Name.Contains("subscribe");
+                   obj.IsIn("subscribe");
         }
         public override int count => 1;
         public override uint mutation { get; set; }
@@ -254,6 +252,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     }
 
     [Mutator("MqttSubscribeRepeatProperties")]
+    [CMutator("repeat_subscribe_properties")]
     [Description("Repeats MQTT Subscribe User Property")]
     public class MqttSubscribeRepeatProperties : Mutator
     {
@@ -261,7 +260,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
         public new static bool supportedDataElement(DataElement obj)
         {
             return obj is Blob && obj.Name == "properties" &&
-                   obj.parent != null && obj.parent.Name.Contains("subscribe");
+                   obj.IsIn("subscribe");
         }
         public override int count => 1;
         public override uint mutation { get; set; }
@@ -271,13 +270,13 @@ namespace Peach.Pro.Core.Mutators.MQTT
         private void PerformMutation(DataElement obj)
         {
             byte[] original = GetOriginalBytes(obj);
-            if(original == null || original.Length == 0) return;
+            if (original == null || original.Length == 0) return;
 
             int pos = 0;
             while (pos < original.Length)
             {
                 byte id = original[pos];
-                if (id == 0x26) 
+                if (id == 0x26)
                 {
                     int start = pos;
                     pos++;
@@ -290,7 +289,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     if (pos <= original.Length)
                     {
                         int len = pos - start;
-                        using (var ms = new MemoryStream()) {
+                        using (var ms = new MemoryStream())
+                        {
                             ms.Write(original, 0, original.Length);
                             ms.Write(original, start, len);
                             obj.MutatedValue = new Variant(ms.ToArray());
@@ -298,24 +298,28 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     }
                     break;
                 }
-                else if (id == 0x0B) {
+                else if (id == 0x0B)
+                {
                     pos++;
                     int count = 0;
-                    while(pos < original.Length && count < 4) {
-                        if((original[pos++] & 0x80) == 0) break;
+                    while (pos < original.Length && count < 4)
+                    {
+                        if ((original[pos++] & 0x80) == 0) break;
                         count++;
                     }
                 }
                 else break;
             }
         }
-        
+
         private byte[] GetOriginalBytes(DataElement obj)
         {
-            try { return (byte[])obj.DefaultValue; } catch { }
-            try { 
-                var bs = (BitwiseStream)obj.DefaultValue; 
-                if(bs != null) {
+            try { return (byte[])obj.InternalValue; } catch { }
+            try
+            {
+                var bs = (BitwiseStream)obj.InternalValue;
+                if (bs != null)
+                {
                     long pos = bs.PositionBits;
                     bs.SeekBits(0, SeekOrigin.Begin);
                     var ms = new MemoryStream();
@@ -323,12 +327,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     bs.SeekBits(pos, SeekOrigin.Begin);
                     return ms.ToArray();
                 }
-            } catch { }
+            }
+            catch { }
             return null;
         }
     }
 
     [Mutator("MqttSubscribeMutateTopicFilter")]
+    [CMutator("mutate_subscribe_topic_filter")]
     [Description("Mutates MQTT Subscribe Topic Filter")]
     public class MqttSubscribeMutateTopicFilter : Mutator
     {
@@ -336,13 +342,13 @@ namespace Peach.Pro.Core.Mutators.MQTT
         public new static bool supportedDataElement(DataElement obj)
         {
             return obj is Peach.Core.Dom.String && obj.Name == "value" &&
-                   obj.parent != null && obj.parent.Name == "topic_filter";
+                   obj.parent != null && obj.parent.Name == "topic_filter" ;
         }
         public override int count => 6;
         public override uint mutation { get; set; }
-        
+
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj, (int)mutation); obj.mutationFlags = MutateOverride.Default; }
-        public override void randomMutation(DataElement obj) 
+        public override void randomMutation(DataElement obj)
         {
             int[] weights = { 20, 20, 20, 20, 10, 10 };
             PerformMutation(obj, PickWeighted(weights));
@@ -354,7 +360,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
             string val = "topic";
             string[] legalWildcards = { "#", "+", "+/+", "devices/+/status", "sensor/#" };
             string legalChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-";
-            
+
             switch (strategy)
             {
                 case 0: // 直接使用一条“已知合法”的模板
@@ -364,7 +370,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     {
                         int levels = 1 + context.Random.Next(4);
                         var sb = new StringBuilder();
-                        for (int i = 0; i < levels; i++) {
+                        for (int i = 0; i < levels; i++)
+                        {
                             if (i > 0) sb.Append("/");
                             int len = 1 + context.Random.Next(8);
                             for (int c = 0; c < len; c++) sb.Append(legalChars[context.Random.Next(legalChars.Length)]);
@@ -378,15 +385,18 @@ namespace Peach.Pro.Core.Mutators.MQTT
                         var sb = new StringBuilder();
                         int plus_cnt = 1 + context.Random.Next(2);
                         int[] plus_at = { -1, -1 };
-                        for(int p=0; p<plus_cnt; p++) {
+                        for (int p = 0; p < plus_cnt; p++)
+                        {
                             int idx;
-                            do { idx = context.Random.Next(levels); } while (p==1 && idx==plus_at[0]);
+                            do { idx = context.Random.Next(levels); } while (p == 1 && idx == plus_at[0]);
                             plus_at[p] = idx;
                         }
-                        for (int l = 0; l < levels; ++l) {
+                        for (int l = 0; l < levels; ++l)
+                        {
                             if (l > 0) sb.Append("/");
                             if (l == plus_at[0] || l == plus_at[1]) sb.Append("+");
-                            else {
+                            else
+                            {
                                 int len = 1 + context.Random.Next(8);
                                 for (int c = 0; c < len; c++) sb.Append(legalChars[context.Random.Next(legalChars.Length)]);
                             }
@@ -399,8 +409,10 @@ namespace Peach.Pro.Core.Mutators.MQTT
                         int levels = context.Random.Next(4); // 0..3
                         var sb = new StringBuilder();
                         if (levels == 0) sb.Append("#");
-                        else {
-                            for (int l = 0; l < levels; ++l) {
+                        else
+                        {
+                            for (int l = 0; l < levels; ++l)
+                            {
                                 if (l > 0) sb.Append("/");
                                 int len = 1 + context.Random.Next(8);
                                 for (int c = 0; c < len; c++) sb.Append(legalChars[context.Random.Next(legalChars.Length)]);
@@ -413,7 +425,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 4: // 构造“比较长但合法”的过滤器
                     {
                         var sb = new StringBuilder();
-                        while (sb.Length < 65535) { // MAX_TOPIC_LEN 65535
+                        while (sb.Length < 65535)
+                        { // MAX_TOPIC_LEN 65535
                             int left = 65535 - sb.Length;
                             if (left <= 5) break;
                             if (sb.Length > 0) sb.Append("/");
@@ -429,30 +442,17 @@ namespace Peach.Pro.Core.Mutators.MQTT
             }
             obj.MutatedValue = new Variant(val);
         }
-
-        private int PickWeighted(int[] weights)
-        {
-            int sum = 0;
-            foreach (int w in weights) sum += w;
-            if (sum <= 0) return 0;
-            int r = context.Random.Next(sum);
-            for (int i = 0; i < weights.Length; i++)
-            {
-                if (r < weights[i]) return i;
-                r -= weights[i];
-            }
-            return weights.Length - 1;
-        }
     }
 
     [Mutator("MqttSubscribeRepeatTopicFilter")]
+    [CMutator("repeat_subscribe_topic_filter")]
     [Description("Repeats (Duplicates) MQTT Subscribe Topic Filter")]
     public class MqttSubscribeRepeatTopicFilter : Mutator
     {
         public MqttSubscribeRepeatTopicFilter(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
         {
-             return obj is Peach.Core.Dom.Block && obj.Name == "topic_filters";
+            return obj is Peach.Core.Dom.Block && obj.Name == "topic_filters";
         }
         public override int count => 1;
         public override uint mutation { get; set; }
@@ -467,6 +467,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     }
 
     [Mutator("MqttSubscribeMutateQoS")]
+    [CMutator("mutate_subscribe_qos")]
     [Description("Mutates MQTT Subscribe QoS")]
     public class MqttSubscribeMutateQoS : Mutator
     {
@@ -474,17 +475,17 @@ namespace Peach.Pro.Core.Mutators.MQTT
         public new static bool supportedDataElement(DataElement obj)
         {
             return obj is Peach.Core.Dom.Number && obj.Name == "qos" &&
-                   obj.parent != null && obj.parent.Name == "topic_filters";
+                   obj.IsIn("topic_filters");
         }
         public override int count => 10;
         public override uint mutation { get; set; }
-        
+
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj, (int)mutation); obj.mutationFlags = MutateOverride.Default; }
-        public override void randomMutation(DataElement obj) 
-        { 
+        public override void randomMutation(DataElement obj)
+        {
             int[] weights = { 40, 40, 40, 0, 0, 0, 0, 0, 0, 40 };
-            PerformMutation(obj, PickWeighted(weights)); 
-            obj.mutationFlags = MutateOverride.Default; 
+            PerformMutation(obj, PickWeighted(weights));
+            obj.mutationFlags = MutateOverride.Default;
         }
 
         private void PerformMutation(DataElement obj, int strategy)
@@ -499,82 +500,57 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 4: val = 255; break;
                 case 5: val = (uint)context.Random.Next(3); break;
                 case 6: val = (uint)(3 + context.Random.Next(252)); break;
-                case 7: val = (uint)((Number)obj).DefaultValue ^ (1u << context.Random.Next(3)); break;
-                case 8: val = (uint)((Number)obj).DefaultValue; break; // Copy previous (simulated as same)
+                case 7: val = (uint)((Number)obj).InternalValue ^ (1u << context.Random.Next(3)); break;
+                case 8: val = (uint)((Number)obj).InternalValue; break; // Copy previous (simulated as same)
                 case 9: val = 0; break;
             }
             obj.MutatedValue = new Variant(val & 0xFF);
         }
-
-        private int PickWeighted(int[] weights)
-        {
-            int sum = 0;
-            foreach (int w in weights) sum += w;
-            if (sum <= 0) return 0;
-            int r = context.Random.Next(sum);
-            for (int i = 0; i < weights.Length; i++)
-            {
-                if (r < weights[i]) return i;
-                r -= weights[i];
-            }
-            return weights.Length - 1;
-        }
     }
 
     [Mutator("MqttSubscribeMutateTopicCount")]
+    [CMutator("mutate_subscribe_topic_count")]
     [Description("Mutates MQTT Subscribe Topic Count")]
     public class MqttSubscribeMutateTopicCount : Mutator
     {
-         public MqttSubscribeMutateTopicCount(DataElement obj) : base(obj) { }
-         public new static bool supportedDataElement(DataElement obj)
-         {
-             return obj is Peach.Core.Dom.Number && obj.Name == "topic_count"; // Changed target to Number field
-         }
-         public override int count => 10;
-         public override uint mutation { get; set; }
-         
-         public override void sequentialMutation(DataElement obj) { PerformMutation(obj, (int)mutation); obj.mutationFlags = MutateOverride.Default; }
-         public override void randomMutation(DataElement obj) 
-         { 
-             int[] weights = { 0, 40, 0, 40, 40, 0, 0, 0, 0, 0 };
-             PerformMutation(obj, PickWeighted(weights)); 
-             obj.mutationFlags = MutateOverride.Default; 
-         }
+        public MqttSubscribeMutateTopicCount(DataElement obj) : base(obj) { }
+        public new static bool supportedDataElement(DataElement obj)
+        {
+            return obj is Peach.Core.Dom.Array && obj.Name == "topic_filters";
+        }
+        public override int count => 10;
+        public override uint mutation { get; set; }
 
-         private void PerformMutation(DataElement obj, int strategy)
-         {
-             uint orig = (uint)((Number)obj).DefaultValue;
-             uint val = orig;
-             int MAX_TOPIC_FILTERS = 100; // Assume
+        public override void sequentialMutation(DataElement obj) { PerformMutation(obj, (int)mutation); obj.mutationFlags = MutateOverride.Default; }
+        public override void randomMutation(DataElement obj)
+        {
+            int[] weights = { 0, 40, 0, 40, 40, 0, 0, 0, 0, 0 };
+            PerformMutation(obj, PickWeighted(weights));
+            obj.mutationFlags = MutateOverride.Default;
+        }
 
-             switch (strategy)
-             {
-                 case 0: val = 0; break;
-                 case 1: val = (uint)MAX_TOPIC_FILTERS; break;
-                 case 2: val = (uint)MAX_TOPIC_FILTERS + 1; break;
-                 case 3: val = 1; break;
-                 case 4: val = (uint)(1 + context.Random.Next(MAX_TOPIC_FILTERS)); break;
-                 case 5: val = (uint)(MAX_TOPIC_FILTERS + 2 + context.Random.Next(255 - MAX_TOPIC_FILTERS - 2)); break;
-                 case 6: val = orig * 2; break;
-                 case 7: val = ~orig; break;
-                 case 8: val = orig ^ 1; break;
-                 case 9: val = orig; break; // Copy previous
-             }
-             obj.MutatedValue = new Variant(val & 0xFF);
-         }
+        private void PerformMutation(DataElement obj, int strategy)
+        {
+            var array = obj as Peach.Core.Dom.Array;
+            uint orig = (uint)array.Count;
+            uint val = orig;
+            int MAX_TOPIC_FILTERS = 100; // Assume
 
-         private int PickWeighted(int[] weights)
-         {
-             int sum = 0;
-             foreach (int w in weights) sum += w;
-             if (sum <= 0) return 0;
-             int r = context.Random.Next(sum);
-             for (int i = 0; i < weights.Length; i++)
-             {
-                 if (r < weights[i]) return i;
-                 r -= weights[i];
-             }
-             return weights.Length - 1;
-         }
+            switch (strategy)
+            {
+                case 0: val = 0; break;
+                case 1: val = (uint)MAX_TOPIC_FILTERS; break;
+                case 2: val = (uint)MAX_TOPIC_FILTERS + 1; break;
+                case 3: val = 1; break;
+                case 4: val = (uint)(1 + context.Random.Next(MAX_TOPIC_FILTERS)); break;
+                case 5: val = (uint)(MAX_TOPIC_FILTERS + 2 + context.Random.Next(255 - MAX_TOPIC_FILTERS - 2)); break;
+                case 6: val = orig * 2; break;
+                case 7: val = ~orig; break;
+                case 8: val = orig ^ 1; break;
+                case 9: val = orig; break; // Copy previous
+            }
+            
+            array.SetCountOverride((int)val, null, 0);
+        }
     }
 }
