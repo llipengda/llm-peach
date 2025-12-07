@@ -1,9 +1,8 @@
-FROM debian:stretch
+FROM debian:stretch AS base
 
 RUN sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list
 RUN sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
 RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
-
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -21,6 +20,9 @@ RUN apt-get update && apt-get install -y \
     libpcap0.8 libpcap0.8-dev \
     nodejs node-typescript && \
     ln -s /usr/bin/python2.7 /usr/bin/python
+
+#############################################################################################################################
+FROM base AS builder
 
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
     echo "deb https://download.mono-project.com/repo/debian stable-stretch main" | tee /etc/apt/sources.list.d/mono-official-stable.list && \
@@ -45,10 +47,15 @@ RUN ./waf configure
 
 RUN ./waf build
 
-RUN apt-get purge -y mono* libmono* && \
-    rm /etc/apt/sources.list.d/mono-official-stable.list && \ 
-    apt-get update && \
-    apt-get install -y mono-complete
+#############################################################################################################################
+FROM base AS runner
+
+RUN apt-get update && apt-get install -y \
+    mono-complete
+
+COPY --from=builder /peach /peach
+
+WORKDIR /peach
 
 RUN ./waf install
 
