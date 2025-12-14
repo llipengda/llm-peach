@@ -316,9 +316,9 @@
 
     <!-- mqtt_packet_t[] - Array of MQTT packets -->
     <DataModel name="mqtt_packet_array">
-        <!-- <Fixup class="MqttFixup">
+        <Fixup class="MqttFixup">
             <Param name="ref" value="packets" />
-        </Fixup> -->
+        </Fixup>
         <Block name="packets" minOccurs="1" maxOccurs="100">
             <Block ref="mqtt_packet_t"/>
         </Block>
