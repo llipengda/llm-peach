@@ -193,8 +193,8 @@ namespace Peach.Pro.Core.Dom
 					value = Convert.ToUInt64(str);
 				}
 			}
-			else if (variant.GetVariantType() == Variant.VariantType.BitStream || 
-			         variant.GetVariantType() == Variant.VariantType.ByteString)
+			else if (variant.GetVariantType() == Variant.VariantType.BitStream ||
+					 variant.GetVariantType() == Variant.VariantType.ByteString)
 			{
 				// Decode from VarInt format
 				BitwiseStream bs;

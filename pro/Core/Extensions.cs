@@ -7,6 +7,7 @@ using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
 using Peach.Core.IO;
+using Peach.Pro.Core.Dom;
 using Peach.Pro.Core.Mutators.Utility;
 using Random = Peach.Core.Random;
 
@@ -312,6 +313,29 @@ namespace Peach.Pro.Core
                 return BitConverter.ToUInt16(bytes, bytes.Length - Math.Min(2, bytes.Length));
             }
             return (ushort)(ulong)inter;
+        }
+
+        public static uint GetVarInt(this MqttVarInt varInt)
+        {
+            var inter = varInt.InternalValue;
+            if (inter.GetVariantType() != Variant.VariantType.Int &&
+                inter.GetVariantType() != Variant.VariantType.Long &&
+                inter.GetVariantType() != Variant.VariantType.ULong)
+            {
+                var bytes = Bytes(varInt);
+                uint value = 0;
+                int multiplier = 1;
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    byte encodedByte = bytes[i];
+                    value += (uint)(encodedByte & 127) * (uint)multiplier;
+                    if ((encodedByte & 128) == 0)
+                        break;
+                    multiplier *= 128;
+                }
+                return value;
+            }
+            return (uint)(ulong)inter;
         }
 
         public static byte[] ToMqttString(this string data)
