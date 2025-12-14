@@ -14,9 +14,7 @@ RUN apt-get update && apt-get install -y \
     apt-transport-https \
     python2.7 \
     libpng-dev \
-    wget \
-    vim \
-    git \
+    wget vim git gdb \
     libpcap0.8 libpcap0.8-dev \
     nodejs node-typescript && \
     ln -s /usr/bin/python2.7 /usr/bin/python

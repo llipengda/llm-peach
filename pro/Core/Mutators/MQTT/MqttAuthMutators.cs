@@ -18,7 +18,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthMutateReasonCode")]
     [CMutator("mutate_auth_reason_code")]
     [Description("Mutates MQTT Auth Reason Code")]
-    public class MqttAuthMutateReasonCode : Mutator
+    public class MqttAuthMutateReasonCode : MqttMutator
     {
         public MqttAuthMutateReasonCode(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "reason_code" && obj.IsIn("auth"); }
@@ -44,7 +44,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 3: val = 0xFF; break;
                 case 4: val = 0x7F; break;
                 case 5: val = 0x80; break;
-                case 6: val = (uint)context.Random.Next(256); break;
+                case 6: val = (uint)Next(256); break;
                 case 7: val = 0x01; break;
                 case 8: val = 0xFE; break;
                 case 9: val = 0x10; break;
@@ -56,7 +56,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthAddReasonCode")]
     [CMutator("add_auth_reason_code")]
     [Description("Adds MQTT Auth Reason Code")]
-    public class MqttAuthAddReasonCode : Mutator
+    public class MqttAuthAddReasonCode : MqttMutator
     {
         public MqttAuthAddReasonCode(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "reason_code" && obj.IsIn("auth"); }
@@ -69,7 +69,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthDeleteReasonCode")]
     [CMutator("delete_auth_reason_code")]
     [Description("Deletes MQTT Auth Reason Code")]
-    public class MqttAuthDeleteReasonCode : Mutator
+    public class MqttAuthDeleteReasonCode : MqttMutator
     {
         public MqttAuthDeleteReasonCode(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "reason_code" && obj.IsIn("auth"); }
@@ -82,14 +82,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthMutateProperties")]
     [CMutator("mutate_auth_properties")]
     [Description("Mutates MQTT Auth Properties")]
-    public class MqttAuthMutateProperties : Mutator
+    public class MqttAuthMutateProperties : MqttMutator
     {
         public MqttAuthMutateProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("auth"); }
         public override int count => 6;
         public override uint mutation { get; set; }
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj, (int)mutation); obj.mutationFlags = MutateOverride.Default; }
-        public override void randomMutation(DataElement obj) { PerformMutation(obj, context.Random.Next(count)); obj.mutationFlags = MutateOverride.Default; }
+        public override void randomMutation(DataElement obj) { PerformMutation(obj, Next(count)); obj.mutationFlags = MutateOverride.Default; }
 
         private void PerformMutation(DataElement obj, int strategy)
         {
@@ -116,14 +116,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
                         if (!used_reason) { WriteReason(bw); used_reason = true; }
                         break;
                     case 4: // User Prop 1..3
-                        int count = 1 + context.Random.Next(3); for (int i = 0; i < count; i++) WriteUserProp(bw);
+                        int count = 1 + Next(3); for (int i = 0; i < count; i++) WriteUserProp(bw);
                         break;
                     case 5: // Mixed
                         if (!used_method) { WriteMethod(bw); used_method = true; }
-                        if (used_method && context.Random.Next(2) != 0 && !used_data) { WriteData(bw); used_data = true; }
-                        int up = context.Random.Next(3);
+                        if (used_method && Next(2) != 0 && !used_data) { WriteData(bw); used_data = true; }
+                        int up = Next(3);
                         for (int i = 0; i < up; i++) WriteUserProp(bw);
-                        if (!used_reason && context.Random.Next(2) != 0) { WriteReason(bw); used_reason = true; }
+                        if (!used_reason && Next(2) != 0) { WriteReason(bw); used_reason = true; }
                         break;
                 }
                 return ms.ToArray();
@@ -132,25 +132,25 @@ namespace Peach.Pro.Core.Mutators.MQTT
         private void WriteMethod(BinaryWriter bw)
         {
             bw.Write((byte)0x15);
-            WriteUtf8(bw, (context.Random.Next(2) == 0) ? "PLAIN" : "SCRAM-SHA-256");
+            WriteUtf8(bw, (Next(2) == 0) ? "PLAIN" : "SCRAM-SHA-256");
         }
         private void WriteData(BinaryWriter bw)
         {
             bw.Write((byte)0x16);
-            int len = 8 + context.Random.Next(9);
+            int len = 8 + Next(9);
             byte[] d = new byte[len];
             // Fix for Random.NextBytes not found in Peach.Core.Random
-            for (int i = 0; i < d.Length; i++) d[i] = (byte)context.Random.Next(256);
+            for (int i = 0; i < d.Length; i++) d[i] = (byte)Next(256);
             bw.Write((byte)((len >> 8) & 0xFF)); bw.Write((byte)(len & 0xFF)); bw.Write(d);
         }
-        private void WriteReason(BinaryWriter bw) { bw.Write((byte)0x1F); string[] rs = { "ok", "continue", "reauth" }; WriteUtf8(bw, rs[context.Random.Next(rs.Length)]); }
+        private void WriteReason(BinaryWriter bw) { bw.Write((byte)0x1F); string[] rs = { "ok", "continue", "reauth" }; WriteUtf8(bw, rs[Next(rs.Length)]); }
         private void WriteUserProp(BinaryWriter bw)
         {
             string[] k = { "source", "priority", "note", "device" };
             string[] v = { "client", "high", "ok", "edge" };
             bw.Write((byte)0x26);
-            WriteUtf8(bw, k[context.Random.Next(4)]);
-            WriteUtf8(bw, v[context.Random.Next(4)]);
+            WriteUtf8(bw, k[Next(4)]);
+            WriteUtf8(bw, v[Next(4)]);
         }
         private void WriteUtf8(BinaryWriter writer, string str) { byte[] b = SysEncoding.UTF8.GetBytes(str); writer.Write((byte)((b.Length >> 8) & 0xFF)); writer.Write((byte)(b.Length & 0xFF)); writer.Write(b); }
     }
@@ -158,7 +158,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthAddProperties")]
     [CMutator("add_auth_properties")]
     [Description("Adds MQTT Auth Properties")]
-    public class MqttAuthAddProperties : Mutator
+    public class MqttAuthAddProperties : MqttMutator
     {
         public MqttAuthAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("auth"); }
@@ -188,7 +188,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthRepeatProperties")]
     [CMutator("repeat_auth_properties")]
     [Description("Repeats MQTT Auth User Property")]
-    public class MqttAuthRepeatProperties : Mutator
+    public class MqttAuthRepeatProperties : MqttMutator
     {
         public MqttAuthRepeatProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("auth"); }

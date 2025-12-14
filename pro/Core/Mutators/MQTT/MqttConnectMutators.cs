@@ -19,7 +19,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateFlags")]
     [CMutator("mutate_connect_flags")]
     [Description("Mutates MQTT Connect Flags")]
-    public class MqttConnectMutateFlags : Mutator
+    public class MqttConnectMutateFlags : MqttMutator
     {
         public MqttConnectMutateFlags(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -45,12 +45,12 @@ namespace Peach.Pro.Core.Mutators.MQTT
             switch (strategy)
             {
                 case 0: // 合法组合：随机合法构造
-                    uint clean = (uint)context.Random.Next(2);
-                    uint will = (uint)context.Random.Next(2);
-                    uint qos = (uint)context.Random.Next(3);
-                    uint retain = will != 0 ? (uint)context.Random.Next(2) : 0;
-                    uint user = (uint)context.Random.Next(2);
-                    uint pass = (uint)context.Random.Next(2);
+                    uint clean = (uint)Next(2);
+                    uint will = (uint)Next(2);
+                    uint qos = (uint)Next(3);
+                    uint retain = will != 0 ? (uint)Next(2) : 0;
+                    uint user = (uint)Next(2);
+                    uint pass = (uint)Next(2);
 
                     mutated = 0;
                     mutated |= user << 7;
@@ -72,7 +72,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     mutated = original | 0x01u;
                     break;
                 case 4: // bitflip
-                    mutated = original ^ (1u << context.Random.Next(8));
+                    mutated = original ^ (1u << Next(8));
                     break;
                 case 5: // rotate left
                     mutated = ((original << 1) | (original >> 7)) & 0xFF;
@@ -90,7 +90,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateKeepAlive")]
     [CMutator("mutate_connect_keep_alive")]
     [Description("Mutates MQTT Connect Keep Alive")]
-    public class MqttConnectMutateKeepAlive : Mutator
+    public class MqttConnectMutateKeepAlive : MqttMutator
     {
         public MqttConnectMutateKeepAlive(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "keep_alive"; }
@@ -121,18 +121,18 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     mutated = 65535; // 最大合法值
                     break;
                 case 3:
-                    mutated = (uint)context.Random.Next(10000); // 合法范围内随机值
+                    mutated = (uint)Next(10000); // 合法范围内随机值
                     break;
                 case 4:
-                    mutated = orig + (uint)context.Random.Next(1000); // 正向扰动
+                    mutated = orig + (uint)Next(1000); // 正向扰动
                     if (mutated > 65535) mutated = 65535;
                     break;
                 case 5:
-                    int val = (int)orig - context.Random.Next(1000); // 负向扰动
+                    int val = (int)orig - Next(1000); // 负向扰动
                     mutated = (uint)val; // cast to uint simulates underflow behavior of C uint16 arithmetic before masking
                     break;
                 case 6:
-                    mutated = (uint)context.Random.Next(int.MaxValue); // 全随机
+                    mutated = (uint)Next(int.MaxValue); // 全随机
                     break;
             }
             obj.MutatedValue = new Variant(mutated & 0xFFFF);
@@ -144,7 +144,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateProperties")]
     [CMutator("mutate_connect_properties")]
     [Description("Mutates MQTT Connect Properties")]
-    public class MqttConnectMutateProperties : Mutator
+    public class MqttConnectMutateProperties : MqttMutator
     {
         public MqttConnectMutateProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -170,18 +170,18 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 bool used_ses = false, used_rcv = false, used_max = false, used_ta = false;
                 bool used_rr = false, used_rp = false, used_am = false, used_ad = false;
 
-                int num_props = 1 + context.Random.Next(6);
+                int num_props = 1 + Next(6);
                 for (int n = 0; n < num_props; ++n)
                 {
-                    int pick = context.Random.Next(9);
+                    int pick = Next(9);
                     switch (pick)
                     {
-                        case 0: if (!used_ses) { PUT8(buf, 0x11); PUT32(buf, (uint)context.Random.Next(86400)); used_ses = true; } break;
-                        case 1: if (!used_rcv) { PUT8(buf, 0x12); PUT16(buf, (ushort)(1 + context.Random.Next(1024))); used_rcv = true; } break;
-                        case 2: if (!used_max) { PUT8(buf, 0x13); PUT32(buf, (uint)(512 + context.Random.Next(65536))); used_max = true; } break;
-                        case 3: if (!used_ta) { PUT8(buf, 0x22); PUT16(buf, (ushort)(1 + context.Random.Next(100))); used_ta = true; } break; // 0x22 or 0x15? C code define PID_TA_MAX 0x22.
-                        case 4: if (!used_rr) { PUT8(buf, 0x17); PUT8(buf, (byte)context.Random.Next(2)); used_rr = true; } break;
-                        case 5: if (!used_rp) { PUT8(buf, 0x19); PUT8(buf, (byte)context.Random.Next(2)); used_rp = true; } break;
+                        case 0: if (!used_ses) { PUT8(buf, 0x11); PUT32(buf, (uint)Next(86400)); used_ses = true; } break;
+                        case 1: if (!used_rcv) { PUT8(buf, 0x12); PUT16(buf, (ushort)(1 + Next(1024))); used_rcv = true; } break;
+                        case 2: if (!used_max) { PUT8(buf, 0x13); PUT32(buf, (uint)(512 + Next(65536))); used_max = true; } break;
+                        case 3: if (!used_ta) { PUT8(buf, 0x22); PUT16(buf, (ushort)(1 + Next(100))); used_ta = true; } break; // 0x22 or 0x15? C code define PID_TA_MAX 0x22.
+                        case 4: if (!used_rr) { PUT8(buf, 0x17); PUT8(buf, (byte)Next(2)); used_rr = true; } break;
+                        case 5: if (!used_rp) { PUT8(buf, 0x19); PUT8(buf, (byte)Next(2)); used_rp = true; } break;
                         case 6: // User Property
                             PUT8(buf, 0x26); PUT_UTF8(buf, "key", 32); PUT_UTF8(buf, "val", 32);
                             break;
@@ -190,8 +190,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                             if (!used_ad)
                             {
                                 byte[] tmp = new byte[16];
-                                int L = 4 + context.Random.Next(8);
-                                for (int t = 0; t < L; ++t) tmp[t] = (byte)context.Random.Next(256);
+                                int L = 4 + Next(8);
+                                for (int t = 0; t < L; ++t) tmp[t] = (byte)Next(256);
                                 PUT8(buf, 0x16);
                                 PUT_BIN(buf, tmp, L);
                                 used_ad = true;
@@ -224,7 +224,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddProperties")]
     [CMutator("add_connect_properties")]
     [Description("Adds MQTT Connect Properties")]
-    public class MqttConnectAddProperties : Mutator
+    public class MqttConnectAddProperties : MqttMutator
     {
         public MqttConnectAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -248,7 +248,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteProperties")]
     [CMutator("delete_connect_properties")]
     [Description("Deletes MQTT Connect Properties")]
-    public class MqttConnectDeleteProperties : Mutator
+    public class MqttConnectDeleteProperties : MqttMutator
     {
         public MqttConnectDeleteProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -264,7 +264,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateClientId")]
     [CMutator("mutate_connect_client_id")]
     [Description("Mutates MQTT Client ID")]
-    public class MqttConnectMutateClientId : Mutator
+    public class MqttConnectMutateClientId : MqttMutator
     {
         public MqttConnectMutateClientId(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -296,39 +296,39 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     break;
                 case 1: // 合法随机 ID（长度 1-23）
                     {
-                        int len = 1 + context.Random.Next(23);
+                        int len = 1 + Next(23);
                         char[] chars = new char[len];
-                        for (int j = 0; j < len; ++j) chars[j] = valid_chars[context.Random.Next(valid_chars.Length)];
+                        for (int j = 0; j < len; ++j) chars[j] = valid_chars[Next(valid_chars.Length)];
                         cid = new string(chars);
                     }
                     break;
                 case 2: // 超长 ID
                     {
-                        int len = 24 + context.Random.Next(40);
+                        int len = 24 + Next(40);
                         char[] chars = new char[len];
-                        for (int j = 0; j < len; ++j) chars[j] = valid_chars[context.Random.Next(valid_chars.Length)];
+                        for (int j = 0; j < len; ++j) chars[j] = valid_chars[Next(valid_chars.Length)];
                         cid = new string(chars);
                     }
                     break;
                 case 3: // 插入非法字符混合
                     {
-                        int len = 5 + context.Random.Next(30);
+                        int len = 5 + Next(30);
                         char[] chars = new char[len];
                         for (int j = 0; j < len; ++j)
                         {
-                            if (context.Random.Next(3) == 0)
-                                chars[j] = bad_chars[context.Random.Next(bad_chars.Length)];
+                            if (Next(3) == 0)
+                                chars[j] = bad_chars[Next(bad_chars.Length)];
                             else
-                                chars[j] = valid_chars[context.Random.Next(valid_chars.Length)];
+                                chars[j] = valid_chars[Next(valid_chars.Length)];
                         }
                         cid = new string(chars);
                     }
                     break;
                 case 4: // 全数字 ID
                     {
-                        int len = 3 + context.Random.Next(20);
+                        int len = 3 + Next(20);
                         char[] chars = new char[len];
-                        for (int j = 0; j < len; ++j) chars[j] = (char)('0' + context.Random.Next(10));
+                        for (int j = 0; j < len; ++j) chars[j] = (char)('0' + Next(10));
                         cid = new string(chars);
                     }
                     break;
@@ -336,11 +336,11 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     if (orig_len > 0)
                     {
                         byte[] b = SysEncoding.UTF8.GetBytes(cid);
-                        int flips = 1 + context.Random.Next(3);
+                        int flips = 1 + Next(3);
                         for (int f = 0; f < flips; ++f)
                         {
-                            int pos = context.Random.Next(b.Length);
-                            b[pos] ^= (byte)(1 << context.Random.Next(8));
+                            int pos = Next(b.Length);
+                            b[pos] ^= (byte)(1 << Next(8));
                         }
                         obj.MutatedValue = new Variant(b);
                         return;
@@ -348,18 +348,18 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     break;
                 case 6: // 拼接合法段 + 非法段
                     {
-                        int len1 = 3 + context.Random.Next(10);
-                        int len2 = 3 + context.Random.Next(10);
+                        int len1 = 3 + Next(10);
+                        int len2 = 3 + Next(10);
                         char[] chars = new char[len1 + len2];
-                        for (int j = 0; j < len1; ++j) chars[j] = valid_chars[context.Random.Next(valid_chars.Length)];
-                        for (int j = 0; j < len2; ++j) chars[len1 + j] = bad_chars[context.Random.Next(bad_chars.Length)];
+                        for (int j = 0; j < len1; ++j) chars[j] = valid_chars[Next(valid_chars.Length)];
+                        for (int j = 0; j < len2; ++j) chars[len1 + j] = bad_chars[Next(bad_chars.Length)];
                         cid = new string(chars);
                     }
                     break;
                 case 7: // 截断 ID（部分丢失）
                     if (orig_len > 2)
                     {
-                        int new_len = 1 + context.Random.Next(orig_len - 1);
+                        int new_len = 1 + Next(orig_len - 1);
                         cid = cid.Substring(0, new_len);
                     }
                     break;
@@ -373,7 +373,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddClientId")]
     [CMutator("add_connect_client_id")]
     [Description("Adds MQTT Client ID")]
-    public class MqttConnectAddClientId : Mutator
+    public class MqttConnectAddClientId : MqttMutator
     {
         public MqttConnectAddClientId(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.Block && obj.Name == "client_id"; }
@@ -383,7 +383,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
         {
             var clientId = FromMqttString(obj.Bytes());
             if (string.IsNullOrEmpty(clientId))
-                obj.MutatedValue = new Variant(ToMqttString("client" + context.Random.Next(10000)));
+                obj.MutatedValue = new Variant(ToMqttString("client" + Next(10000)));
             obj.mutationFlags = MutateOverride.Default;
         }
         public override void randomMutation(DataElement obj) { sequentialMutation(obj); }
@@ -392,7 +392,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteClientId")]
     [CMutator("delete_connect_client_id")]
     [Description("Deletes MQTT Client ID")]
-    public class MqttConnectDeleteClientId : Mutator
+    public class MqttConnectDeleteClientId : MqttMutator
     {
         public MqttConnectDeleteClientId(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -408,7 +408,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateUserName")]
     [CMutator("mutate_connect_user_name")]
     [Description("Mutates MQTT User Name")]
-    public class MqttConnectMutateUserName : Mutator
+    public class MqttConnectMutateUserName : MqttMutator
     {
         public MqttConnectMutateUserName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.Block && obj.Name == "user_name"; }
@@ -433,14 +433,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
             {
                 case 0: // 合法随机用户名
                     {
-                        int len = 5 + context.Random.Next(20);
+                        int len = 5 + Next(20);
                         char[] chars = new char[len];
-                        for (int j = 0; j < len; ++j) chars[j] = valid_chars[context.Random.Next(valid_chars.Length)];
+                        for (int j = 0; j < len; ++j) chars[j] = valid_chars[Next(valid_chars.Length)];
                         val = new string(chars);
                     }
                     break;
                 case 1: // 使用特殊测试用例
-                    val = special_cases[context.Random.Next(special_cases.Length)];
+                    val = special_cases[Next(special_cases.Length)];
                     break;
                 case 2: // 非法非 ASCII 序列 + UTF-8 序列污染
                     obj.MutatedValue = new Variant(new byte[] { 0xC3, 0x28, 0xA0, 0xA1, 0xFF, 0xFE });
@@ -455,10 +455,10 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     break;
                 case 5: // NULL 字节注入 + 随机后缀
                     {
-                        int len = 5 + context.Random.Next(10);
+                        int len = 5 + Next(10);
                         char[] chars = new char[len];
-                        for (int j = 0; j < len; ++j) chars[j] = valid_chars[context.Random.Next(valid_chars.Length)];
-                        int pos = context.Random.Next(len);
+                        for (int j = 0; j < len; ++j) chars[j] = valid_chars[Next(valid_chars.Length)];
+                        int pos = Next(len);
                         chars[pos] = '\0';
                         val = new string(chars);
                     }
@@ -469,7 +469,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
                         if (b.Length == 0) b = SysEncoding.UTF8.GetBytes("user");
                         for (int j = 0; j < b.Length; ++j)
                         {
-                            if (context.Random.Next(2) != 0) b[j] ^= (byte)(1 << context.Random.Next(8));
+                            if (Next(2) != 0) b[j] ^= (byte)(1 << Next(8));
                         }
                         obj.MutatedValue = new Variant(b);
                         return;
@@ -484,7 +484,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddUserName")]
     [CMutator("add_connect_user_name")]
     [Description("Adds MQTT User Name")]
-    public class MqttConnectAddUserName : Mutator
+    public class MqttConnectAddUserName : MqttMutator
     {
         public MqttConnectAddUserName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.Block && obj.Name == "user_name"; }
@@ -494,7 +494,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
         {
             var origin = FromMqttString(obj.Bytes());
             if (string.IsNullOrEmpty(origin))
-                obj.MutatedValue = new Variant(ToMqttString("user_" + context.Random.Next(int.MaxValue)));
+                obj.MutatedValue = new Variant(ToMqttString("user_" + Next(int.MaxValue)));
             obj.mutationFlags = MutateOverride.Default;
         }
         public override void randomMutation(DataElement obj) { sequentialMutation(obj); }
@@ -503,7 +503,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteUserName")]
     [CMutator("delete_connect_user_name")]
     [Description("Deletes MQTT User Name")]
-    public class MqttConnectDeleteUserName : Mutator
+    public class MqttConnectDeleteUserName : MqttMutator
     {
         public MqttConnectDeleteUserName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -519,7 +519,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutatePassword")]
     [CMutator("mutate_connect_password")]
     [Description("Mutates MQTT Password")]
-    public class MqttConnectMutatePassword : Mutator
+    public class MqttConnectMutatePassword : MqttMutator
     {
         public MqttConnectMutatePassword(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -545,7 +545,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
             switch (strategy)
             {
                 case 0: // 使用预置常见密码
-                    string src = common_passwords[context.Random.Next(common_passwords.Length)];
+                    string src = common_passwords[Next(common_passwords.Length)];
                     val = SysEncoding.UTF8.GetBytes(src);
                     break;
                 case 1: // 空密码
@@ -555,8 +555,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     val = new byte[] { 0x00, 0xFF, 0xAA, 0x55 };
                     break;
                 case 3: // 随机二进制串
-                    val = new byte[context.Random.Next(23)];
-                    new SysRandom().NextBytes(val);
+                    val = new byte[Next(23)];
+                    NextBytes(val);
                     break;
                 case 4: // 超长填充（全'A'）
                     val = new byte[23];
@@ -567,10 +567,10 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     break;
                 case 6: // NULL 字节混入 + 后缀
                     {
-                        int len = 5 + context.Random.Next(10);
+                        int len = 5 + Next(10);
                         val = new byte[len];
-                        for (int j = 0; j < len; ++j) val[j] = (byte)('a' + context.Random.Next(26));
-                        int pos = context.Random.Next(len);
+                        for (int j = 0; j < len; ++j) val[j] = (byte)('a' + Next(26));
+                        int pos = Next(len);
                         val[pos] = 0;
                     }
                     break;
@@ -582,11 +582,11 @@ namespace Peach.Pro.Core.Mutators.MQTT
 
                         if (val.Length == 0)
                         {
-                            val = new byte[5 + context.Random.Next(10)];
-                            for (int j = 0; j < val.Length; ++j) val[j] = (byte)('a' + context.Random.Next(26));
+                            val = new byte[5 + Next(10)];
+                            for (int j = 0; j < val.Length; ++j) val[j] = (byte)('a' + Next(26));
                         }
-                        int flip_pos = context.Random.Next(val.Length);
-                        val[flip_pos] ^= (byte)(1 << context.Random.Next(8));
+                        int flip_pos = Next(val.Length);
+                        val[flip_pos] ^= (byte)(1 << Next(8));
                     }
                     break;
             }
@@ -599,7 +599,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddPassword")]
     [CMutator("add_connect_password")]
     [Description("Adds MQTT Password")]
-    public class MqttConnectAddPassword : Mutator
+    public class MqttConnectAddPassword : MqttMutator
     {
         public MqttConnectAddPassword(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -623,7 +623,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeletePassword")]
     [CMutator("delete_connect_password")]
     [Description("Deletes MQTT Password")]
-    public class MqttConnectDeletePassword : Mutator
+    public class MqttConnectDeletePassword : MqttMutator
     {
         public MqttConnectDeletePassword(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -639,7 +639,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateWillProperties")]
     [CMutator("mutate_connect_will_properties")]
     [Description("Mutates MQTT Will Properties")]
-    public class MqttConnectMutateWillProperties : Mutator
+    public class MqttConnectMutateWillProperties : MqttMutator
     {
         public MqttConnectMutateWillProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -671,60 +671,60 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 switch (strategy)
                 {
                     case 0: // 合法单个属性
-                        bw.Write(legal_will_prop_ids[context.Random.Next(legal_will_prop_ids.Length)]);
+                        bw.Write(legal_will_prop_ids[Next(legal_will_prop_ids.Length)]);
                         bw.Write((byte)0x00);
-                        bw.Write((byte)context.Random.Next(256));
+                        bw.Write((byte)Next(256));
                         break;
                     case 1: // 合法多个属性混合
-                        int count = 2 + context.Random.Next(4); // 2-5
+                        int count = 2 + Next(4); // 2-5
                         for (int j = 0; j < count; ++j)
                         {
-                            bw.Write(legal_will_prop_ids[context.Random.Next(legal_will_prop_ids.Length)]);
+                            bw.Write(legal_will_prop_ids[Next(legal_will_prop_ids.Length)]);
                             bw.Write((byte)0x00);
-                            bw.Write((byte)context.Random.Next(256));
+                            bw.Write((byte)Next(256));
                         }
                         break;
                     case 2: // 非法属性 ID混入
-                        int len = 3 + context.Random.Next(5);
+                        int len = 3 + Next(5);
                         for (int j = 0; j < len; ++j)
                         {
-                            byte val = (context.Random.Next(2) != 0) ? (byte)0xFF : legal_will_prop_ids[context.Random.Next(legal_will_prop_ids.Length)];
+                            byte val = (Next(2) != 0) ? (byte)0xFF : legal_will_prop_ids[Next(legal_will_prop_ids.Length)];
                             bw.Write(val);
                         }
                         break;
                     case 3: // 超长属性随机填充 (Simulated by returning max buf)
                         byte[] large = new byte[65535]; // MAX_PROPERTIES_LEN? Assuming large.
-                        new SysRandom().NextBytes(large);
+                        NextBytes(large);
                         return large;
                     case 4: // 重复属性段
-                        byte id = legal_will_prop_ids[context.Random.Next(legal_will_prop_ids.Length)];
-                        int repeat = 1 + context.Random.Next(5);
+                        byte id = legal_will_prop_ids[Next(legal_will_prop_ids.Length)];
+                        int repeat = 1 + Next(5);
                         for (int j = 0; j < repeat; ++j)
                         {
                             bw.Write(id);
                             bw.Write((byte)0x00);
-                            bw.Write((byte)context.Random.Next(256));
+                            bw.Write((byte)Next(256));
                         }
                         break;
                     case 5: // 全 0x00
-                        int len0 = 2 + context.Random.Next(10);
+                        int len0 = 2 + Next(10);
                         return new byte[len0];
                     case 6: // 全 0xFF
-                        int lenF = 2 + context.Random.Next(10);
+                        int lenF = 2 + Next(10);
                         byte[] bufF = new byte[lenF];
                         for (int i = 0; i < lenF; i++) bufF[i] = 0xFF;
                         return bufF;
                     case 7: // bitflip + 插入垃圾尾部
                         {
-                            int l = 5 + context.Random.Next(10);
+                            int l = 5 + Next(10);
                             byte[] buf = new byte[l + 5]; // space for tail
                             for (int j = 0; j < l; ++j)
                             {
-                                buf[j] = (byte)context.Random.Next(256);
-                                if (context.Random.Next(3) == 0) buf[j] ^= (byte)(1 << context.Random.Next(8));
+                                buf[j] = (byte)Next(256);
+                                if (Next(3) == 0) buf[j] ^= (byte)(1 << Next(8));
                             }
                             // Garbage tail
-                            for (int j = l; j < l + 5; ++j) buf[j] = (byte)context.Random.Next(256);
+                            for (int j = l; j < l + 5; ++j) buf[j] = (byte)Next(256);
                             return buf;
                         }
                 }
@@ -736,7 +736,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddWillProperties")]
     [CMutator("add_connect_will_properties")]
     [Description("Adds MQTT Will Properties")]
-    public class MqttConnectAddWillProperties : Mutator
+    public class MqttConnectAddWillProperties : MqttMutator
     {
         public MqttConnectAddWillProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -757,12 +757,12 @@ namespace Peach.Pro.Core.Mutators.MQTT
             using (var ms = new MemoryStream())
             using (var bw = new BinaryWriter(ms))
             {
-                int strategy = context.Random.Next(6);
+                int strategy = Next(6);
                 switch (strategy)
                 {
                     case 0: bw.Write((byte)0x01); bw.Write((byte)1); break;
-                    case 1: bw.Write((byte)0x02); PUT32(bw, (uint)context.Random.Next(3601)); break;
-                    case 2: bw.Write((byte)0x18); PUT32(bw, (uint)context.Random.Next(601)); break;
+                    case 1: bw.Write((byte)0x02); PUT32(bw, (uint)Next(3601)); break;
+                    case 2: bw.Write((byte)0x18); PUT32(bw, (uint)Next(601)); break;
                     case 3: bw.Write((byte)0x03); PUT_UTF8_LIT(bw, "text/plain"); break;
                     case 4: bw.Write((byte)0x08); PUT_UTF8_LIT(bw, "reply/topic"); break;
                     case 5: bw.Write((byte)0x09); PUT_BIN_RAND(bw, 8, 24); break;
@@ -770,12 +770,12 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 // User props
                 string[] keys = { "source", "priority", "note", "device" };
                 string[] vals = { "sensor1", "high", "ok", "edge" };
-                int upn = context.Random.Next(3);
+                int upn = Next(3);
                 for (int t = 0; t < upn; ++t)
                 {
                     bw.Write((byte)0x26);
-                    PUT_UTF8_LIT(bw, keys[context.Random.Next(4)]);
-                    PUT_UTF8_LIT(bw, vals[context.Random.Next(4)]);
+                    PUT_UTF8_LIT(bw, keys[Next(4)]);
+                    PUT_UTF8_LIT(bw, vals[Next(4)]);
                 }
                 obj.MutatedValue = new Variant(ms.ToArray());
             }
@@ -786,10 +786,10 @@ namespace Peach.Pro.Core.Mutators.MQTT
         private void PUT_UTF8_LIT(BinaryWriter bw, string s) { byte[] b = SysEncoding.UTF8.GetBytes(s); PUT16(bw, (ushort)b.Length); bw.Write(b); }
         private void PUT_BIN_RAND(BinaryWriter bw, int min, int max)
         {
-            int L = min + context.Random.Next(max - min + 1);
+            int L = min + Next(max - min + 1);
             PUT16(bw, (ushort)L);
             byte[] b = new byte[L];
-            new SysRandom().NextBytes(b);
+            NextBytes(b);
             bw.Write(b);
         }
     }
@@ -797,7 +797,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteWillProperties")]
     [CMutator("delete_connect_will_properties")]
     [Description("Deletes MQTT Will Properties")]
-    public class MqttConnectDeleteWillProperties : Mutator
+    public class MqttConnectDeleteWillProperties : MqttMutator
     {
         public MqttConnectDeleteWillProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -813,7 +813,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateWillTopic")]
     [CMutator("mutate_connect_will_topic")]
     [Description("Mutates MQTT Will Topic")]
-    public class MqttConnectMutateWillTopic : Mutator
+    public class MqttConnectMutateWillTopic : MqttMutator
     {
         public MqttConnectMutateWillTopic(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -840,41 +840,41 @@ namespace Peach.Pro.Core.Mutators.MQTT
             switch (strategy)
             {
                 case 0: // 使用预设 topic
-                    val = base_topics[context.Random.Next(base_topics.Length)];
+                    val = base_topics[Next(base_topics.Length)];
                     break;
                 case 1: // 生成合法随机 topic
                     {
-                        int len = 1 + context.Random.Next(20);
+                        int len = 1 + Next(20);
                         StringBuilder sb = new StringBuilder();
-                        for (int j = 0; j < len; ++j) sb.Append(valid_chars[context.Random.Next(valid_chars.Length)]);
+                        for (int j = 0; j < len; ++j) sb.Append(valid_chars[Next(valid_chars.Length)]);
                         val = sb.ToString();
                     }
                     break;
                 case 2: // 生成超长 topic
                     {
-                        int len = 200 + context.Random.Next(20);
+                        int len = 200 + Next(20);
                         StringBuilder sb = new StringBuilder();
-                        for (int j = 0; j < len; ++j) sb.Append(valid_chars[context.Random.Next(valid_chars.Length)]);
+                        for (int j = 0; j < len; ++j) sb.Append(valid_chars[Next(valid_chars.Length)]);
                         val = sb.ToString();
                     }
                     break;
                 case 3: // 拼接合法 + 非法片段
                     {
-                        val = base_topics[context.Random.Next(base_topics.Length)];
+                        val = base_topics[Next(base_topics.Length)];
                         val += "\xFF"; // Append invalid char
                     }
                     break;
                 case 4: // 插入特殊符号 & bitflip
                     {
-                        int len = 1 + context.Random.Next(20);
+                        int len = 1 + Next(20);
                         byte[] b = new byte[len];
                         for (int j = 0; j < len; ++j)
                         {
-                            if (context.Random.Next(4) == 0) b[j] = (byte)'#';
+                            if (Next(4) == 0) b[j] = (byte)'#';
                             else
                             {
-                                b[j] = (byte)valid_chars[context.Random.Next(valid_chars.Length)];
-                                if (context.Random.Next(3) == 0) b[j] ^= (byte)(1 << context.Random.Next(8));
+                                b[j] = (byte)valid_chars[Next(valid_chars.Length)];
+                                if (Next(3) == 0) b[j] ^= (byte)(1 << Next(8));
                             }
                         }
                         var sb = new StringBuilder();
@@ -893,7 +893,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddWillTopic")]
     [CMutator("add_connect_will_topic")]
     [Description("Adds MQTT Will Topic")]
-    public class MqttConnectAddWillTopic : Mutator
+    public class MqttConnectAddWillTopic : MqttMutator
     {
         public MqttConnectAddWillTopic(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -907,7 +907,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
             if (string.IsNullOrEmpty(FromMqttString(obj.Bytes())))
             {
                 string[] sample_topics = { "sensor/temp", "a/b/c", "device/+/status", "home/+/light/#", "你好/测试" };
-                obj.MutatedValue = new Variant(ToMqttString(sample_topics[context.Random.Next(sample_topics.Length)]));
+                obj.MutatedValue = new Variant(ToMqttString(sample_topics[Next(sample_topics.Length)]));
             }
             obj.mutationFlags = MutateOverride.Default;
         }
@@ -917,7 +917,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteWillTopic")]
     [CMutator("delete_connect_will_topic")]
     [Description("Deletes MQTT Will Topic")]
-    public class MqttConnectDeleteWillTopic : Mutator
+    public class MqttConnectDeleteWillTopic : MqttMutator
     {
         public MqttConnectDeleteWillTopic(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -933,7 +933,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateWillPayload")]
     [CMutator("mutate_connect_will_payload")]
     [Description("Mutates MQTT Will Payload")]
-    public class MqttConnectMutateWillPayload : Mutator
+    public class MqttConnectMutateWillPayload : MqttMutator
     {
         public MqttConnectMutateWillPayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -960,17 +960,17 @@ namespace Peach.Pro.Core.Mutators.MQTT
             {
                 case 0: // 合法 UTF-8 文本
                     {
-                        int l = 5 + context.Random.Next(20);
+                        int l = 5 + Next(20);
                         char[] c = new char[l];
-                        for (int j = 0; j < l; ++j) c[j] = valid_chars[context.Random.Next(valid_chars.Length)];
+                        for (int j = 0; j < l; ++j) c[j] = valid_chars[Next(valid_chars.Length)];
                         val = ToUtf8(new string(c));
                     }
                     break;
                 case 1: // 二进制模式
                     {
-                        int l = 1 + context.Random.Next(64);
+                        int l = 1 + Next(64);
                         val = new byte[l];
-                        new SysRandom().NextBytes(val);
+                        NextBytes(val);
                     }
                     break;
                 case 2: // 空 payload
@@ -978,14 +978,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     break;
                 case 3: // 超长 payload
                     val = new byte[65535];
-                    new SysRandom().NextBytes(val);
+                    NextBytes(val);
                     break;
                 case 4: // 插入 NULL 字节 + 随机尾随数据
                     {
-                        int l = 5 + context.Random.Next(10);
+                        int l = 5 + Next(10);
                         val = new byte[l];
-                        for (int j = 0; j < l; ++j) val[j] = (byte)valid_chars[context.Random.Next(valid_chars.Length)];
-                        val[context.Random.Next(l)] = 0;
+                        for (int j = 0; j < l; ++j) val[j] = (byte)valid_chars[Next(valid_chars.Length)];
+                        val[Next(l)] = 0;
                     }
                     break;
                 case 5: // 非法 UTF-8 序列
@@ -993,11 +993,11 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     break;
                 case 6: // 混合合法文本 + 垃圾二进制
                     {
-                        int l = 10 + context.Random.Next(30);
-                        int split = context.Random.Next(l);
+                        int l = 10 + Next(30);
+                        int split = Next(l);
                         val = new byte[l];
-                        for (int j = 0; j < split; ++j) val[j] = (byte)valid_chars[context.Random.Next(valid_chars.Length)];
-                        for (int j = split; j < l; ++j) val[j] = (byte)context.Random.Next(256);
+                        for (int j = 0; j < split; ++j) val[j] = (byte)valid_chars[Next(valid_chars.Length)];
+                        for (int j = split; j < l; ++j) val[j] = (byte)Next(256);
                     }
                     break;
             }
@@ -1008,7 +1008,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddWillPayload")]
     [CMutator("add_connect_will_payload")]
     [Description("Adds MQTT Will Payload")]
-    public class MqttConnectAddWillPayload : Mutator
+    public class MqttConnectAddWillPayload : MqttMutator
     {
         public MqttConnectAddWillPayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -1023,7 +1023,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
             if (b != null && b.Length == 0)
             {
                 string[] samples = { "device offline", "error: timeout", "{\"status\": \"dead\"}", "MQTT last will", "\xDE\xAD\xBE\xEF" };
-                string data = samples[context.Random.Next(samples.Length)];
+                string data = samples[Next(samples.Length)];
                 obj.MutatedValue = new Variant(ToUtf8(data));
             }
             obj.mutationFlags = MutateOverride.Default;
@@ -1034,7 +1034,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteWillPayload")]
     [CMutator("delete_connect_will_payload")]
     [Description("Deletes MQTT Will Payload")]
-    public class MqttConnectDeleteWillPayload : Mutator
+    public class MqttConnectDeleteWillPayload : MqttMutator
     {
         public MqttConnectDeleteWillPayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) {

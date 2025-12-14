@@ -18,7 +18,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeMutatePacketIdentifier")]
     [CMutator("mutate_unsubscribe_packet_identifier")]
     [Description("Mutates MQTT Unsubscribe Packet ID")]
-    public class MqttUnsubscribeMutatePacketIdentifier : Mutator
+    public class MqttUnsubscribeMutatePacketIdentifier : MqttMutator
     {
         public MqttUnsubscribeMutatePacketIdentifier(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "packet_identifier" && obj.IsIn("unsubscribe"); }
@@ -44,11 +44,11 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 2: val = 0; break;
                 case 3: val = current ^ 0xFFFF; break;
                 case 4: val = ((current & 0xFF) << 8) | (current >> 8); break;
-                case 5: val = (uint)context.Random.Next(0xFFFF); break;
+                case 5: val = (uint)Next(0xFFFF); break;
                 case 6: val = 0x1234; break;
                 case 7: val = current; break;
                 case 8: val = 0xABCD; break;
-                case 9: val = (uint)(0xFFFF + context.Random.Next(100)); break;
+                case 9: val = (uint)(0xFFFF + Next(100)); break;
             }
             obj.MutatedValue = new Variant(val & 0xFFFF);
         }
@@ -57,14 +57,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeMutateProperties")]
     [CMutator("mutate_unsubscribe_properties")]
     [Description("Mutates MQTT Unsubscribe Properties")]
-    public class MqttUnsubscribeMutateProperties : Mutator
+    public class MqttUnsubscribeMutateProperties : MqttMutator
     {
         public MqttUnsubscribeMutateProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("unsubscribe"); }
         public override int count => 4;
         public override uint mutation { get; set; }
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj, (int)mutation); obj.mutationFlags = MutateOverride.Default; }
-        public override void randomMutation(DataElement obj) { PerformMutation(obj, context.Random.Next(count)); obj.mutationFlags = MutateOverride.Default; }
+        public override void randomMutation(DataElement obj) { PerformMutation(obj, Next(count)); obj.mutationFlags = MutateOverride.Default; }
 
         private void PerformMutation(DataElement obj, int strategy)
         {
@@ -78,8 +78,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 for (int i = 0; i < num; i++)
                 {
                     bw.Write((byte)0x26);
-                    WriteUtf8(bw, keys[context.Random.Next(keys.Length)]);
-                    WriteUtf8(bw, vals[context.Random.Next(vals.Length)]);
+                    WriteUtf8(bw, keys[Next(keys.Length)]);
+                    WriteUtf8(bw, vals[Next(vals.Length)]);
                 }
                 obj.MutatedValue = new Variant(ms.ToArray());
             }
@@ -96,7 +96,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeAddProperties")]
     [CMutator("add_unsubscribe_properties")]
     [Description("Adds MQTT Unsubscribe Properties")]
-    public class MqttUnsubscribeAddProperties : Mutator
+    public class MqttUnsubscribeAddProperties : MqttMutator
     {
         public MqttUnsubscribeAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("unsubscribe"); }
@@ -130,7 +130,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeDeleteProperties")]
     [CMutator("delete_unsubscribe_properties")]
     [Description("Deletes MQTT Unsubscribe Properties")]
-    public class MqttUnsubscribeDeleteProperties : Mutator
+    public class MqttUnsubscribeDeleteProperties : MqttMutator
     {
         public MqttUnsubscribeDeleteProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("unsubscribe"); }
@@ -143,7 +143,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeRepeatProperties")]
     [CMutator("repeat_unsubscribe_properties")]
     [Description("Repeats MQTT Unsubscribe User Property")]
-    public class MqttUnsubscribeRepeatProperties : Mutator
+    public class MqttUnsubscribeRepeatProperties : MqttMutator
     {
         public MqttUnsubscribeRepeatProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("unsubscribe"); }
@@ -185,7 +185,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeMutateTopicFilters")]
     [CMutator("mutate_unsubscribe_topic_filters")]
     [Description("Mutates MQTT Unsubscribe Topic Filters")]
-    public class MqttUnsubscribeMutateTopicFilters : Mutator
+    public class MqttUnsubscribeMutateTopicFilters : MqttMutator
     {
         public MqttUnsubscribeMutateTopicFilters(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -211,7 +211,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeRepeatTopicFilters")]
     [CMutator("repeat_unsubscribe_topic_filters")]
     [Description("Repeats MQTT Unsubscribe Topic Filters")]
-    public class MqttUnsubscribeRepeatTopicFilters : Mutator
+    public class MqttUnsubscribeRepeatTopicFilters : MqttMutator
     {
         public MqttUnsubscribeRepeatTopicFilters(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)

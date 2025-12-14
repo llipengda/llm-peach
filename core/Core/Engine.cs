@@ -279,6 +279,7 @@ namespace Peach.Core
 					else
 					{
 						logger.Debug("Stopping engine due to {0}.", ex.GetType().Name);
+						logger.Debug(ex.StackTrace);
 						OnTestError(ex);
 						throw;
 					}
