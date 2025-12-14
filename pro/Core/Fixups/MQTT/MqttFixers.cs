@@ -301,7 +301,7 @@ namespace Peach.Pro.Core.Fixups.MQTT
             var propsElem = elem.find("properties") as Blob;
             var props = propsElem.Bytes();
             var lenElem = elem.find("property_length") as MqttVarInt;
-            var len = (ulong)lenElem.InternalValue;
+            var len = lenElem.GetVarInt();
             var newProps = new List<byte>(MaxPropertiesLen);
 
             var topicNameElem = elem.find("topic_name");
