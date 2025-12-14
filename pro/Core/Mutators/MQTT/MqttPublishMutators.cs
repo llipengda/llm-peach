@@ -20,7 +20,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutatePacketIdentifier")]
     [CMutator("mutate_publish_packet_identifier")]
     [Description("Mutates MQTT Publish Packet ID")]
-    public class MqttPublishMutatePacketIdentifier : Mutator
+    public class MqttPublishMutatePacketIdentifier : MqttMutator
     {
         public MqttPublishMutatePacketIdentifier(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -48,8 +48,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 0: val = 0; break;
                 case 1: val = 1; break;
                 case 2: val = 0xFFFF; break;
-                case 3: val = (uint)context.Random.Next(0xFFFF); break;
-                case 4: val = (uint)context.Random.Next(int.MaxValue); break;
+                case 3: val = (uint)Next(0xFFFF); break;
+                case 4: val = (uint)Next(int.MaxValue); break;
                 case 5: val = 0x7FFF; break;
                 case 6: val = 0x8000; break;
                 case 7: val = current ^ 0xAAAA; break;
@@ -63,7 +63,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishAddPacketIdentifier")]
     [CMutator("add_publish_packet_identifier")]
     [Description("Adds (Populates) MQTT Publish Packet ID")]
-    public class MqttPublishAddPacketIdentifier : Mutator
+    public class MqttPublishAddPacketIdentifier : MqttMutator
     {
         public MqttPublishAddPacketIdentifier(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -74,7 +74,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
         public override uint mutation { get; set; }
         public override void sequentialMutation(DataElement obj)
         {
-            if ((uint)((Number)obj).InternalValue == 0) obj.MutatedValue = new Variant(1 + context.Random.Next(0xFFFF));
+            if ((uint)((Number)obj).InternalValue == 0) obj.MutatedValue = new Variant(1 + Next(0xFFFF));
             obj.mutationFlags = MutateOverride.Default;
         }
         public override void randomMutation(DataElement obj) { sequentialMutation(obj); }
@@ -83,7 +83,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishDeletePacketIdentifier")]
     [CMutator("delete_publish_packet_identifier")]
     [Description("Deletes (Clears) MQTT Publish Packet ID")]
-    public class MqttPublishDeletePacketIdentifier : Mutator
+    public class MqttPublishDeletePacketIdentifier : MqttMutator
     {
         public MqttPublishDeletePacketIdentifier(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -100,7 +100,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateTopicName")]
     [CMutator("mutate_publish_topic_name")]
     [Description("Mutates MQTT Publish Topic Name")]
-    public class MqttPublishMutateTopicName : Mutator
+    public class MqttPublishMutateTopicName : MqttMutator
     {
         public MqttPublishMutateTopicName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.String && obj.Name == "value" && obj.parent != null && obj.parent.Name == "topic_name"; }
@@ -129,7 +129,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 5: val = "sensor/+/temperature"; break;
                 case 6:
                     byte[] b = new byte[65535];
-                    new SysRandom().NextBytes(b);
+                    NextBytes(b);
                     obj.MutatedValue = new Variant(b);
                     return;
                 case 7: val = "home/kitchen/light"; break;
@@ -143,7 +143,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishAddTopicName")]
     [CMutator("add_publish_topic_name")]
     [Description("Adds (Populates) MQTT Publish Topic Name")]
-    public class MqttPublishAddTopicName : Mutator
+    public class MqttPublishAddTopicName : MqttMutator
     {
         public MqttPublishAddTopicName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.String && obj.Name == "value" && obj.parent != null && obj.parent.Name == "topic_name"; }
@@ -160,7 +160,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishDeleteTopicName")]
     [CMutator("delete_publish_topic_name")]
     [Description("Deletes (Clears) MQTT Publish Topic Name")]
-    public class MqttPublishDeleteTopicName : Mutator
+    public class MqttPublishDeleteTopicName : MqttMutator
     {
         public MqttPublishDeleteTopicName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -177,14 +177,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateProperties")]
     [CMutator("mutate_publish_properties")]
     [Description("Mutates MQTT Publish Properties")]
-    public class MqttPublishMutateProperties : Mutator
+    public class MqttPublishMutateProperties : MqttMutator
     {
         public MqttPublishMutateProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("publish"); }
         public override int count => 6;
         public override uint mutation { get; set; }
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj, (int)mutation); obj.mutationFlags = MutateOverride.Default; }
-        public override void randomMutation(DataElement obj) { PerformMutation(obj, context.Random.Next(count)); obj.mutationFlags = MutateOverride.Default; }
+        public override void randomMutation(DataElement obj) { PerformMutation(obj, Next(count)); obj.mutationFlags = MutateOverride.Default; }
         private void PerformMutation(DataElement obj, int strategy)
         {
             obj.MutatedValue = new Variant(GenerateProperties(strategy));
@@ -202,39 +202,39 @@ namespace Peach.Pro.Core.Mutators.MQTT
                         break;
                     case 1: // PFI=1 + optional CT
                         if (!used_pfi) { writer.Write((byte)0x01); writer.Write((byte)1); used_pfi = true; }
-                        if (context.Random.Next(2) != 0 && !used_ct) { WriteUtf8(writer, 0x03, "text/plain"); used_ct = true; }
+                        if (Next(2) != 0 && !used_ct) { WriteUtf8(writer, 0x03, "text/plain"); used_ct = true; }
                         break;
                     case 2: // MEI + optional PFI
-                        if (!used_mei) { writer.Write((byte)0x02); WriteBigEndian(writer, (uint)context.Random.Next(7200)); used_mei = true; }
-                        if (context.Random.Next(2) != 0 && !used_pfi) { writer.Write((byte)0x01); writer.Write((byte)context.Random.Next(2)); used_pfi = true; }
+                        if (!used_mei) { writer.Write((byte)0x02); WriteBigEndian(writer, (uint)Next(7200)); used_mei = true; }
+                        if (Next(2) != 0 && !used_pfi) { writer.Write((byte)0x01); writer.Write((byte)Next(2)); used_pfi = true; }
                         break;
                     case 3: // TA + optional RT
-                        if (!used_ta) { writer.Write((byte)0x23); WriteBigEndian(writer, (ushort)(1 + context.Random.Next(100))); used_ta = true; }
-                        if (context.Random.Next(2) != 0 && !used_rt) { WriteUtf8(writer, 0x08, "reply/topic"); used_rt = true; }
+                        if (!used_ta) { writer.Write((byte)0x23); WriteBigEndian(writer, (ushort)(1 + Next(100))); used_ta = true; }
+                        if (Next(2) != 0 && !used_rt) { WriteUtf8(writer, 0x08, "reply/topic"); used_rt = true; }
                         break;
                     case 4: // CD + RT
                         if (!used_rt) { WriteUtf8(writer, 0x08, "reply/topic"); used_rt = true; }
                         if (!used_cd)
                         {
-                            byte[] tmp = new byte[8 + context.Random.Next(17)];
-                            new SysRandom().NextBytes(tmp);
+                            byte[] tmp = new byte[8 + Next(17)];
+                            NextBytes(tmp);
                             writer.Write((byte)0x09); WriteBigEndian(writer, (ushort)tmp.Length); writer.Write(tmp); used_cd = true;
                         }
                         break;
                     case 5: // Mixed
-                        if (!used_pfi && context.Random.Next(2) != 0) { writer.Write((byte)0x01); writer.Write((byte)context.Random.Next(2)); used_pfi = true; }
-                        if (!used_mei && context.Random.Next(2) != 0) { writer.Write((byte)0x02); WriteBigEndian(writer, (uint)context.Random.Next(7200)); used_mei = true; }
-                        if (!used_ct && context.Random.Next(2) != 0) { WriteUtf8(writer, 0x03, "application/json"); used_ct = true; }
-                        if (!used_rt && context.Random.Next(2) != 0) { WriteUtf8(writer, 0x08, "resp/alpha"); used_rt = true; }
-                        if (!used_cd && context.Random.Next(2) != 0)
+                        if (!used_pfi && Next(2) != 0) { writer.Write((byte)0x01); writer.Write((byte)Next(2)); used_pfi = true; }
+                        if (!used_mei && Next(2) != 0) { writer.Write((byte)0x02); WriteBigEndian(writer, (uint)Next(7200)); used_mei = true; }
+                        if (!used_ct && Next(2) != 0) { WriteUtf8(writer, 0x03, "application/json"); used_ct = true; }
+                        if (!used_rt && Next(2) != 0) { WriteUtf8(writer, 0x08, "resp/alpha"); used_rt = true; }
+                        if (!used_cd && Next(2) != 0)
                         {
-                            byte[] tmp = new byte[6 + context.Random.Next(9)];
-                            new SysRandom().NextBytes(tmp);
+                            byte[] tmp = new byte[6 + Next(9)];
+                            NextBytes(tmp);
                             writer.Write((byte)0x09); WriteBigEndian(writer, (ushort)tmp.Length); writer.Write(tmp); used_cd = true;
                         }
-                        if (!used_ta && context.Random.Next(2) != 0) { writer.Write((byte)0x23); WriteBigEndian(writer, (ushort)(1 + context.Random.Next(100))); used_ta = true; }
+                        if (!used_ta && Next(2) != 0) { writer.Write((byte)0x23); WriteBigEndian(writer, (ushort)(1 + Next(100))); used_ta = true; }
 
-                        int upn = context.Random.Next(4);
+                        int upn = Next(4);
                         for (int i = 0; i < upn; i++)
                         {
                             writer.Write((byte)0x26);
@@ -255,14 +255,14 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishAddProperties")]
     [CMutator("add_publish_properties")]
     [Description("Adds MQTT Publish Properties")]
-    public class MqttPublishAddProperties : Mutator
+    public class MqttPublishAddProperties : MqttMutator
     {
         public MqttPublishAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("publish"); }
         public override int count => 5;
         public override uint mutation { get; set; }
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj, (int)mutation); obj.mutationFlags = MutateOverride.Default; }
-        public override void randomMutation(DataElement obj) { PerformMutation(obj, context.Random.Next(count)); obj.mutationFlags = MutateOverride.Default; }
+        public override void randomMutation(DataElement obj) { PerformMutation(obj, Next(count)); obj.mutationFlags = MutateOverride.Default; }
         private void PerformMutation(DataElement obj, int strategy)
         {
             using (var ms = new MemoryStream())
@@ -274,9 +274,9 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 switch (strategy)
                 {
                     case 0: writer.Write((byte)0x01); writer.Write((byte)1); break;
-                    case 1: writer.Write((byte)0x02); WriteBigEndian(writer, (uint)context.Random.Next(3601)); break;
+                    case 1: writer.Write((byte)0x02); WriteBigEndian(writer, (uint)Next(3601)); break;
                     case 2: WriteUtf8(writer, 0x03, "text/plain"); break;
-                    case 3: writer.Write((byte)0x23); WriteBigEndian(writer, (ushort)(1 + context.Random.Next(100))); break;
+                    case 3: writer.Write((byte)0x23); WriteBigEndian(writer, (ushort)(1 + Next(100))); break;
                     case 4: writer.Write((byte)0x26); WriteUtf8Val(writer, "key"); WriteUtf8Val(writer, "value"); break;
                 }
                 obj.MutatedValue = new Variant(ms.ToArray());
@@ -311,7 +311,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishDeleteProperties")]
     [CMutator("delete_publish_properties")]
     [Description("Deletes MQTT Publish Properties")]
-    public class MqttPublishDeleteProperties : Mutator
+    public class MqttPublishDeleteProperties : MqttMutator
     {
         public MqttPublishDeleteProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("publish"); }
@@ -324,7 +324,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishRepeatProperties")]
     [CMutator("repeat_publish_properties")]
     [Description("Repeats MQTT Publish User Property")]
-    public class MqttPublishRepeatProperties : Mutator
+    public class MqttPublishRepeatProperties : MqttMutator
     {
         public MqttPublishRepeatProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("publish"); }
@@ -398,7 +398,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutatePayload")]
     [CMutator("mutate_publish_payload")]
     [Description("Mutates MQTT Publish Payload")]
-    public class MqttPublishMutatePayload : Mutator
+    public class MqttPublishMutatePayload : MqttMutator
     {
         public MqttPublishMutatePayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "payload" && obj.IsIn("publish"); }
@@ -419,10 +419,10 @@ namespace Peach.Pro.Core.Mutators.MQTT
             {
                 case 0: d = new byte[0]; break;
                 case 1: d = new byte[65535]; for (int i = 0; i < d.Length; i++) d[i] = (byte)'A'; break;
-                case 2: d = new byte[context.Random.Next(65535)]; new SysRandom().NextBytes(d); break;
-                case 3: d = SysEncoding.UTF8.GetBytes("msg_" + context.Random.Next(1000)); break;
+                case 2: d = new byte[Next(65535)]; NextBytes(d); break;
+                case 3: d = SysEncoding.UTF8.GetBytes("msg_" + Next(1000)); break;
                 case 4: d = new byte[16]; for (int i = 0; i < 16; i++) d[i] = 0xFF; break;
-                case 5: d = SysEncoding.UTF8.GetBytes("{\"key\":\"val" + context.Random.Next(100) + "\"}"); break;
+                case 5: d = SysEncoding.UTF8.GetBytes("{\"key\":\"val" + Next(100) + "\"}"); break;
                 case 6: d = new byte[70000]; break;
                 case 7: d = new byte[] { 0xC0, 0x00 }; break;
                 case 8: d = SysEncoding.UTF8.GetBytes("topic/name"); break;
@@ -463,7 +463,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishAddPayload")]
     [CMutator("add_publish_payload")]
     [Description("Adds MQTT Publish Payload")]
-    public class MqttPublishAddPayload : Mutator
+    public class MqttPublishAddPayload : MqttMutator
     {
         public MqttPublishAddPayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "payload" && obj.IsIn("publish"); }
@@ -500,7 +500,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishDeletePayload")]
     [CMutator("delete_publish_payload")]
     [Description("Deletes MQTT Publish Payload")]
-    public class MqttPublishDeletePayload : Mutator
+    public class MqttPublishDeletePayload : MqttMutator
     {
         public MqttPublishDeletePayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "payload" && obj.IsIn("publish"); }
@@ -514,7 +514,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateQoS")]
     [CMutator("mutate_publish_qos")]
     [Description("Mutates MQTT Publish QoS")]
-    public class MqttPublishMutateQoS : Mutator
+    public class MqttPublishMutateQoS : MqttMutator
     {
         public MqttPublishMutateQoS(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name.StartsWith("qos") && obj.lengthAsBits == 2; }
@@ -540,10 +540,10 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 2: val = 2; break;
                 case 3: val = 3; break; // Illegal
                 case 4: val = 255; break; // Extreme illegal
-                case 5: val = (uint)context.Random.Next(256); break;
+                case 5: val = (uint)Next(256); break;
                 case 6: val = (current + 1) % 4; break;
                 case 7: val = 0xFF & ~current; break;
-                case 8: val = (context.Random.Next(10) == 0) ? 4u : 2u; break;
+                case 8: val = (Next(10) == 0) ? 4u : 2u; break;
                 case 9: val = 0xAA; break;
             }
             obj.MutatedValue = new Variant(val & 0x3);
@@ -553,7 +553,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateDup")]
     [CMutator("mutate_publish_dup")]
     [Description("Mutates MQTT Publish Dup")]
-    public class MqttPublishMutateDup : Mutator
+    public class MqttPublishMutateDup : MqttMutator
     {
         public MqttPublishMutateDup(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "dup"; }
@@ -579,11 +579,11 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 2: val = (current == 0) ? 1u : 0u; break;
                 case 3: val = 2; break;
                 case 4: val = 255; break;
-                case 5: val = (uint)context.Random.Next(256); break;
+                case 5: val = (uint)Next(256); break;
                 case 6: val = current ^ 1; break;
                 case 7: val = 0xAA; break;
-                case 8: val = (uint)((context.Random.Next(2) == 0) ? 0 : 1); break;
-                case 9: val = (uint)(current + context.Random.Next(3)); break;
+                case 8: val = (uint)((Next(2) == 0) ? 0 : 1); break;
+                case 9: val = (uint)(current + Next(3)); break;
             }
             obj.MutatedValue = new Variant(val & 1);
         }
@@ -592,7 +592,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateRetain")]
     [CMutator("mutate_publish_retain")]
     [Description("Mutates MQTT Publish Retain")]
-    public class MqttPublishMutateRetain : Mutator
+    public class MqttPublishMutateRetain : MqttMutator
     {
         public MqttPublishMutateRetain(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "retain"; }
@@ -618,11 +618,11 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 2: val = current ^ 1; break;
                 case 3: val = 2; break;
                 case 4: val = 255; break;
-                case 5: val = (uint)context.Random.Next(256); break;
+                case 5: val = (uint)Next(256); break;
                 case 6: val = 0xFF; break;
                 case 7: val = 1; break; // Logic in C uses qos check, here we assume 1
                 case 8: val = current + 1; break;
-                case 9: val = (uint)(context.Random.Next(2) * 3); break;
+                case 9: val = (uint)(Next(2) * 3); break;
             }
             obj.MutatedValue = new Variant(val & 1);
         }

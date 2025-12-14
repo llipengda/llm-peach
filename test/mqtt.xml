@@ -51,14 +51,14 @@
         <Number name="will_payload_length" size="16" minOccurs="0" maxOccurs="1">
             <Relation type="size" of="will_payload"/>
         </Number>
-        <Blob name="will_payload" length="256" minOccurs="0" maxOccurs="1"/>
+        <Blob name="will_payload" minOccurs="0" maxOccurs="1"/>
         <!-- User Name (optional, if Username Flag is set) -->
         <Block name="user_name" ref="MQTT_String" minOccurs="0" maxOccurs="1"/>
         <!-- Password (optional, if Password Flag is set) -->
         <Number name="password_length" size="16" minOccurs="0" maxOccurs="1">
             <Relation type="size" of="password"/>
         </Number>
-        <Blob name="password" length="64" minOccurs="0" maxOccurs="1"/>
+        <Blob name="password" minOccurs="0" maxOccurs="1"/>
     </DataModel>
 
     <!-- Connect Packet -->
@@ -84,7 +84,7 @@
 
     <!-- Subscribe Payload -->
     <DataModel name="mqtt_subscribe_payload_t">
-        <Block name="topic_filters" minOccurs="1" maxOccurs="10">
+        <Block name="topic_filters" minOccurs="1" maxOccurs="100">
             <Block name="topic_filter" ref="MQTT_String"/>
             <Number name="qos" size="8"/>
         </Block>
@@ -125,6 +125,7 @@
                     <Block name="variable_header">
                         <Block name="topic_name" ref="MQTT_String"/>
                          <!-- No Packet Identifier -->
+                        <Number name="packet_identifier" size="16" occurs="0"/>
                         <VarInt name="property_length">
                             <Relation type="size" of="properties"/>
                         </VarInt>
@@ -150,9 +151,9 @@
                 </Block>
                 <Block name="msg_body">
                     <Block name="variable_header">
-                         <Block name="topic_name" ref="MQTT_String"/>
-                         <Number name="packet_identifier" size="16"/>
-                         <VarInt name="property_length">
+                        <Block name="topic_name" ref="MQTT_String"/>
+                        <Number name="packet_identifier" size="16"/>
+                        <VarInt name="property_length">
                             <Relation type="size" of="properties"/>
                         </VarInt>
                         <Blob name="properties"/>
@@ -315,6 +316,9 @@
 
     <!-- mqtt_packet_t[] - Array of MQTT packets -->
     <DataModel name="mqtt_packet_array">
+        <!-- <Fixup class="MqttFixup">
+            <Param name="ref" value="packets" />
+        </Fixup> -->
         <Block name="packets" minOccurs="1" maxOccurs="100">
             <Block ref="mqtt_packet_t"/>
         </Block>
@@ -351,7 +355,7 @@
 
         <Strategy class="Random"/>
 
-        <Mutators mode="include">
+        <!-- <Mutators mode="include">
             <Mutator class="MqttAuthAddProperties" />
             <Mutator class="MqttAuthAddReasonCode" />
             <Mutator class="MqttAuthDeleteReasonCode" />
@@ -413,7 +417,7 @@
             <Mutator class="MqttUnsubscribeMutateTopicFilters" />
             <Mutator class="MqttUnsubscribeRepeatProperties" />
             <Mutator class="MqttUnsubscribeRepeatTopicFilters" />
-        </Mutators>
+        </Mutators> -->
 
     </Test>
 

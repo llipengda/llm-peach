@@ -1667,6 +1667,8 @@ namespace Peach.Core.Dom
 			var ret = InternalValue;
 			if (ret == null)
 				return new BitStream();
+			if (ret.GetVariantType() != Variant.VariantType.BitStream)
+				throw new PeachException("InternalValueToBitStream called on DataElement where InternalValue is not a BitStream. Type is {0}. DataElement: {1}".Fmt(ret.GetVariantType(), this.Name));
 			return (BitwiseStream)ret;
 		}
 

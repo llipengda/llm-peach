@@ -18,7 +18,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutatePacketIdentifier")]
     [CMutator("mutate_subscribe_packet_identifier")]
     [Description("Mutates MQTT Subscribe Packet Identifier")]
-    public class MqttSubscribeMutatePacketIdentifier : Mutator
+    public class MqttSubscribeMutatePacketIdentifier : MqttMutator
     {
         public MqttSubscribeMutatePacketIdentifier(DataElement obj) : base(obj) { }
 
@@ -54,9 +54,9 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 0: mutated = 0; break; // 设置为0（非法）
                 case 1: mutated = 65535; break; // 设置为最大合法值
                 case 2: mutated = 1; break; // 设置为最小合法值
-                case 3: mutated = (uint)context.Random.Next(65536); break; // 生成完全随机值
-                case 4: mutated = 0xFF00 | (uint)(context.Random.Next(256)); break; // 高位全1，低位随机
-                case 5: mutated = orig ^ (1u << context.Random.Next(16)); break; // 翻转一位
+                case 3: mutated = (uint)Next(65536); break; // 生成完全随机值
+                case 4: mutated = 0xFF00 | (uint)(Next(256)); break; // 高位全1，低位随机
+                case 5: mutated = orig ^ (1u << Next(16)); break; // 翻转一位
                 case 6: mutated = orig + 1; break; // 加1
                 case 7: mutated = orig - 1; break; // 减1
                 case 8: mutated = orig; break; // 设置为前一个包的 ID (Simulated as same)
@@ -69,7 +69,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutateProperties")]
     [CMutator("mutate_subscribe_properties")]
     [Description("Mutates MQTT Subscribe Properties (Rebuild)")]
-    public class MqttSubscribeMutateProperties : Mutator
+    public class MqttSubscribeMutateProperties : MqttMutator
     {
         public MqttSubscribeMutateProperties(DataElement obj) : base(obj) { }
 
@@ -96,20 +96,20 @@ namespace Peach.Pro.Core.Mutators.MQTT
             using (var writer = new BinaryWriter(ms))
             {
                 // 50% 是否带 Subscription Identifier
-                if (context.Random.Next(2) != 0)
+                if (Next(2) != 0)
                 {
                     writer.Write((byte)0x0B);
-                    WriteVarInt(writer, 1 + context.Random.Next(16383));
+                    WriteVarInt(writer, 1 + Next(16383));
                 }
                 // 追加 0..3 个 User Property
                 string[] keys = { "source", "priority", "note", "device" };
                 string[] vals = { "sensor1", "high", "ok", "edge" };
-                int upn = context.Random.Next(4);
+                int upn = Next(4);
                 for (int t = 0; t < upn; ++t)
                 {
                     writer.Write((byte)0x26);
-                    WriteUtf8(writer, keys[context.Random.Next(4)]);
-                    WriteUtf8(writer, vals[context.Random.Next(4)]);
+                    WriteUtf8(writer, keys[Next(4)]);
+                    WriteUtf8(writer, vals[Next(4)]);
                 }
                 return ms.ToArray();
             }
@@ -138,7 +138,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeAddProperties")]
     [CMutator("add_subscribe_properties")]
     [Description("Adds MQTT Subscribe Properties")]
-    public class MqttSubscribeAddProperties : Mutator
+    public class MqttSubscribeAddProperties : MqttMutator
     {
         public MqttSubscribeAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -184,7 +184,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 if (!has_sid)
                 {
                     writer.Write((byte)0x0B);
-                    WriteVarInt(writer, 1 + context.Random.Next(16383));
+                    WriteVarInt(writer, 1 + Next(16383));
                 }
                 else
                 {
@@ -237,7 +237,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeDeleteProperties")]
     [CMutator("delete_subscribe_properties")]
     [Description("Deletes MQTT Subscribe Properties")]
-    public class MqttSubscribeDeleteProperties : Mutator
+    public class MqttSubscribeDeleteProperties : MqttMutator
     {
         public MqttSubscribeDeleteProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -254,7 +254,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeRepeatProperties")]
     [CMutator("repeat_subscribe_properties")]
     [Description("Repeats MQTT Subscribe User Property")]
-    public class MqttSubscribeRepeatProperties : Mutator
+    public class MqttSubscribeRepeatProperties : MqttMutator
     {
         public MqttSubscribeRepeatProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -336,7 +336,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutateTopicFilter")]
     [CMutator("mutate_subscribe_topic_filter")]
     [Description("Mutates MQTT Subscribe Topic Filter")]
-    public class MqttSubscribeMutateTopicFilter : Mutator
+    public class MqttSubscribeMutateTopicFilter : MqttMutator
     {
         public MqttSubscribeMutateTopicFilter(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -364,31 +364,31 @@ namespace Peach.Pro.Core.Mutators.MQTT
             switch (strategy)
             {
                 case 0: // 直接使用一条“已知合法”的模板
-                    val = legalWildcards[context.Random.Next(legalWildcards.Length)];
+                    val = legalWildcards[Next(legalWildcards.Length)];
                     break;
                 case 1: // 纯静态合法路径
                     {
-                        int levels = 1 + context.Random.Next(4);
+                        int levels = 1 + Next(4);
                         var sb = new StringBuilder();
                         for (int i = 0; i < levels; i++)
                         {
                             if (i > 0) sb.Append("/");
-                            int len = 1 + context.Random.Next(8);
-                            for (int c = 0; c < len; c++) sb.Append(legalChars[context.Random.Next(legalChars.Length)]);
+                            int len = 1 + Next(8);
+                            for (int c = 0; c < len; c++) sb.Append(legalChars[Next(legalChars.Length)]);
                         }
                         val = sb.ToString();
                     }
                     break;
                 case 2: // 含 '+' 的合法过滤器
                     {
-                        int levels = 2 + context.Random.Next(3); // 2..4
+                        int levels = 2 + Next(3); // 2..4
                         var sb = new StringBuilder();
-                        int plus_cnt = 1 + context.Random.Next(2);
+                        int plus_cnt = 1 + Next(2);
                         int[] plus_at = { -1, -1 };
                         for (int p = 0; p < plus_cnt; p++)
                         {
                             int idx;
-                            do { idx = context.Random.Next(levels); } while (p == 1 && idx == plus_at[0]);
+                            do { idx = Next(levels); } while (p == 1 && idx == plus_at[0]);
                             plus_at[p] = idx;
                         }
                         for (int l = 0; l < levels; ++l)
@@ -397,8 +397,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                             if (l == plus_at[0] || l == plus_at[1]) sb.Append("+");
                             else
                             {
-                                int len = 1 + context.Random.Next(8);
-                                for (int c = 0; c < len; c++) sb.Append(legalChars[context.Random.Next(legalChars.Length)]);
+                                int len = 1 + Next(8);
+                                for (int c = 0; c < len; c++) sb.Append(legalChars[Next(legalChars.Length)]);
                             }
                         }
                         val = sb.ToString();
@@ -406,7 +406,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
                     break;
                 case 3: // 末尾 '#'
                     {
-                        int levels = context.Random.Next(4); // 0..3
+                        int levels = Next(4); // 0..3
                         var sb = new StringBuilder();
                         if (levels == 0) sb.Append("#");
                         else
@@ -414,8 +414,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                             for (int l = 0; l < levels; ++l)
                             {
                                 if (l > 0) sb.Append("/");
-                                int len = 1 + context.Random.Next(8);
-                                for (int c = 0; c < len; c++) sb.Append(legalChars[context.Random.Next(legalChars.Length)]);
+                                int len = 1 + Next(8);
+                                for (int c = 0; c < len; c++) sb.Append(legalChars[Next(legalChars.Length)]);
                             }
                             sb.Append("/#");
                         }
@@ -430,8 +430,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                             int left = 65535 - sb.Length;
                             if (left <= 5) break;
                             if (sb.Length > 0) sb.Append("/");
-                            int seg = 4 + context.Random.Next(8);
-                            for (int s = 0; s < seg && sb.Length < 65535; ++s) sb.Append((char)('a' + context.Random.Next(26)));
+                            int seg = 4 + Next(8);
+                            for (int s = 0; s < seg && sb.Length < 65535; ++s) sb.Append((char)('a' + Next(26)));
                         }
                         val = sb.ToString();
                     }
@@ -447,7 +447,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeRepeatTopicFilter")]
     [CMutator("repeat_subscribe_topic_filter")]
     [Description("Repeats (Duplicates) MQTT Subscribe Topic Filter")]
-    public class MqttSubscribeRepeatTopicFilter : Mutator
+    public class MqttSubscribeRepeatTopicFilter : MqttMutator
     {
         public MqttSubscribeRepeatTopicFilter(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -469,7 +469,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutateQoS")]
     [CMutator("mutate_subscribe_qos")]
     [Description("Mutates MQTT Subscribe QoS")]
-    public class MqttSubscribeMutateQoS : Mutator
+    public class MqttSubscribeMutateQoS : MqttMutator
     {
         public MqttSubscribeMutateQoS(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -498,9 +498,9 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 2: val = 2; break;
                 case 3: val = 3; break; // 非法值
                 case 4: val = 255; break;
-                case 5: val = (uint)context.Random.Next(3); break;
-                case 6: val = (uint)(3 + context.Random.Next(252)); break;
-                case 7: val = (uint)((Number)obj).InternalValue ^ (1u << context.Random.Next(3)); break;
+                case 5: val = (uint)Next(3); break;
+                case 6: val = (uint)(3 + Next(252)); break;
+                case 7: val = (uint)((Number)obj).InternalValue ^ (1u << Next(3)); break;
                 case 8: val = (uint)((Number)obj).InternalValue; break; // Copy previous (simulated as same)
                 case 9: val = 0; break;
             }
@@ -511,7 +511,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutateTopicCount")]
     [CMutator("mutate_subscribe_topic_count")]
     [Description("Mutates MQTT Subscribe Topic Count")]
-    public class MqttSubscribeMutateTopicCount : Mutator
+    public class MqttSubscribeMutateTopicCount : MqttMutator
     {
         public MqttSubscribeMutateTopicCount(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -542,8 +542,8 @@ namespace Peach.Pro.Core.Mutators.MQTT
                 case 1: val = (uint)MAX_TOPIC_FILTERS; break;
                 case 2: val = (uint)MAX_TOPIC_FILTERS + 1; break;
                 case 3: val = 1; break;
-                case 4: val = (uint)(1 + context.Random.Next(MAX_TOPIC_FILTERS)); break;
-                case 5: val = (uint)(MAX_TOPIC_FILTERS + 2 + context.Random.Next(255 - MAX_TOPIC_FILTERS - 2)); break;
+                case 4: val = (uint)(1 + Next(MAX_TOPIC_FILTERS)); break;
+                case 5: val = (uint)(MAX_TOPIC_FILTERS + 2 + Next(255 - MAX_TOPIC_FILTERS - 2)); break;
                 case 6: val = orig * 2; break;
                 case 7: val = ~orig; break;
                 case 8: val = orig ^ 1; break;
