@@ -15,7 +15,11 @@ namespace Peach.Pro.Core.Fixups.MQTT
     {
         public DataElement _ref { get; protected set; }
 
+        [NonSerialized]
         private static readonly NLog.Logger _logger = LogManager.GetCurrentClassLogger();
+
+        // [NonSerialized]
+        // private static readonly System.Random _rand = new System.Random();
 
         public MqttFixup(DataElement parent, Dictionary<string, Variant> args) : base(parent, args, "ref")
         {
@@ -26,6 +30,9 @@ namespace Peach.Pro.Core.Fixups.MQTT
         {
             var elem = elements["ref"];
             var packets = elem.find("packets") as Peach.Core.Dom.Array;
+
+            // if (_rand.Next(2) == 0)
+            //     return elem.InternalValue;
 
             var before = elem.Bytes();
 
@@ -57,6 +64,11 @@ namespace Peach.Pro.Core.Fixups.MQTT
             catch (NullReferenceException)
             {
                 _logger.Error("MQTT Fixup failed due to missing expected elements. Skipping fixup.");
+                return new Variant(before);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "MQTT Fixup failed. Skipping fixup.");
                 return new Variant(before);
             }
 
