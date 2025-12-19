@@ -82,17 +82,29 @@ namespace Peach.Pro.Core.Fixups.MQTT
         }
 
         public static void FixConnectPacketWillRules(DataElement elem)
-        {
+        {        
             unchecked
             {
                 var connectFlags = elem.find("connect_flags") as Number;
 
+                // bit:  7   6   5   4   3   2   1   0
+                //       -----------------------------
+                //       U   P   W   W   W   W   C   R
+                //       S   W   R   Q   Q   F   L   E
+                //       E   D   E   O   O   L   E   S
+                //       R       T   S   S   A   A   V
+                //       N       A           G   N   D
+                //       A       I               S
+                //       M       N               T
+                //       E                       A
+                //                               R
+                //                               T
                 var connectFlagsValue = connectFlags.GetUint8();
 
-                connectFlagsValue &= (uint8)~0x01;
+                connectFlagsValue &= 0b1111_1110;
 
-                var willFlag = (uint8)((connectFlagsValue >> 2) & 0x01);
-                var willQos = (uint8)((connectFlagsValue >> 3) & 0x03);
+                var willFlag = (uint8)(connectFlagsValue & 0b0000_0100) >> 2;
+                var willQos = (uint8)(connectFlagsValue & 0b0001_1000) >> 3;
                 // var willRetain = (uint8)((connectFlagsValue >> 5) & 0x01);
 
                 var protocolLevel = (elem.find("protocol_level") as Number).GetUint8();
@@ -111,8 +123,8 @@ namespace Peach.Pro.Core.Fixups.MQTT
 
                 if (willFlag == 0)
                 {
-                    connectFlagsValue &= (uint8)~(0x03 << 3); // Clear Will QoS
-                    connectFlagsValue &= (uint8)~(0x01 << 5); // Clear Will Retain
+                    connectFlagsValue &= 0b1110_0111; // Clear Will QoS
+                    connectFlagsValue &= 0b1101_1111; // Clear Will Retain
 
                     willPropertyLength?.parent?.Remove(willPropertyLength);
                     willProperties?.parent?.Remove(willProperties);
@@ -124,7 +136,7 @@ namespace Peach.Pro.Core.Fixups.MQTT
                 {
                     if (willQos > 2)
                     {
-                        connectFlagsValue &= (uint8)~(0x03 << 3);
+                        connectFlagsValue &= 0b1110_0111; 
                     }
 
                     if (willTopic.Count == 0)
@@ -161,7 +173,7 @@ namespace Peach.Pro.Core.Fixups.MQTT
                 if (connectFlags == null) return;
 
                 var connectFlagsValue = connectFlags.GetUint8();
-                var userNameFlag = (uint8)((connectFlagsValue >> 7) & 0x01);
+                var userNameFlag = (connectFlagsValue & 0b1000_0000) >> 7;
 
                 var userName = elem.find("user_name") as Array;
                 var passwordLength = elem.find("password_length") as Array;
@@ -171,7 +183,7 @@ namespace Peach.Pro.Core.Fixups.MQTT
                 {
                     userName?.parent.Remove(userName);
 
-                    connectFlagsValue &= (uint8)~(1 << 6); // Clear Password Flag
+                    connectFlagsValue &= 0b1011_1111; // Clear Password Flag
                     passwordLength?.parent.Remove(passwordLength);
                     password?.parent.Remove(password);
 
@@ -195,7 +207,7 @@ namespace Peach.Pro.Core.Fixups.MQTT
                 if (connectFlags == null) return;
 
                 var connectFlagsValue = connectFlags.GetUint8();
-                var passwordFlag = (uint8)((connectFlagsValue >> 6) & 0x01);
+                var passwordFlag = (connectFlagsValue & 0b0100_0000) >> 6;
 
                 var passwordLength = elem.find("password_length") as Array;
                 var password = elem.find("password") as Array;
@@ -810,9 +822,18 @@ namespace Peach.Pro.Core.Fixups.MQTT
 
         public static void FixConnect(DataElement elem)
         {
+            var willFlag = (elem.find("connect_flags") as Number).GetUint8() & 0b0000_0100;
+            var before = elem.Bytes();
             FixConnectPacketWillRules(elem);
             FixUserNameFlag(elem);
             FixPasswordFlag(elem);
+            var afterWillFlag = (elem.find("connect_flags") as Number).GetUint8() & 0b0000_0100;
+
+            if (willFlag > 0 && afterWillFlag == 0)
+            {
+                Console.WriteLine("Warning: Will Flag was set, but got cleared after Fix");
+                before.DumpDiff(elem.Bytes());
+            }
         }
 
         static void _FixPublishTopicAlias(DataElement elem)
