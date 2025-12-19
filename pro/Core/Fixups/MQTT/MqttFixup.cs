@@ -29,41 +29,44 @@ namespace Peach.Pro.Core.Fixups.MQTT
         protected override Variant fixupImpl()
         {
             var elem = elements["ref"];
-            var packets = elem.find("packets") as Peach.Core.Dom.Array;
+            var packets = elem.find("packets").Clone() as Peach.Core.Dom.Array;
 
             // if (_rand.Next(2) == 0)
             //     return elem.InternalValue;
+
+            _logger.Debug("Applying MQTT Fixup to element: {0}", elem.fullName);
 
             var before = elem.Bytes();
 
             MqttFixers.ResetPacketIdTracking();
 
-            try {
-            for (int i = 0; i < packets.Count; i++)
+            try
             {
-                var p = (packets[i].find("packet_union") as Choice).SelectedElement;
+                for (int i = 0; i < packets.Count; i++)
+                {
+                    var p = (packets[i].find("packet_union") as Choice).SelectedElement;
 
-                if (p.Name == "connect")
-                {
-                    MqttFixers.FixConnect(p);
-                }
-                else if (p.Name == "publish")
-                {
-                    MqttFixers.FixPublish(p);
-                }
-                else if (p.Name == "subscribe")
-                {
-                    MqttFixers.FixSubscribe(p);
-                }
-                else if (p.Name == "unsubscribe")
-                {
-                    MqttFixers.FixUnsubscribe(p);
+                    if (p.Name == "connect")
+                    {
+                        MqttFixers.FixConnect(p);
+                    }
+                    else if (p.Name == "publish")
+                    {
+                        MqttFixers.FixPublish(p);
+                    }
+                    else if (p.Name == "subscribe")
+                    {
+                        MqttFixers.FixSubscribe(p);
+                    }
+                    else if (p.Name == "unsubscribe")
+                    {
+                        MqttFixers.FixUnsubscribe(p);
+                    }
                 }
             }
-            }
-            catch (NullReferenceException)
+            catch (NullReferenceException ex)
             {
-                _logger.Error("MQTT Fixup failed due to missing expected elements. Skipping fixup.");
+                _logger.Error(ex, "MQTT Fixup failed due to missing expected elements. Skipping fixup.");
                 return new Variant(before);
             }
             catch (Exception ex)

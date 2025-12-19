@@ -286,7 +286,7 @@ namespace Peach.Pro.Core
                 v = new Variant(System.Text.Encoding.ASCII.GetBytes((string)v));
             }
             elem.MutatedValue = v;
-            elem.mutationFlags = MutateOverride.Transformer | MutateOverride.Fixup;
+            elem.mutationFlags = MutateOverride.None;
         }
 
         public static byte GetUint8(this Number num)
