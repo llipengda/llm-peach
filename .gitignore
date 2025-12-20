@@ -126,3 +126,6 @@ paket/.paket/Paket.Restore.targets
 *.swp
 
 /*/logs/
+.vscode/
+bin
+obj
