@@ -1,0 +1,7 @@
+.git/
+.vscode/
+test/
+test*/
+Dockerfile
+bin
+obj
