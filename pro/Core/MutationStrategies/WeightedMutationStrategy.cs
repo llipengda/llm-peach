@@ -148,12 +148,28 @@ namespace Peach.Pro.Core.MutationStrategies
 			set;
 		}
 
+		/// <summary>
+		/// Mutation phase: None, MQTTOnly, NonMQTTOnly
+		/// None: Use all mutators (default)
+		/// MQTTOnly: Only use MQTT mutators
+		/// NonMQTTOnly: Only use non-MQTT mutators
+		/// </summary>
+		public string MutationPhase
+		{
+			get;
+			set;
+		}
+
 		protected WeightedMutationStrategy(Dictionary<string, Variant> args)
 			: base(args)
 		{
 			MaxFieldsToMutate = 6;
 			if (args.ContainsKey("MaxFieldsToMutate"))
 				MaxFieldsToMutate = int.Parse((string)args["MaxFieldsToMutate"]);
+
+			MutationPhase = "None";
+			if (args.ContainsKey("MutationPhase"))
+				MutationPhase = (string)args["MutationPhase"];
 
 			var weighting = 10;
 			if (args.ContainsKey("Weighting"))
@@ -169,6 +185,33 @@ namespace Peach.Pro.Core.MutationStrategies
 			mutationScopeGlobal = new MutationScope("All");
 			mutationScopeState = new List<MutationScope>();
 			mutationScopeAction = new List<MutationScope>();
+		}
+
+		/// <summary>
+		/// Check if a mutator type belongs to MQTT namespace
+		/// </summary>
+		protected bool IsMQTTMutator(Type mutatorType)
+		{
+			return mutatorType != null && mutatorType.Namespace == "Peach.Pro.Core.Mutators.MQTT";
+		}
+
+		/// <summary>
+		/// Filter mutators based on current mutation phase
+		/// </summary>
+		protected bool ShouldIncludeMutator(Type mutatorType)
+		{
+			if (MutationPhase == null || MutationPhase == "None")
+				return true;
+
+			bool isMQTT = IsMQTTMutator(mutatorType);
+
+			if (MutationPhase == "MQTTOnly")
+				return isMQTT;
+
+			if (MutationPhase == "NonMQTTOnly")
+				return !isMQTT;
+
+			return true;
 		}
 
 		protected int GetMutationCount()
@@ -213,7 +256,7 @@ namespace Peach.Pro.Core.MutationStrategies
 					var e = elem;
 
 					rec.Mutators.AddRange(dataMutators
-						.Where(m => SupportedDataElement(m, e))
+						.Where(m => SupportedDataElement(m, e) && ShouldIncludeMutator(m))
 						.Select(m => GetMutatorInstance(m, e))
 						.Where(m => m.SelectionWeight > 0));
 
@@ -235,53 +278,80 @@ namespace Peach.Pro.Core.MutationStrategies
 				scopeState.ChildScopes += 1;
 		}
 
-		[Conditional("DEBUG")]
-		void RecordMutation(string instanceName, string elementName, string mutatorName)
-		{
-			mutationHistory.Add(instanceName + "." + elementName + " + " + mutatorName);
-		}
+	[Conditional("DEBUG")]
+	protected void RecordMutation(string instanceName, string elementName, string mutatorName)
+	{
+		mutationHistory.Add(instanceName + "." + elementName + " + " + mutatorName);
+	}
 
-		private void ApplyMutation(ActionData data)
-		{
-			var instanceName = data.instanceName;
+	protected virtual void ApplyMutation(ActionData data, Action action)
+	{
+		var instanceName = data.instanceName;
 
-			foreach (var item in mutations)
+		foreach (var item in mutations)
+		{
+			if (item.InstanceName != instanceName)
+				continue;
+
+			var elem = data.dataModel.find(item.ElementName);
+			if (elem != null && elem.mutationFlags == MutateOverride.None)
 			{
-				if (item.InstanceName != instanceName)
-					continue;
-
-				var elem = data.dataModel.find(item.ElementName);
-				if (elem != null && elem.mutationFlags == MutateOverride.None)
+				// Filter mutators based on phase if needed
+				WeightedList<Mutator> availableMutators;
+				if (MutationPhase != null && MutationPhase != "None")
 				{
-					var mutator = Random.WeightedChoice(item.Mutators);
-					Context.OnDataMutating(data, elem, mutator);
-					logger.Debug("Action_Starting: Fuzzing: {0}", item.ElementName);
-					logger.Debug("Action_Starting: Mutator: {0}", mutator.Name);
-					mutator.randomMutation(elem);
-
-					RecordMutation(instanceName, item.ElementName, mutator.Name);
-
-					// Trigger re-generation of data
-					// needed for Frag element.
-					//var obj = data.dataModel.Value;
+					// Create a new WeightedList with filtered mutators
+					var filteredMutators = item.Mutators.Where(m => ShouldIncludeMutator(m.GetType())).ToList();
+					if (filteredMutators.Count == 0)
+					{
+						logger.Debug("Action_Starting: No available mutators for phase {0} on element {1}", 
+							MutationPhase, item.ElementName);
+						continue;
+					}
+					availableMutators = new WeightedList<Mutator>(filteredMutators);
 				}
 				else
 				{
-					logger.Debug("Action_Starting: Skipping Fuzzing: {0}", item.ElementName);
+					availableMutators = item.Mutators;
 				}
+
+				if (availableMutators.Count == 0)
+				{
+					logger.Debug("Action_Starting: No available mutators for phase {0} on element {1}", 
+						MutationPhase, item.ElementName);
+					continue;
+				}
+
+				var mutator = Random.WeightedChoice(availableMutators);
+				Context.OnDataMutating(data, elem, mutator);
+				logger.Debug("Action_Starting: Fuzzing: {0}", item.ElementName);
+				logger.Debug("Action_Starting: Mutator: {0}", mutator.Name);
+				
+				mutator.randomMutation(elem);
+				RecordMutation(instanceName, item.ElementName, mutator.Name);
+
+				// Trigger re-generation of data
+				// needed for Frag element.
+				//var obj = data.dataModel.Value;
 			}
-		}
-
-		protected void MutateDataModel(Action action)
-		{
-			// MutateDataModel should only be called after ParseDataModel
-			Debug.Assert(Iteration > 0);
-
-			foreach (var item in action.outputData)
+			else
 			{
-				ApplyMutation(item);
+				logger.Debug("Action_Starting: Skipping Fuzzing: {0}", item.ElementName);
 			}
 		}
+	}
+
+	protected virtual void MutateDataModel(Action action)
+	{
+		// MutateDataModel should only be called after ParseDataModel
+		Debug.Assert(Iteration > 0);
+
+		// Original behavior: Apply mutations to each element independently
+		foreach (var item in action.outputData)
+		{
+			ApplyMutation(item, action);
+		}
+	}
 
 	}
 }
