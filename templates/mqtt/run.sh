@@ -8,7 +8,7 @@ MUTATORS=""
 LOGGER=""
 FIXUP_XML=""
 STRATEGY=$(capitalize "$STRATEGY")
-MODE=$(capitalize "$MODE")
+MODE=$MODE
 FIXUP=$FIXUP
 LOG_DIR=$LOG_DIR
 HOST=$HOST
@@ -18,15 +18,14 @@ PEACH_ARGS=$PEACH_ARGS
 
 
 if [ "$MODE" == "peach" ]; then
-    MUTATORS='<Mutators mode="exclude">' ++
-                $(cat ./llm_mutators.txt) ++
-             '</Mutators>'
+    MUTATORS='<Mutators mode="exclude">'$(tr -d '\n' < ./llm_mutators.txt)'</Mutators>'
 elif [ "$MODE" == "llm" ]; then
-    MUTATORS='<Mutators mode="include">' ++
-                $(cat ./llm_mutators.txt) ++
-             '</Mutators>'
+    MUTATORS='<Mutators mode="include">'$(tr -d '\n' < ./llm_mutators.txt)'</Mutators>'
 elif [ "$MODE" == "llm-peach" ]; then
     MUTATORS=""
+else
+    echo "Unknown MODE: $MODE, must be one of: peach, llm, llm-peach"
+    exit 1
 fi
 
 if [ -n "$LOG_DIR" ]; then
@@ -41,6 +40,8 @@ else
     FIXUP_XML=""
 fi
 
+pit_file="./mqtt_STRATEGY=${STRATEGY}&MODE=${MODE}&FIXUP=${FIXUP}&HOST=${HOST}&PORT=${PORT}&PEACH_ARGS=${PEACH_ARGS}.xml"
+
 sed -e "s/@STRATEGY@/$STRATEGY/g" \
     -e "s|@MUTATORS@|$MUTATORS|g" \
     -e "s|@LOGGER@|$LOGGER|g" \
@@ -48,8 +49,8 @@ sed -e "s/@STRATEGY@/$STRATEGY/g" \
     -e "s/@HOST@/$HOST/g" \
     -e "s/@PORT@/$PORT/g" \
     -e "s/@TIMEOUT@/$TIMEOUT/g" \
-    ./mqtt.xml.template > ./mqtt.xml
+    ./mqtt.xml.template > $pit_file
 
 
 /peach/output/linux_x86_64_release/bin/peach \
-    ./mqtt.xml $PEACH_ARGS
+    $pit_file $PEACH_ARGS
