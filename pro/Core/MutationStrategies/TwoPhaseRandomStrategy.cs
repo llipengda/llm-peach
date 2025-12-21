@@ -313,8 +313,8 @@ namespace Peach.Pro.Core.MutationStrategies
 					continue;
 
 				var elem = data.dataModel.find(item.ElementName);
-				// if (elem == null || elem.mutationFlags != MutateOverride.None)
-				// 	continue;
+				if (elem == null)
+					continue;
 
 				// Get random mutation count for this element (1 to MultipleMutationsPerElement, weighted toward 1)
 				int mutationCount = GetRandomMutationCountPerElement();
