@@ -28,8 +28,8 @@ namespace Peach.Pro.Core.Fixups.MQTT
 
         protected override Variant fixupImpl()
         {
-            var elem = elements["ref"];
-            var packets = elem.find("packets").Clone() as Peach.Core.Dom.Array;
+            var elem = elements["ref"].Clone();
+            var packets = elem.find("packets") as Peach.Core.Dom.Array;
 
             // if (_rand.Next(2) == 0)
             //     return elem.InternalValue;
