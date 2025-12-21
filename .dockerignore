@@ -5,3 +5,5 @@ test*/
 Dockerfile
 bin
 obj
+logs
+cov

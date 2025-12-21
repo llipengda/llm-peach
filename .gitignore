@@ -125,7 +125,8 @@ paket/.paket/Paket.Restore.targets
 # vim swapfiles
 *.swp
 
-/*/logs/
+logs
+cov
 .vscode/
 bin
 obj
