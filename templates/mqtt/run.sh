@@ -7,6 +7,8 @@ capitalize() {
 MUTATORS=""
 LOGGER=""
 FIXUP_XML=""
+IMPORTS=""
+ON_COMPLETE=""
 STRATEGY=$(capitalize "$STRATEGY")
 MODE=$MODE
 FIXUP=$FIXUP
@@ -15,6 +17,7 @@ HOST=$HOST
 PORT=$PORT
 TIMEOUT=$TIMEOUT
 PEACH_ARGS=$PEACH_ARGS
+COUNT_PKT=$COUNT_PKT
 
 
 if [ "$MODE" == "peach" ]; then
@@ -40,7 +43,12 @@ else
     FIXUP_XML=""
 fi
 
-pit_file="./mqtt_STRATEGY=${STRATEGY}&MODE=${MODE}&FIXUP=${FIXUP}&HOST=${HOST}&PORT=${PORT}&PEACH_ARGS=${PEACH_ARGS}.xml"
+if [ "$COUNT_PKT" -eq 1 ]; then
+    IMPORTS='<Import import="pkt_cnt"/>'
+    ON_COMPLETE='onComplete="pkt_cnt.count_pkt(self)"'
+fi
+
+pit_file="./mqtt_STRATEGY=${STRATEGY}&MODE=${MODE}&FIXUP=${FIXUP}&HOST=${HOST}&PORT=${PORT}&PEACH_ARGS=${PEACH_ARGS// /_}.xml"
 
 sed -e "s/@STRATEGY@/$STRATEGY/g" \
     -e "s|@MUTATORS@|$MUTATORS|g" \
@@ -49,8 +57,11 @@ sed -e "s/@STRATEGY@/$STRATEGY/g" \
     -e "s/@HOST@/$HOST/g" \
     -e "s/@PORT@/$PORT/g" \
     -e "s/@TIMEOUT@/$TIMEOUT/g" \
-    ./mqtt.xml.template > $pit_file
+    -e "s|@IMPORTS@|$IMPORTS|g" \
+    -e "s/@ON_COMPLETE@/$ON_COMPLETE/g" \
+    ./mqtt.xml.template > "$pit_file"
 
+[[ $PEACH_ARGS == \"*\" ]] && PEACH_ARGS=${PEACH_ARGS#\"} && PEACH_ARGS=${PEACH_ARGS%\"}
 
-/peach/output/linux_x86_64_release/bin/peach \
-    $pit_file $PEACH_ARGS
+exec /peach/output/linux_x86_64_release/bin/peach \
+    "$pit_file" $PEACH_ARGS
