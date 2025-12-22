@@ -29,7 +29,7 @@ with open(csv_file, 'wb') as f:
     for line in content:
         time = int.from_bytes(line[0:8], 'little')
         try:
-            time = datetime.datetime.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S')
+            time = datetime.datetime.fromtimestamp(time, datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
         except:
             time = f'invalid({time})'
         
