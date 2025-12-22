@@ -1,6 +1,6 @@
 # version: "3.3"
 
-name: add-pkt-cnt-test
+name: peach-valid-pkt-test
 services:
   llm-peach:
     image: pdli/llm-peach:add-pkt-cnt

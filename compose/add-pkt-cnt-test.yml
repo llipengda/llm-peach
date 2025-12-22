@@ -13,7 +13,7 @@ services:
       FIXUP: 1
       COUNT_PKT: 1
       MODE: llm
-      PEACH_ARGS: "--duration=1:00"
+      PEACH_ARGS: "--duration=6:00"
 
   mosquitto:
     image: pdli/mosquitto
@@ -36,7 +36,7 @@ services:
       FIXUP: 0
       COUNT_PKT: 1
       MODE: llm
-      PEACH_ARGS: "--duration=1:00"
+      PEACH_ARGS: "--duration=6:00"
 
   mosquitto-no-fixer:
     image: pdli/mosquitto
