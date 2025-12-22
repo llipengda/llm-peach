@@ -1,0 +1,55 @@
+# version: "3.3"
+
+name: add-pkt-cnt-test
+services:
+  llm-peach:
+    image: pdli/llm-peach:add-pkt-cnt
+    volumes:
+      - ./logs:/peach/logs
+    networks:
+      - llm-peach-net
+    environment:
+      HOST: mosquitto
+      FIXUP: 1
+      COUNT_PKT: 1
+      MODE: llm
+      PEACH_ARGS: "--duration=1:00"
+
+  mosquitto:
+    image: pdli/mosquitto
+    volumes:
+      - ./cov:/coverage_data
+    environment:
+      NAME: llm+fixer
+    networks:
+      - llm-peach-net
+    stop_grace_period: 120s
+
+  llm-peach-no-fixer:
+    image: pdli/llm-peach:add-pkt-cnt
+    volumes:
+      - ./logs:/peach/logs
+    networks:
+      - llm-peach-net-2
+    environment:
+      HOST: mosquitto-no-fixer
+      FIXUP: 0
+      COUNT_PKT: 1
+      MODE: llm
+      PEACH_ARGS: "--duration=1:00"
+
+  mosquitto-no-fixer:
+    image: pdli/mosquitto
+    volumes:
+      - ./cov:/coverage_data
+    environment:
+      NAME: llm
+    networks:
+      - llm-peach-net-2
+    stop_grace_period: 120s
+
+networks:
+  llm-peach-net:
+    driver: bridge
+  llm-peach-net-2:
+    driver: bridge
