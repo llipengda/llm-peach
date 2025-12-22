@@ -343,7 +343,14 @@
 
         @LOGGER@
 
-        <Strategy class="@STRATEGY@"/>
+        <!-- <Strategy class="@STRATEGY@"/> -->
+        <Strategy class="TwoPhaseRandom">
+            <Param name="TwoPhaseMutation" value="True" /> 
+            <Param name="MultipleMutationsPerElement" value="3" />
+            <!-- 其他可选参数 -->
+            <!-- <Param name="MaxFieldsToMutate" value="6" /> -->
+            <!-- <Param name="SwitchCount" value="200" /> -->
+        </Strategy>
 
         @MUTATORS@
 

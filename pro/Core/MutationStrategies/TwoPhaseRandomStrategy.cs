@@ -7,6 +7,7 @@ using NLog;
 using Peach.Core;
 using Peach.Core.Dom;
 using Peach.Pro.Core.Mutators.Utility;
+using Peach.Pro.Core.Runtime;
 using Action = Peach.Core.Dom.Action;
 using Logger = NLog.Logger;
 using Random = Peach.Core.Random;
@@ -40,6 +41,12 @@ namespace Peach.Pro.Core.MutationStrategies
 		private static string _currentPhaseName;
 
 		/// <summary>
+		/// Key used in RunContext.stateStore to mark that two-phase messages have been sent.
+		/// This prevents Action.Run() from sending a third message.
+		/// </summary>
+		private const string TwoPhaseMessagesSentKey = "TwoPhaseRandomStrategy.MessagesSent";
+
+		/// <summary>
 		/// Maximum number of times to mutate a single data element before keeping the final result.
 		/// The actual count is randomly chosen between 1 and this value, with higher probability for lower values (especially 1).
 		/// If set to 1, each element is mutated only once (default behavior).
@@ -70,6 +77,46 @@ namespace Peach.Pro.Core.MutationStrategies
 				TwoPhaseMutation = bool.Parse((string)args["TwoPhaseMutation"]);
 				if (TwoPhaseMutation)
 					logger.Info("TwoPhaseRandomStrategy: TwoPhaseMutation enabled (MQTT mutators first, then non-MQTT mutators)");
+			}
+		}
+
+		/// <summary>
+		/// Initialize the strategy and register event handlers.
+		/// </summary>
+		public override void Initialize(RunContext context, Engine engine)
+		{
+			base.Initialize(context, engine);
+			
+			// Register ActionFinished handler to clean up the two-phase messages sent flag
+			if (TwoPhaseMutation)
+			{
+				context.ActionFinished += ActionFinished;
+			}
+		}
+
+		/// <summary>
+		/// Finalize the strategy and unregister event handlers.
+		/// </summary>
+		public override void Finalize(RunContext context, Engine engine)
+		{
+			// Unregister ActionFinished handler
+			if (TwoPhaseMutation)
+			{
+				context.ActionFinished -= ActionFinished;
+			}
+			
+			base.Finalize(context, engine);
+		}
+
+		/// <summary>
+		/// Clean up the two-phase messages sent flag after action completes.
+		/// </summary>
+		private void ActionFinished(RunContext context, Action action)
+		{
+			// Clean up the flag to ensure it doesn't affect the next iteration
+			if (context.stateStore.ContainsKey(TwoPhaseMessagesSentKey))
+			{
+				context.stateStore.Remove(TwoPhaseMessagesSentKey);
 			}
 		}
 
@@ -130,17 +177,115 @@ namespace Peach.Pro.Core.MutationStrategies
 				// Two-phase mutation: first apply MQTT mutators to all elements, then non-MQTT mutators
 				// Send message after each phase completes for all elements
 				
-				// Phase 1: Apply MQTT mutators to all elements
-				logger.Info("MutateDataModel: Phase 1 (MQTT) - Starting mutation for all elements");
-				bool phase1HasMutations = false;
-				foreach (var item in action.outputData)
+				// Phase 1: Select elements that support MQTT mutators and apply MQTT mutators to them
+				logger.Info("MutateDataModel: Phase 1 (MQTT) - Selecting elements with MQTT mutators");
+				
+				// Create a new scope containing only elements that have at least one MQTT mutator
+				// For each element, create a new MutableItem with only MQTT mutators
+				var phase1Scope = new MutationScope("Phase1_MQTT");
+
+				// Use mutationScopeGlobal if available (contains all mutable elements from control iteration)
+				// Otherwise fall back to current iteration's mutations (already selected elements)
+				IEnumerable<MutableItem> phase1Source = null;
+				if (mutationScopeGlobal != null && mutationScopeGlobal.Count > 0)
 				{
-					if (ApplyPhaseMutation(item, action, true)) // true = MQTT phase
-						phase1HasMutations = true;
+					phase1Source = mutationScopeGlobal;
+					logger.Debug("MutateDataModel: Phase 1 (MQTT) - Using mutationScopeGlobal ({0} elements)", mutationScopeGlobal.Count);
+				}
+				else if (mutations != null && mutations.Length > 0)
+				{
+					phase1Source = mutations;
+					logger.Debug("MutateDataModel: Phase 1 (MQTT) - mutationScopeGlobal is empty, using current mutations list ({0} elements)", mutations.Length);
+				}
+				else
+				{
+					phase1Source = Enumerable.Empty<MutableItem>();
+					logger.Warn("MutateDataModel: Phase 1 (MQTT) - No mutable elements available (mutationScopeGlobal and mutations are both empty)");
+				}
+
+				// Build scope from the chosen source
+				foreach (var item in phase1Source)
+				{
+					var mqttMutators = item.Mutators.Where(m => IsMQTTMutator(m.GetType())).ToList();
+					if (mqttMutators.Count > 0)
+					{
+						var phase1Item = new MutableItem(item.InstanceName, item.ElementName, mqttMutators);
+						phase1Scope.Add(phase1Item);
+					}
+				}
+
+				// If still empty, try a forced re-pick from current mutations (in case initial source had none)
+				if (phase1Scope.Count == 0 && mutations != null && mutations.Length > 0)
+				{
+					foreach (var item in mutations)
+					{
+						var mqttMutators = item.Mutators.Where(m => IsMQTTMutator(m.GetType())).ToList();
+						if (mqttMutators.Count > 0)
+						{
+							var phase1Item = new MutableItem(item.InstanceName, item.ElementName, mqttMutators);
+							phase1Scope.Add(phase1Item);
+						}
+					}
+
+					if (phase1Scope.Count > 0)
+						logger.Debug("MutateDataModel: Phase 1 (MQTT) - Forced re-pick from current mutations yielded {0} MQTT-capable elements.", phase1Scope.Count);
+				}
+
+				// If still empty, try to find MQTT-capable elements from all mutableItems scopes
+				if (phase1Scope.Count == 0 && mutableItems != null && mutableItems.Count > 0)
+				{
+					foreach (var scope in mutableItems)
+					{
+						foreach (var item in scope)
+						{
+							var mqttMutators = item.Mutators.Where(m => IsMQTTMutator(m.GetType())).ToList();
+							if (mqttMutators.Count > 0)
+							{
+								var phase1Item = new MutableItem(item.InstanceName, item.ElementName, mqttMutators);
+								phase1Scope.Add(phase1Item);
+							}
+						}
+					}
+
+					if (phase1Scope.Count > 0)
+						logger.Debug("MutateDataModel: Phase 1 (MQTT) - Forced search from all mutableItems scopes yielded {0} MQTT-capable elements.", phase1Scope.Count);
+				}
+
+				// If still empty, no MQTT-capable elements exist in the entire test model
+				
+				bool phase1HasMutations = false;
+				
+				if (phase1Scope.Count == 0)
+				{
+					logger.Info("MutateDataModel: Phase 1 (MQTT) - No elements found with MQTT mutators. Skipping Phase 1.");
+				}
+				else
+				{
+					int totalElements = phase1Source.Count();
+					logger.Info("MutateDataModel: Phase 1 (MQTT) - Found {0} elements with MQTT mutators (out of {1} total elements)", 
+						phase1Scope.Count, totalElements);
+					
+					// Select elements from the Phase 1 scope using weighted random selection
+					var fieldsToMutate = GetMutationCount();
+					// Ensure at least 1 selection and cap to available elements (WeightedSample is without replacement)
+					fieldsToMutate = Math.Max(1, Math.Min(fieldsToMutate, phase1Scope.Count));
+					var phase1Mutations = Random.WeightedSample(phase1Scope, fieldsToMutate);
+					
+					logger.Info("MutateDataModel: Phase 1 (MQTT) - Selected {0} elements to mutate", phase1Mutations.Length);
+					
+					foreach (var item in action.outputData)
+					{
+						// Only apply Phase 1 mutations to elements that are in phase1Mutations
+						if (phase1Mutations.Any(m => m.InstanceName == item.instanceName))
+						{
+							if (ApplyPhaseMutation(item, action, true, phase1Mutations)) // true = MQTT phase, pass selected mutations
+								phase1HasMutations = true;
+						}
+					}
 				}
 				
-			// Send message after Phase 1 completes (if there were any mutations)
-			if (phase1HasMutations)
+				// Send message after Phase 1 completes (if there were any mutations)
+				if (phase1HasMutations)
 			{
 				// Use the first outputData item to get the data model for sending
 				var firstData = action.outputData.FirstOrDefault();
@@ -265,6 +410,17 @@ namespace Peach.Pro.Core.MutationStrategies
 						// Randomly select a mutator from the full list (may select the same mutator multiple times)
 						var mutator = Random.WeightedChoice(availableMutators);
 
+						// Output phase information for non-two-phase mode (if MutationPhase is set)
+						string phaseInfo = "";
+						if (MutationPhase != null && MutationPhase != "None")
+						{
+							phaseInfo = $" [{MutationPhase}]";
+							ConsoleWatcher.WriteInfoMark();
+							Console.WriteLine("Fuzzing: {0}{1}", currentElem.fullName, phaseInfo);
+							ConsoleWatcher.WriteInfoMark();
+							Console.WriteLine("Mutator: {0}{1}", mutator.Name, phaseInfo);
+						}
+
 						Context.OnDataMutating(data, currentElem, mutator);
 						logger.Debug("Action_Starting: Fuzzing: {0} (mutation {1}/{2})", 
 							item.ElementName, i + 1, mutationCount);
@@ -302,12 +458,21 @@ namespace Peach.Pro.Core.MutationStrategies
 		/// Apply mutations for a single phase (MQTT or non-MQTT) to a single element.
 		/// Returns true if any mutations were applied.
 		/// </summary>
-		private bool ApplyPhaseMutation(ActionData data, Action action, bool isMqttPhase)
+		/// <param name="data">The action data containing the data model</param>
+		/// <param name="action">The action being executed</param>
+		/// <param name="isMqttPhase">True for MQTT phase, false for non-MQTT phase</param>
+		/// <param name="filteredMutations">Optional filtered mutations list. If null, uses the default mutations list.</param>
+		private bool ApplyPhaseMutation(ActionData data, Action action, bool isMqttPhase, MutableItem[] filteredMutations = null)
 		{
 			var instanceName = data.instanceName;
 			bool hasMutations = false;
+			int skippedCount = 0;  // 记录跳过的元素数量
 
-			foreach (var item in mutations)
+			// Use filtered mutations if provided, otherwise use the default mutations list
+			var mutationsToUse = filteredMutations ?? mutations;
+
+			// 首先尝试从已选择的 mutations 列表中选择元素
+			foreach (var item in mutationsToUse)
 			{
 				if (item.InstanceName != instanceName)
 					continue;
@@ -326,7 +491,8 @@ namespace Peach.Pro.Core.MutationStrategies
 				
 				if (phaseMutators.Count == 0)
 				{
-					logger.Info("Action_Starting: Phase {0} - No {1} mutators available for element {2}", 
+					skippedCount++;
+					logger.Debug("Action_Starting: Phase {0} - No {1} mutators available for element {2}", 
 						isMqttPhase ? "1 (MQTT)" : "2 (Non-MQTT)", 
 						isMqttPhase ? "MQTT" : "non-MQTT",
 						item.ElementName);
@@ -353,6 +519,7 @@ namespace Peach.Pro.Core.MutationStrategies
 					// Randomly select a mutator from the full list (may select the same mutator multiple times)
 					var mutator = Random.WeightedChoice(mutatorList);
 					
+					// OnDataMutating will output phase information automatically via ConsoleWatcher
 					Context.OnDataMutating(data, currentElem, mutator);
 					logger.Info("Action_Starting: {0} - Fuzzing: {1} (mutation {2}/{3})", 
 						phaseName, item.ElementName, i + 1, mutationCount);
@@ -428,6 +595,15 @@ namespace Peach.Pro.Core.MutationStrategies
 				logger.Info("SendOutputMessage: Sending output message after {0} mutations", phaseName);
 				publisher.output(data.dataModel);
 				logger.Info("SendOutputMessage: Successfully sent output message after {0} mutations", phaseName);
+				
+				// Mark that we've sent messages via two-phase strategy
+				// Only set the flag after Phase 2 completes, to prevent Action.Run() from sending a third message
+				// This ensures both Phase 1 and Phase 2 messages have been sent before blocking Action.Run()
+				if (phaseName.Contains("Phase 2") || phaseName.Contains("Non-MQTT"))
+				{
+					Context.stateStore[TwoPhaseMessagesSentKey] = true;
+					logger.Debug("SendOutputMessage: Set flag to prevent Action.Run() from sending third message");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -449,6 +625,14 @@ namespace Peach.Pro.Core.MutationStrategies
 						logger.Info("SendOutputMessage: Retrying send after reconnection for {0}", phaseName);
 						publisher.output(data.dataModel);
 						logger.Info("SendOutputMessage: Successfully sent output message after {0} mutations (retry)", phaseName);
+						
+						// Mark that we've sent messages via two-phase strategy (after retry)
+						// Only set the flag after Phase 2 completes
+						if (phaseName.Contains("Phase 2") || phaseName.Contains("Non-MQTT"))
+						{
+							Context.stateStore[TwoPhaseMessagesSentKey] = true;
+							logger.Debug("SendOutputMessage: Set flag to prevent Action.Run() from sending third message (after retry)");
+						}
 						return;
 					}
 					catch (Exception retryEx)
