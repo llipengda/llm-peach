@@ -312,6 +312,10 @@ namespace Peach.Pro.Core.MutationStrategies
 				// Phase 2: Apply non-MQTT mutators to all elements (mutating already-mutated elements)
 				logger.Info("MutateDataModel: Phase 2 (Non-MQTT) - Starting mutation for all elements");
 				bool phase2HasMutations = false;
+
+				// 设置 Phase 2 名称，供 Fixup 判断跳过
+				_currentPhaseName = "Phase 2 (Non-MQTT)";
+
 				foreach (var item in action.outputData)
 				{
 					if (ApplyPhaseMutation(item, action, false)) // false = non-MQTT phase
@@ -319,8 +323,7 @@ namespace Peach.Pro.Core.MutationStrategies
 				}
 
 				// 不在 Phase 2 发送额外消息，留给 Action.Output 在变异完成后统一发送
-				// 保持 _currentPhaseName 为空，避免 Phase 2 触发 fixup
-				_currentPhaseName = null;
+				// 保持 _currentPhaseName 为 Phase 2，让 MqttFixup 能在 Action.Output 时跳过
 			}
 			else
 			{
