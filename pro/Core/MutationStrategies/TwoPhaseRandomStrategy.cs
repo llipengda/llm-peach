@@ -317,30 +317,10 @@ namespace Peach.Pro.Core.MutationStrategies
 					if (ApplyPhaseMutation(item, action, false)) // false = non-MQTT phase
 						phase2HasMutations = true;
 				}
-				
-			// Send message after Phase 2 completes (if there were any mutations)
-			if (phase2HasMutations)
-			{
-				// Use the first outputData item to get the data model for sending
-				var firstData = action.outputData.FirstOrDefault();
-				if (firstData != null)
-				{
-					// Set phase name for fixup logging
-					_currentPhaseName = "Phase 2 (Non-MQTT)";
-					
-					// Force reapplication of relations and fixups after Phase 2 mutations
-					// This ensures that fixups and relations are applied to the final mutated data
-					firstData.dataModel.Invalidate();
-					
-					// Accessing Value will trigger GenerateValue() which applies relations and fixups
-					var _ = firstData.dataModel.Value;
-					
-					SendOutputMessage(action, firstData, "Phase 2 (Non-MQTT)");
-					
-					// Clear phase name after sending
-					_currentPhaseName = null;
-				}
-			}
+
+				// 不在 Phase 2 发送额外消息，留给 Action.Output 在变异完成后统一发送
+				// 保持 _currentPhaseName 为空，避免 Phase 2 触发 fixup
+				_currentPhaseName = null;
 			}
 			else
 			{

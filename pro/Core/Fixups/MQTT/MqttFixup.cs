@@ -4,6 +4,7 @@ using System.ComponentModel;
 using NLog;
 using Peach.Core;
 using Peach.Core.Dom;
+using Peach.Pro.Core.MutationStrategies;
 
 namespace Peach.Pro.Core.Fixups.MQTT
 {
@@ -30,6 +31,26 @@ namespace Peach.Pro.Core.Fixups.MQTT
         {
             var elem = elements["ref"].Clone();
             var packets = elem.find("packets") as Peach.Core.Dom.Array;
+
+            // Phase-aware: skip MQTT fixup during Phase 2 (Non-MQTT)
+            string phaseName = null;
+            try
+            {
+                phaseName = TwoPhaseRandomStrategy.GetCurrentPhaseName();
+            }
+            catch
+            {
+                // ignore errors in phase detection
+            }
+
+            bool isPhase2 = phaseName != null &&
+                            (phaseName.Contains("Phase 2") || phaseName.Contains("Non-MQTT"));
+
+            if (isPhase2)
+            {
+                _logger.Debug("Skipping MQTT Fixup for element: {0} (Phase='{1}')", elem.fullName, phaseName ?? "null");
+                return elem.InternalValue;
+            }
 
             // if (_rand.Next(2) == 0)
             //     return elem.InternalValue;
