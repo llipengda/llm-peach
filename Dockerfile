@@ -70,6 +70,7 @@ ENV PROTOCOL=mqtt \
     PORT=1883 \
     TIMEOUT=200 \
     FIXUP=1 \
+    COUNT_PKT=0 \
     PEACH_ARGS=
 
 CMD ["./entrypoint.sh"]
