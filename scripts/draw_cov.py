@@ -5,6 +5,7 @@ import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
+import warnings
 from collections import defaultdict
 
 col_names = ["timestamp", "lines_hit", "lines_total", "functions_hit", "functions_total", "branches_hit", "branches_total"]
@@ -54,7 +55,6 @@ def main():
         sys.exit(1)
         
     global_common_time = np.linspace(0, max_total_time, 500)
-    analysis_results = {}
 
     fig, ax = plt.subplots(figsize=(10, 5), dpi=300) 
     ax.set_title(args.title)
@@ -65,18 +65,59 @@ def main():
         interpolated_y = []
         
         for df in dfs:
-            y_interp = np.interp(global_common_time, df["time_minutes"], df["branches_hit"])
+            y_interp = np.interp(global_common_time,
+                                 df["time_minutes"],
+                                 df["branches_hit"],
+                                 right=np.nan)
             interpolated_y.append(y_interp)
         
         y_matrix = np.array(interpolated_y)
-        
-        y_mean = np.mean(y_matrix, axis=0)
-        y_std = np.std(y_matrix, axis=0)
-        
-        analysis_results[name] = y_mean
-        
-        line, = ax.plot(global_common_time, y_mean, label=name)
-        
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", category=RuntimeWarning)
+            y_mean = np.nanmean(y_matrix, axis=0)
+            y_std = np.nanstd(y_matrix, axis=0)
+
+        if len(dfs) == 1:
+            line, = ax.plot(
+                global_common_time,
+                y_mean,
+                label=name,
+                marker='o',
+                markersize=4,
+                markevery=2
+            )
+        else:
+            line, = ax.plot(
+                global_common_time,
+                y_mean,
+                label=name
+            )
+
+        valid_indices = ~np.isnan(y_mean)
+
+        if not np.any(valid_indices):
+            continue
+
+        last_valid_idx = np.where(valid_indices)[0][-1]
+
+        final_x = global_common_time[last_valid_idx]
+        final_y = y_mean[last_valid_idx]
+
+        ax.annotate(
+            f"{final_y:.1f}",
+            xy=(final_x, final_y),
+            xytext=(5, 0),
+            textcoords='offset points',
+            color=line.get_color(),
+            fontweight='bold',
+            fontsize=9,
+            verticalalignment='center'
+        )
+
+        ax.plot(final_x, final_y, marker='o',
+                color=line.get_color(), markersize=5)
+
         if len(dfs) > 1:
             ax.fill_between(global_common_time, 
                             y_mean - y_std, 

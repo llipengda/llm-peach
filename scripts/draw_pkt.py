@@ -27,8 +27,25 @@ def load_data(file):
         data["time_minutes"] = (data["time"] - start_time) / pd.Timedelta(minutes=1)
         
         data["valid_ratio"] = data["valid_packets"] / data["packets"]
-        
-        return data[["time_minutes", "valid_ratio"]]
+
+        cols_to_return = ["time_minutes",
+                          "valid_ratio", "valid_packets", "packets"]
+
+        if "total_packets_peach" in data.columns:
+
+            denom_col = "packets_peach" if "packets_peach" in data.columns else "total_packets_peach"
+
+            data = data.iloc[:-1]
+            data["valid_ratio_peach"] = data["valid_packets"] / data[denom_col]
+
+            cols_to_return.append("valid_ratio_peach")
+            cols_to_return.append(denom_col)
+            
+            data = data[data["valid_ratio_peach"] <= 1.0]
+
+            return data[cols_to_return]
+
+        return data[cols_to_return]
     except Exception as e:
         return None
 
@@ -81,7 +98,7 @@ def main():
         smooth = lowess(
             all_ratio,
             all_time,
-            frac=0.05,
+            frac=0.1,
             it=0
         )
 
