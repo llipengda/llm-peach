@@ -11,15 +11,15 @@ using SysRandom = System.Random;
 using SysEncoding = System.Text.Encoding;
 using SysArray = System.Array;
 
-using static Peach.Pro.Core.Mutators.MQTT.MqttUtils;
+using static Peach.Pro.Core.Mutators.LLM.MQTT.MqttUtils;
 using System.Text;
 
-namespace Peach.Pro.Core.Mutators.MQTT
+namespace Peach.Pro.Core.Mutators.LLM.MQTT
 {
     [Mutator("MqttConnectMutateFlags")]
     [CMutator("mutate_connect_flags")]
     [Description("Mutates MQTT Connect Flags")]
-    public class MqttConnectMutateFlags : MqttMutator
+    public class MqttConnectMutateFlags : LLMMutator
     {
         public MqttConnectMutateFlags(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -90,7 +90,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateKeepAlive")]
     [CMutator("mutate_connect_keep_alive")]
     [Description("Mutates MQTT Connect Keep Alive")]
-    public class MqttConnectMutateKeepAlive : MqttMutator
+    public class MqttConnectMutateKeepAlive : LLMMutator
     {
         public MqttConnectMutateKeepAlive(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "keep_alive"; }
@@ -144,7 +144,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateProperties")]
     [CMutator("mutate_connect_properties")]
     [Description("Mutates MQTT Connect Properties")]
-    public class MqttConnectMutateProperties : MqttMutator
+    public class MqttConnectMutateProperties : LLMMutator
     {
         public MqttConnectMutateProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -224,7 +224,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddProperties")]
     [CMutator("add_connect_properties")]
     [Description("Adds MQTT Connect Properties")]
-    public class MqttConnectAddProperties : MqttMutator
+    public class MqttConnectAddProperties : LLMMutator
     {
         public MqttConnectAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -248,7 +248,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteProperties")]
     [CMutator("delete_connect_properties")]
     [Description("Deletes MQTT Connect Properties")]
-    public class MqttConnectDeleteProperties : MqttMutator
+    public class MqttConnectDeleteProperties : LLMMutator
     {
         public MqttConnectDeleteProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -264,7 +264,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateClientId")]
     [CMutator("mutate_connect_client_id")]
     [Description("Mutates MQTT Client ID")]
-    public class MqttConnectMutateClientId : MqttMutator
+    public class MqttConnectMutateClientId : LLMMutator
     {
         public MqttConnectMutateClientId(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -373,7 +373,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddClientId")]
     [CMutator("add_connect_client_id")]
     [Description("Adds MQTT Client ID")]
-    public class MqttConnectAddClientId : MqttMutator
+    public class MqttConnectAddClientId : LLMMutator
     {
         public MqttConnectAddClientId(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.Block && obj.Name == "client_id"; }
@@ -392,7 +392,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteClientId")]
     [CMutator("delete_connect_client_id")]
     [Description("Deletes MQTT Client ID")]
-    public class MqttConnectDeleteClientId : MqttMutator
+    public class MqttConnectDeleteClientId : LLMMutator
     {
         public MqttConnectDeleteClientId(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -408,7 +408,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateUserName")]
     [CMutator("mutate_connect_user_name")]
     [Description("Mutates MQTT User Name")]
-    public class MqttConnectMutateUserName : MqttMutator
+    public class MqttConnectMutateUserName : LLMMutator
     {
         public MqttConnectMutateUserName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.Block && obj.Name == "user_name"; }
@@ -484,7 +484,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddUserName")]
     [CMutator("add_connect_user_name")]
     [Description("Adds MQTT User Name")]
-    public class MqttConnectAddUserName : MqttMutator
+    public class MqttConnectAddUserName : LLMMutator
     {
         public MqttConnectAddUserName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.Block && obj.Name == "user_name"; }
@@ -503,7 +503,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteUserName")]
     [CMutator("delete_connect_user_name")]
     [Description("Deletes MQTT User Name")]
-    public class MqttConnectDeleteUserName : MqttMutator
+    public class MqttConnectDeleteUserName : LLMMutator
     {
         public MqttConnectDeleteUserName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -519,7 +519,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutatePassword")]
     [CMutator("mutate_connect_password")]
     [Description("Mutates MQTT Password")]
-    public class MqttConnectMutatePassword : MqttMutator
+    public class MqttConnectMutatePassword : LLMMutator
     {
         public MqttConnectMutatePassword(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -599,7 +599,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddPassword")]
     [CMutator("add_connect_password")]
     [Description("Adds MQTT Password")]
-    public class MqttConnectAddPassword : MqttMutator
+    public class MqttConnectAddPassword : LLMMutator
     {
         public MqttConnectAddPassword(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -623,7 +623,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeletePassword")]
     [CMutator("delete_connect_password")]
     [Description("Deletes MQTT Password")]
-    public class MqttConnectDeletePassword : MqttMutator
+    public class MqttConnectDeletePassword : LLMMutator
     {
         public MqttConnectDeletePassword(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -639,7 +639,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateWillProperties")]
     [CMutator("mutate_connect_will_properties")]
     [Description("Mutates MQTT Will Properties")]
-    public class MqttConnectMutateWillProperties : MqttMutator
+    public class MqttConnectMutateWillProperties : LLMMutator
     {
         public MqttConnectMutateWillProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -736,7 +736,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddWillProperties")]
     [CMutator("add_connect_will_properties")]
     [Description("Adds MQTT Will Properties")]
-    public class MqttConnectAddWillProperties : MqttMutator
+    public class MqttConnectAddWillProperties : LLMMutator
     {
         public MqttConnectAddWillProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -797,7 +797,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteWillProperties")]
     [CMutator("delete_connect_will_properties")]
     [Description("Deletes MQTT Will Properties")]
-    public class MqttConnectDeleteWillProperties : MqttMutator
+    public class MqttConnectDeleteWillProperties : LLMMutator
     {
         public MqttConnectDeleteWillProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -813,7 +813,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateWillTopic")]
     [CMutator("mutate_connect_will_topic")]
     [Description("Mutates MQTT Will Topic")]
-    public class MqttConnectMutateWillTopic : MqttMutator
+    public class MqttConnectMutateWillTopic : LLMMutator
     {
         public MqttConnectMutateWillTopic(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -893,7 +893,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddWillTopic")]
     [CMutator("add_connect_will_topic")]
     [Description("Adds MQTT Will Topic")]
-    public class MqttConnectAddWillTopic : MqttMutator
+    public class MqttConnectAddWillTopic : LLMMutator
     {
         public MqttConnectAddWillTopic(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -917,7 +917,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteWillTopic")]
     [CMutator("delete_connect_will_topic")]
     [Description("Deletes MQTT Will Topic")]
-    public class MqttConnectDeleteWillTopic : MqttMutator
+    public class MqttConnectDeleteWillTopic : LLMMutator
     {
         public MqttConnectDeleteWillTopic(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -933,7 +933,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectMutateWillPayload")]
     [CMutator("mutate_connect_will_payload")]
     [Description("Mutates MQTT Will Payload")]
-    public class MqttConnectMutateWillPayload : MqttMutator
+    public class MqttConnectMutateWillPayload : LLMMutator
     {
         public MqttConnectMutateWillPayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -1008,7 +1008,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectAddWillPayload")]
     [CMutator("add_connect_will_payload")]
     [Description("Adds MQTT Will Payload")]
-    public class MqttConnectAddWillPayload : MqttMutator
+    public class MqttConnectAddWillPayload : LLMMutator
     {
         public MqttConnectAddWillPayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -1034,7 +1034,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttConnectDeleteWillPayload")]
     [CMutator("delete_connect_will_payload")]
     [Description("Deletes MQTT Will Payload")]
-    public class MqttConnectDeleteWillPayload : MqttMutator
+    public class MqttConnectDeleteWillPayload : LLMMutator
     {
         public MqttConnectDeleteWillPayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) {
