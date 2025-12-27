@@ -43,6 +43,8 @@ def load_data(file):
 
             cols_to_return.append("valid_ratio_peach")
             cols_to_return.append(denom_col)
+            
+            data = data[data["valid_ratio_peach"] <= 1.0]
 
             return data[cols_to_return]
 
@@ -151,7 +153,7 @@ def main():
         smooth = lowess(
             all_ratio,
             all_time,
-            frac=0.05,
+            frac=0.1,
             it=0
         )
 
