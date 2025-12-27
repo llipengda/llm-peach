@@ -5,13 +5,13 @@ using NLog;
 using Peach.Core;
 using Peach.Core.Dom;
 
-namespace Peach.Pro.Core.Fixups.MQTT
+namespace Peach.Pro.Core.Fixups.LLM.MQTT
 {
     [Description("Mqtt Fixup.")]
     [Fixup("MqttFixup", true)]
     [Parameter("ref", typeof(DataElement), "Reference to data element")]
     [Serializable]
-    public class MqttFixup : Fixup
+    public class MqttFixup : LLMFixup
     {
         public DataElement _ref { get; protected set; }
 
@@ -28,6 +28,9 @@ namespace Peach.Pro.Core.Fixups.MQTT
 
         protected override Variant fixupImpl()
         {
+            if (!ShouldFixup)
+                return elements["ref"].InternalValue;
+
             var elem = elements["ref"].Clone();
             var packets = elem.find("packets") as Peach.Core.Dom.Array;
 

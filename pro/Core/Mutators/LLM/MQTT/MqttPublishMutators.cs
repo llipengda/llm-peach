@@ -12,15 +12,15 @@ using SysRandom = System.Random;
 using SysEncoding = System.Text.Encoding;
 using SysArray = System.Array;
 
-using static Peach.Pro.Core.Mutators.MQTT.MqttUtils;
+using static Peach.Pro.Core.Mutators.LLM.MQTT.MqttUtils;
 
-namespace Peach.Pro.Core.Mutators.MQTT
+namespace Peach.Pro.Core.Mutators.LLM.MQTT
 {
     // Packet Identifier Mutators
     [Mutator("MqttPublishMutatePacketIdentifier")]
     [CMutator("mutate_publish_packet_identifier")]
     [Description("Mutates MQTT Publish Packet ID")]
-    public class MqttPublishMutatePacketIdentifier : MqttMutator
+    public class MqttPublishMutatePacketIdentifier : LLMMutator
     {
         public MqttPublishMutatePacketIdentifier(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -63,7 +63,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishAddPacketIdentifier")]
     [CMutator("add_publish_packet_identifier")]
     [Description("Adds (Populates) MQTT Publish Packet ID")]
-    public class MqttPublishAddPacketIdentifier : MqttMutator
+    public class MqttPublishAddPacketIdentifier : LLMMutator
     {
         public MqttPublishAddPacketIdentifier(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -83,7 +83,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishDeletePacketIdentifier")]
     [CMutator("delete_publish_packet_identifier")]
     [Description("Deletes (Clears) MQTT Publish Packet ID")]
-    public class MqttPublishDeletePacketIdentifier : MqttMutator
+    public class MqttPublishDeletePacketIdentifier : LLMMutator
     {
         public MqttPublishDeletePacketIdentifier(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -100,7 +100,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateTopicName")]
     [CMutator("mutate_publish_topic_name")]
     [Description("Mutates MQTT Publish Topic Name")]
-    public class MqttPublishMutateTopicName : MqttMutator
+    public class MqttPublishMutateTopicName : LLMMutator
     {
         public MqttPublishMutateTopicName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.String && obj.Name == "value" && obj.parent != null && obj.parent.Name == "topic_name"; }
@@ -143,7 +143,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishAddTopicName")]
     [CMutator("add_publish_topic_name")]
     [Description("Adds (Populates) MQTT Publish Topic Name")]
-    public class MqttPublishAddTopicName : MqttMutator
+    public class MqttPublishAddTopicName : LLMMutator
     {
         public MqttPublishAddTopicName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Peach.Core.Dom.String && obj.Name == "value" && obj.parent != null && obj.parent.Name == "topic_name"; }
@@ -160,7 +160,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishDeleteTopicName")]
     [CMutator("delete_publish_topic_name")]
     [Description("Deletes (Clears) MQTT Publish Topic Name")]
-    public class MqttPublishDeleteTopicName : MqttMutator
+    public class MqttPublishDeleteTopicName : LLMMutator
     {
         public MqttPublishDeleteTopicName(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -177,7 +177,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateProperties")]
     [CMutator("mutate_publish_properties")]
     [Description("Mutates MQTT Publish Properties")]
-    public class MqttPublishMutateProperties : MqttMutator
+    public class MqttPublishMutateProperties : LLMMutator
     {
         public MqttPublishMutateProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("publish"); }
@@ -255,7 +255,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishAddProperties")]
     [CMutator("add_publish_properties")]
     [Description("Adds MQTT Publish Properties")]
-    public class MqttPublishAddProperties : MqttMutator
+    public class MqttPublishAddProperties : LLMMutator
     {
         public MqttPublishAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("publish"); }
@@ -311,7 +311,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishDeleteProperties")]
     [CMutator("delete_publish_properties")]
     [Description("Deletes MQTT Publish Properties")]
-    public class MqttPublishDeleteProperties : MqttMutator
+    public class MqttPublishDeleteProperties : LLMMutator
     {
         public MqttPublishDeleteProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("publish"); }
@@ -324,7 +324,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishRepeatProperties")]
     [CMutator("repeat_publish_properties")]
     [Description("Repeats MQTT Publish User Property")]
-    public class MqttPublishRepeatProperties : MqttMutator
+    public class MqttPublishRepeatProperties : LLMMutator
     {
         public MqttPublishRepeatProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("publish"); }
@@ -398,7 +398,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutatePayload")]
     [CMutator("mutate_publish_payload")]
     [Description("Mutates MQTT Publish Payload")]
-    public class MqttPublishMutatePayload : MqttMutator
+    public class MqttPublishMutatePayload : LLMMutator
     {
         public MqttPublishMutatePayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "payload" && obj.IsIn("publish"); }
@@ -463,7 +463,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishAddPayload")]
     [CMutator("add_publish_payload")]
     [Description("Adds MQTT Publish Payload")]
-    public class MqttPublishAddPayload : MqttMutator
+    public class MqttPublishAddPayload : LLMMutator
     {
         public MqttPublishAddPayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "payload" && obj.IsIn("publish"); }
@@ -500,7 +500,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishDeletePayload")]
     [CMutator("delete_publish_payload")]
     [Description("Deletes MQTT Publish Payload")]
-    public class MqttPublishDeletePayload : MqttMutator
+    public class MqttPublishDeletePayload : LLMMutator
     {
         public MqttPublishDeletePayload(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "payload" && obj.IsIn("publish"); }
@@ -514,7 +514,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateQoS")]
     [CMutator("mutate_publish_qos")]
     [Description("Mutates MQTT Publish QoS")]
-    public class MqttPublishMutateQoS : MqttMutator
+    public class MqttPublishMutateQoS : LLMMutator
     {
         public MqttPublishMutateQoS(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name.StartsWith("qos") && obj.lengthAsBits == 2; }
@@ -553,7 +553,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateDup")]
     [CMutator("mutate_publish_dup")]
     [Description("Mutates MQTT Publish Dup")]
-    public class MqttPublishMutateDup : MqttMutator
+    public class MqttPublishMutateDup : LLMMutator
     {
         public MqttPublishMutateDup(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "dup"; }
@@ -592,7 +592,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttPublishMutateRetain")]
     [CMutator("mutate_publish_retain")]
     [Description("Mutates MQTT Publish Retain")]
-    public class MqttPublishMutateRetain : MqttMutator
+    public class MqttPublishMutateRetain : LLMMutator
     {
         public MqttPublishMutateRetain(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "retain"; }
