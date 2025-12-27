@@ -1,6 +1,6 @@
 using System;
 
-namespace Peach.Pro.Core.Mutators.MQTT
+namespace Peach.Pro.Core.Mutators.LLM
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class CMutatorAttribute : Attribute

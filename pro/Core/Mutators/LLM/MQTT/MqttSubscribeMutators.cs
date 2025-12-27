@@ -11,14 +11,14 @@ using Peach.Core.IO;
 using SysRandom = System.Random;
 using SysEncoding = System.Text.Encoding;
 
-using static Peach.Pro.Core.Mutators.MQTT.MqttUtils;
+using static Peach.Pro.Core.Mutators.LLM.MQTT.MqttUtils;
 
-namespace Peach.Pro.Core.Mutators.MQTT
+namespace Peach.Pro.Core.Mutators.LLM.MQTT
 {
     [Mutator("MqttSubscribeMutatePacketIdentifier")]
     [CMutator("mutate_subscribe_packet_identifier")]
     [Description("Mutates MQTT Subscribe Packet Identifier")]
-    public class MqttSubscribeMutatePacketIdentifier : MqttMutator
+    public class MqttSubscribeMutatePacketIdentifier : LLMMutator
     {
         public MqttSubscribeMutatePacketIdentifier(DataElement obj) : base(obj) { }
 
@@ -69,7 +69,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutateProperties")]
     [CMutator("mutate_subscribe_properties")]
     [Description("Mutates MQTT Subscribe Properties (Rebuild)")]
-    public class MqttSubscribeMutateProperties : MqttMutator
+    public class MqttSubscribeMutateProperties : LLMMutator
     {
         public MqttSubscribeMutateProperties(DataElement obj) : base(obj) { }
 
@@ -138,7 +138,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeAddProperties")]
     [CMutator("add_subscribe_properties")]
     [Description("Adds MQTT Subscribe Properties")]
-    public class MqttSubscribeAddProperties : MqttMutator
+    public class MqttSubscribeAddProperties : LLMMutator
     {
         public MqttSubscribeAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -237,7 +237,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeDeleteProperties")]
     [CMutator("delete_subscribe_properties")]
     [Description("Deletes MQTT Subscribe Properties")]
-    public class MqttSubscribeDeleteProperties : MqttMutator
+    public class MqttSubscribeDeleteProperties : LLMMutator
     {
         public MqttSubscribeDeleteProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -254,7 +254,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeRepeatProperties")]
     [CMutator("repeat_subscribe_properties")]
     [Description("Repeats MQTT Subscribe User Property")]
-    public class MqttSubscribeRepeatProperties : MqttMutator
+    public class MqttSubscribeRepeatProperties : LLMMutator
     {
         public MqttSubscribeRepeatProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -336,7 +336,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutateTopicFilter")]
     [CMutator("mutate_subscribe_topic_filter")]
     [Description("Mutates MQTT Subscribe Topic Filter")]
-    public class MqttSubscribeMutateTopicFilter : MqttMutator
+    public class MqttSubscribeMutateTopicFilter : LLMMutator
     {
         public MqttSubscribeMutateTopicFilter(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -447,7 +447,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeRepeatTopicFilter")]
     [CMutator("repeat_subscribe_topic_filter")]
     [Description("Repeats (Duplicates) MQTT Subscribe Topic Filter")]
-    public class MqttSubscribeRepeatTopicFilter : MqttMutator
+    public class MqttSubscribeRepeatTopicFilter : LLMMutator
     {
         public MqttSubscribeRepeatTopicFilter(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -469,7 +469,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutateQoS")]
     [CMutator("mutate_subscribe_qos")]
     [Description("Mutates MQTT Subscribe QoS")]
-    public class MqttSubscribeMutateQoS : MqttMutator
+    public class MqttSubscribeMutateQoS : LLMMutator
     {
         public MqttSubscribeMutateQoS(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -511,7 +511,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttSubscribeMutateTopicCount")]
     [CMutator("mutate_subscribe_topic_count")]
     [Description("Mutates MQTT Subscribe Topic Count")]
-    public class MqttSubscribeMutateTopicCount : MqttMutator
+    public class MqttSubscribeMutateTopicCount : LLMMutator
     {
         public MqttSubscribeMutateTopicCount(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)

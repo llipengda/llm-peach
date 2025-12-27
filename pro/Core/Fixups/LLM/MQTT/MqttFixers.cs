@@ -17,7 +17,7 @@ using Array = Peach.Core.Dom.Array;
 using SArray = System.Array;
 using Peach.Pro.Core.Dom;
 
-namespace Peach.Pro.Core.Fixups.MQTT
+namespace Peach.Pro.Core.Fixups.LLM.MQTT
 {
     public class MqttFixers
     {

@@ -2,11 +2,11 @@ using Peach.Core;
 using Peach.Core.Dom;
 
 
-namespace Peach.Pro.Core.Mutators.MQTT
+namespace Peach.Pro.Core.Mutators.LLM
 {
-    public abstract class MqttMutator : Mutator
+    public abstract class LLMMutator : Mutator
     {
-        public MqttMutator(DataElement obj) : base(obj) { }
+        public LLMMutator(DataElement obj) : base(obj) { }
 
         public int PickWeighted(int[] weights)
         {
