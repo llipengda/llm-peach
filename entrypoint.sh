@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 proto=$(echo "$PROTOCOL" | tr '[:upper:]' '[:lower:]')
 cd "/peach/templates/$proto" || exit 1
