@@ -11,14 +11,14 @@ using Peach.Core.IO; // Added for BitwiseStream
 using SysRandom = System.Random;
 using SysEncoding = System.Text.Encoding;
 
-using static Peach.Pro.Core.Mutators.MQTT.MqttUtils;
+using static Peach.Pro.Core.Mutators.LLM.MQTT.MqttUtils;
 
-namespace Peach.Pro.Core.Mutators.MQTT
+namespace Peach.Pro.Core.Mutators.LLM.MQTT
 {
     [Mutator("MqttAuthMutateReasonCode")]
     [CMutator("mutate_auth_reason_code")]
     [Description("Mutates MQTT Auth Reason Code")]
-    public class MqttAuthMutateReasonCode : MqttMutator
+    public class MqttAuthMutateReasonCode : LLMMutator
     {
         public MqttAuthMutateReasonCode(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "reason_code" && obj.IsIn("auth"); }
@@ -56,7 +56,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthAddReasonCode")]
     [CMutator("add_auth_reason_code")]
     [Description("Adds MQTT Auth Reason Code")]
-    public class MqttAuthAddReasonCode : MqttMutator
+    public class MqttAuthAddReasonCode : LLMMutator
     {
         public MqttAuthAddReasonCode(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "reason_code" && obj.IsIn("auth"); }
@@ -69,7 +69,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthDeleteReasonCode")]
     [CMutator("delete_auth_reason_code")]
     [Description("Deletes MQTT Auth Reason Code")]
-    public class MqttAuthDeleteReasonCode : MqttMutator
+    public class MqttAuthDeleteReasonCode : LLMMutator
     {
         public MqttAuthDeleteReasonCode(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "reason_code" && obj.IsIn("auth"); }
@@ -82,7 +82,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthMutateProperties")]
     [CMutator("mutate_auth_properties")]
     [Description("Mutates MQTT Auth Properties")]
-    public class MqttAuthMutateProperties : MqttMutator
+    public class MqttAuthMutateProperties : LLMMutator
     {
         public MqttAuthMutateProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("auth"); }
@@ -158,7 +158,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthAddProperties")]
     [CMutator("add_auth_properties")]
     [Description("Adds MQTT Auth Properties")]
-    public class MqttAuthAddProperties : MqttMutator
+    public class MqttAuthAddProperties : LLMMutator
     {
         public MqttAuthAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("auth"); }
@@ -188,7 +188,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttAuthRepeatProperties")]
     [CMutator("repeat_auth_properties")]
     [Description("Repeats MQTT Auth User Property")]
-    public class MqttAuthRepeatProperties : MqttMutator
+    public class MqttAuthRepeatProperties : LLMMutator
     {
         public MqttAuthRepeatProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("auth"); }

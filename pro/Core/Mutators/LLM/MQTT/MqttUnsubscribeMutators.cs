@@ -11,14 +11,14 @@ using Peach.Core.IO;
 using SysRandom = System.Random;
 using SysEncoding = System.Text.Encoding;
 
-using static Peach.Pro.Core.Mutators.MQTT.MqttUtils;
+using static Peach.Pro.Core.Mutators.LLM.MQTT.MqttUtils;
 
-namespace Peach.Pro.Core.Mutators.MQTT
+namespace Peach.Pro.Core.Mutators.LLM.MQTT
 {
     [Mutator("MqttUnsubscribeMutatePacketIdentifier")]
     [CMutator("mutate_unsubscribe_packet_identifier")]
     [Description("Mutates MQTT Unsubscribe Packet ID")]
-    public class MqttUnsubscribeMutatePacketIdentifier : MqttMutator
+    public class MqttUnsubscribeMutatePacketIdentifier : LLMMutator
     {
         public MqttUnsubscribeMutatePacketIdentifier(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Number && obj.Name == "packet_identifier" && obj.IsIn("unsubscribe"); }
@@ -57,7 +57,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeMutateProperties")]
     [CMutator("mutate_unsubscribe_properties")]
     [Description("Mutates MQTT Unsubscribe Properties")]
-    public class MqttUnsubscribeMutateProperties : MqttMutator
+    public class MqttUnsubscribeMutateProperties : LLMMutator
     {
         public MqttUnsubscribeMutateProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("unsubscribe"); }
@@ -96,7 +96,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeAddProperties")]
     [CMutator("add_unsubscribe_properties")]
     [Description("Adds MQTT Unsubscribe Properties")]
-    public class MqttUnsubscribeAddProperties : MqttMutator
+    public class MqttUnsubscribeAddProperties : LLMMutator
     {
         public MqttUnsubscribeAddProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("unsubscribe"); }
@@ -130,7 +130,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeDeleteProperties")]
     [CMutator("delete_unsubscribe_properties")]
     [Description("Deletes MQTT Unsubscribe Properties")]
-    public class MqttUnsubscribeDeleteProperties : MqttMutator
+    public class MqttUnsubscribeDeleteProperties : LLMMutator
     {
         public MqttUnsubscribeDeleteProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("unsubscribe"); }
@@ -143,7 +143,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeRepeatProperties")]
     [CMutator("repeat_unsubscribe_properties")]
     [Description("Repeats MQTT Unsubscribe User Property")]
-    public class MqttUnsubscribeRepeatProperties : MqttMutator
+    public class MqttUnsubscribeRepeatProperties : LLMMutator
     {
         public MqttUnsubscribeRepeatProperties(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj) { return obj is Blob && obj.Name == "properties" && obj.IsIn("unsubscribe"); }
@@ -185,7 +185,7 @@ namespace Peach.Pro.Core.Mutators.MQTT
     [Mutator("MqttUnsubscribeMutateTopicFilters")]
     [CMutator("mutate_unsubscribe_topic_filters")]
     [Description("Mutates MQTT Unsubscribe Topic Filters")]
-    public class MqttUnsubscribeMutateTopicFilters : MqttMutator
+    public class MqttUnsubscribeMutateTopicFilters : LLMMutator
     {
         public MqttUnsubscribeMutateTopicFilters(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
@@ -203,15 +203,13 @@ namespace Peach.Pro.Core.Mutators.MQTT
         }
         private void PerformMutation(DataElement obj, int strategy)
         {
-            // Placeholder for structure logic. Requires DOM manipulation not easily available.
-            // Strategies 0..9 as defined in C.
         }
     }
 
     [Mutator("MqttUnsubscribeRepeatTopicFilters")]
     [CMutator("repeat_unsubscribe_topic_filters")]
     [Description("Repeats MQTT Unsubscribe Topic Filters")]
-    public class MqttUnsubscribeRepeatTopicFilters : MqttMutator
+    public class MqttUnsubscribeRepeatTopicFilters : LLMMutator
     {
         public MqttUnsubscribeRepeatTopicFilters(DataElement obj) : base(obj) { }
         public new static bool supportedDataElement(DataElement obj)
