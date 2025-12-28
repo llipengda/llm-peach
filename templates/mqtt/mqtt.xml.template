@@ -345,7 +345,7 @@
 
         @LOGGER@
 
-        <Strategy class="@STRATEGY@"/>
+        @STRATEGY@
 
         @MUTATORS@
 

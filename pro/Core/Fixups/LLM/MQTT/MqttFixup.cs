@@ -4,6 +4,7 @@ using System.ComponentModel;
 using NLog;
 using Peach.Core;
 using Peach.Core.Dom;
+using Peach.Pro.Core.MutationStrategies;
 
 namespace Peach.Pro.Core.Fixups.LLM.MQTT
 {
@@ -33,6 +34,9 @@ namespace Peach.Pro.Core.Fixups.LLM.MQTT
 
             var elem = elements["ref"].Clone();
             var packets = elem.find("packets") as Peach.Core.Dom.Array;
+
+            // Phase-aware skipping is now controlled by LLMFixup.ShouldFixup; the strategy will
+            // toggle ShouldFixup on LLMFixup instances before Phase 2 to skip LLM-specific fixups.
 
             // if (_rand.Next(2) == 0)
             //     return elem.InternalValue;
