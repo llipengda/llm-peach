@@ -267,62 +267,38 @@ namespace Peach.Pro.Core.MutationStrategies
 		mutationHistory.Add(instanceName + "." + elementName + " + " + mutatorName);
 	}
 
-	protected virtual void ApplyMutation(ActionData data, Action action)
-	{
-		var instanceName = data.instanceName;
-
-		foreach (var item in mutations)
+	private void ApplyMutation(ActionData data)
 		{
-			if (item.InstanceName != instanceName)
-				continue;
+			var instanceName = data.instanceName;
 
-			var elem = data.dataModel.find(item.ElementName);
-			if (elem != null && elem.mutationFlags == MutateOverride.None)
+			foreach (var item in mutations)
 			{
-				// Filter mutators based on phase if needed
-				WeightedList<Mutator> availableMutators;
-				if (MutationPhase != null && MutationPhase != "None")
+				if (item.InstanceName != instanceName)
+					continue;
+
+				var elem = data.dataModel.find(item.ElementName);
+				if (elem != null && elem.mutationFlags == MutateOverride.None)
 				{
-					// Create a new WeightedList with filtered mutators
-					var filteredMutators = item.Mutators.Where(m => ShouldIncludeMutator(m.GetType())).ToList();
-					if (filteredMutators.Count == 0)
-					{
-						logger.Debug("Action_Starting: No available mutators for phase {0} on element {1}", 
-							MutationPhase, item.ElementName);
-						continue;
-					}
-					availableMutators = new WeightedList<Mutator>(filteredMutators);
+					var mutator = Random.WeightedChoice(item.Mutators);
+					Context.OnDataMutating(data, elem, mutator);
+					logger.Debug("Action_Starting: Fuzzing: {0}", item.ElementName);
+					logger.Debug("Action_Starting: Mutator: {0}", mutator.Name);
+					mutator.randomMutation(elem);
+
+					RecordMutation(instanceName, item.ElementName, mutator.Name);
+
+					// Trigger re-generation of data
+					// needed for Frag element.
+					//var obj = data.dataModel.Value;
 				}
 				else
 				{
-					availableMutators = item.Mutators;
+					logger.Debug("Action_Starting: Skipping Fuzzing: {0}", item.ElementName);
 				}
-
-				if (availableMutators.Count == 0)
-				{
-					logger.Debug("Action_Starting: No available mutators for phase {0} on element {1}", 
-						MutationPhase, item.ElementName);
-					continue;
-				}
-
-				var mutator = Random.WeightedChoice(availableMutators);
-				Context.OnDataMutating(data, elem, mutator);
-				logger.Debug("Action_Starting: Fuzzing: {0}", item.ElementName);
-				logger.Debug("Action_Starting: Mutator: {0}", mutator.Name);
-				
-				mutator.randomMutation(elem);
-				RecordMutation(instanceName, item.ElementName, mutator.Name);
-
-				// Trigger re-generation of data
-				// needed for Frag element.
-				//var obj = data.dataModel.Value;
-			}
-			else
-			{
-				logger.Debug("Action_Starting: Skipping Fuzzing: {0}", item.ElementName);
 			}
 		}
-	}
+
+
 
 	protected virtual void MutateDataModel(Action action)
 	{
