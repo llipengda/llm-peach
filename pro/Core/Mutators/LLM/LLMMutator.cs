@@ -8,6 +8,8 @@ namespace Peach.Pro.Core.Mutators.LLM
     {
         public LLMMutator(DataElement obj) : base(obj) { }
 
+        public override uint mutation { get; set; }
+
         public int PickWeighted(int[] weights)
         {
             int sum = 0;
