@@ -35,25 +35,8 @@ namespace Peach.Pro.Core.Fixups.LLM.MQTT
             var elem = elements["ref"].Clone();
             var packets = elem.find("packets") as Peach.Core.Dom.Array;
 
-            // Phase-aware: skip MQTT fixup during Phase 2 (Non-MQTT)
-            string phaseName = null;
-            try
-            {
-                phaseName = TwoPhaseRandomStrategy.GetCurrentPhaseName();
-            }
-            catch
-            {
-                // ignore errors in phase detection
-            }
-
-            bool isPhase2 = phaseName != null &&
-                            (phaseName.Contains("Phase 2") || phaseName.Contains("Non-MQTT"));
-
-            if (isPhase2)
-            {
-                _logger.Debug("Skipping MQTT Fixup for element: {0} (Phase='{1}')", elem.fullName, phaseName ?? "null");
-                return elem.InternalValue;
-            }
+            // Phase-aware skipping is now controlled by LLMFixup.ShouldFixup; the strategy will
+            // toggle ShouldFixup on LLMFixup instances before Phase 2 to skip LLM-specific fixups.
 
             // if (_rand.Next(2) == 0)
             //     return elem.InternalValue;

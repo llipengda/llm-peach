@@ -149,10 +149,10 @@ namespace Peach.Pro.Core.MutationStrategies
 		}
 
 		/// <summary>
-		/// Mutation phase: None, MQTTOnly, NonMQTTOnly
+		/// Mutation phase: None, LLMOnly, NonLLMOnly
 		/// None: Use all mutators (default)
-		/// MQTTOnly: Only use MQTT mutators
-		/// NonMQTTOnly: Only use non-MQTT mutators
+		/// LLMOnly: Only use LLM mutators
+		/// NonLLMOnly: Only use non-LLM mutators
 		/// </summary>
 		public string MutationPhase
 		{
@@ -188,29 +188,12 @@ namespace Peach.Pro.Core.MutationStrategies
 		}
 
 		/// <summary>
-		/// Check if a mutator type belongs to MQTT namespace
+		/// Filter mutators based on current mutation phase.
+		/// Default implementation includes all mutators; strategies can override this to provide
+		/// phase-specific filtering (e.g., TwoPhaseRandomStrategy).
 		/// </summary>
-		protected bool IsMQTTMutator(Type mutatorType)
+		protected virtual bool ShouldIncludeMutator(Type mutatorType)
 		{
-			return mutatorType != null && mutatorType.Namespace == "Peach.Pro.Core.Mutators.MQTT";
-		}
-
-		/// <summary>
-		/// Filter mutators based on current mutation phase
-		/// </summary>
-		protected bool ShouldIncludeMutator(Type mutatorType)
-		{
-			if (MutationPhase == null || MutationPhase == "None")
-				return true;
-
-			bool isMQTT = IsMQTTMutator(mutatorType);
-
-			if (MutationPhase == "MQTTOnly")
-				return isMQTT;
-
-			if (MutationPhase == "NonMQTTOnly")
-				return !isMQTT;
-
 			return true;
 		}
 
