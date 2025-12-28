@@ -12,7 +12,7 @@ using int64 = System.Int64;
 using Peach.Core.Dom;
 using Peach.Core.IO;
 
-namespace Peach.Pro.Core.Mutators.MQTT
+namespace Peach.Pro.Core.Mutators.LLM.MQTT
 {
     static class MqttUtils
     {
