@@ -307,8 +307,8 @@
             <Block name="publish" ref="mqtt_publish_packet_t"/>
             <Block name="unsubscribe" ref="mqtt_unsubscribe_packet_t"/>
             <Block name="auth" ref="mqtt_auth_packet_t"/>
-            <Block name="puback" ref="mqtt_puback_packet_t"/>
-            <Block name="pubrec" ref="mqtt_pubrec_packet_t"/>
+            <!-- <Block name="puback" ref="mqtt_puback_packet_t"/> -->
+            <!-- <Block name="pubrec" ref="mqtt_pubrec_packet_t"/> -->
             <Block name="pubrel" ref="mqtt_pubrel_packet_t"/>
             <Block name="pubcomp" ref="mqtt_pubcomp_packet_t"/>
             <Block name="pingreq" ref="mqtt_pingreq_packet_t"/>
