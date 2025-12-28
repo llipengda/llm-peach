@@ -148,28 +148,12 @@ namespace Peach.Pro.Core.MutationStrategies
 			set;
 		}
 
-		/// <summary>
-		/// Mutation phase: None, LLMOnly, NonLLMOnly
-		/// None: Use all mutators (default)
-		/// LLMOnly: Only use LLM mutators
-		/// NonLLMOnly: Only use non-LLM mutators
-		/// </summary>
-		public string MutationPhase
-		{
-			get;
-			set;
-		}
-
 		protected WeightedMutationStrategy(Dictionary<string, Variant> args)
 			: base(args)
 		{
 			MaxFieldsToMutate = 6;
 			if (args.ContainsKey("MaxFieldsToMutate"))
 				MaxFieldsToMutate = int.Parse((string)args["MaxFieldsToMutate"]);
-
-			MutationPhase = "None";
-			if (args.ContainsKey("MutationPhase"))
-				MutationPhase = (string)args["MutationPhase"];
 
 			var weighting = 10;
 			if (args.ContainsKey("Weighting"))
@@ -261,13 +245,13 @@ namespace Peach.Pro.Core.MutationStrategies
 				scopeState.ChildScopes += 1;
 		}
 
-	[Conditional("DEBUG")]
-	protected void RecordMutation(string instanceName, string elementName, string mutatorName)
-	{
-		mutationHistory.Add(instanceName + "." + elementName + " + " + mutatorName);
-	}
+		[Conditional("DEBUG")]
+		protected void RecordMutation(string instanceName, string elementName, string mutatorName)
+		{
+			mutationHistory.Add(instanceName + "." + elementName + " + " + mutatorName);
+		}
 
-	private void ApplyMutation(ActionData data)
+		private void ApplyMutation(ActionData data)
 		{
 			var instanceName = data.instanceName;
 
@@ -300,17 +284,17 @@ namespace Peach.Pro.Core.MutationStrategies
 
 
 
-	protected virtual void MutateDataModel(Action action)
-	{
-		// MutateDataModel should only be called after ParseDataModel
-		Debug.Assert(Iteration > 0);
-
-		// Original behavior: Apply mutations to each element independently
-		foreach (var item in action.outputData)
+		protected virtual void MutateDataModel(Action action)
 		{
-			ApplyMutation(item, action);
+			// MutateDataModel should only be called after ParseDataModel
+			Debug.Assert(Iteration > 0);
+
+			// Original behavior: Apply mutations to each element independently
+			foreach (var item in action.outputData)
+			{
+				ApplyMutation(item);
+			}
 		}
-	}
 
 	}
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 capitalize() {
-    echo "$1" | sed 's/.*/\L&/; s/^\(.\)/\U\1/'
+    echo "$1" | sed 's/^\(.\)/\U\1/'
 }
 
 MUTATORS=""
@@ -9,6 +9,7 @@ LOGGER=""
 FIXUP_XML=""
 IMPORTS=""
 ON_COMPLETE=""
+STRATEGY_XML=""
 STRATEGY=$(capitalize "$STRATEGY")
 MODE=$MODE
 FIXUP=$FIXUP
@@ -48,9 +49,15 @@ if [ "$COUNT_PKT" -eq 1 ]; then
     ON_COMPLETE='onComplete="pkt_cnt.count_pkt(self)"'
 fi
 
+if [ "$STRATEGY" == "TwoPhaseRandom" ]; then
+    STRATEGY_XML='<Strategy class="TwoPhaseRandom"><Param name="TwoPhaseMutation" value="True" /><Param name="MultipleMutationsPerElement" value="3" /></Strategy>'
+else
+    STRATEGY_XML="<Strategy class=\"$STRATEGY\" />"
+fi
+
 pit_file="./mqtt_STRATEGY=${STRATEGY}&MODE=${MODE}&FIXUP=${FIXUP}&HOST=${HOST}&PORT=${PORT}&PEACH_ARGS=${PEACH_ARGS// /_}.xml"
 
-sed -e "s/@STRATEGY@/$STRATEGY/g" \
+sed -e "s|@STRATEGY@|$STRATEGY_XML|g" \
     -e "s|@MUTATORS@|$MUTATORS|g" \
     -e "s|@LOGGER@|$LOGGER|g" \
     -e "s|@FIXUP@|$FIXUP_XML|g" \
