@@ -263,6 +263,7 @@ namespace Peach.Pro.Core.MutationStrategies
 
 					// 优化：先将phase1Mutations的InstanceName存入HashSet，提升查询效率
 					HashSet<string> phase1InstanceNames = new HashSet<string>(phase1Mutations.Select(m => m.InstanceName));
+					SetLLMFixupsShouldFixup(action, true); // Enable LLM fixups for LLM phase
 					foreach (var item in action.outputData)
 					{
 						// O(1) 时间复杂度查询，提升性能
@@ -298,32 +299,46 @@ namespace Peach.Pro.Core.MutationStrategies
 						}
 					}
 				}
-				// Prepare Phase 2 scope and source
-				var phase2Scope = new MutationScope("Phase2_NonLLM");
-				IEnumerable<MutableItem> phase2Source = null;
-				if (mutationScopeGlobal != null && mutationScopeGlobal.Count > 0)
-				{
-					phase2Source = mutationScopeGlobal;
-					logger.Debug("MutateDataModel: Phase 2 (Non-LLM) - Using mutationScopeGlobal ({0} elements)", mutationScopeGlobal.Count);
-				}
-				else if (mutations != null && mutations.Length > 0)
-				{
-					phase2Source = mutations;
-					logger.Debug("MutateDataModel: Phase 2 (Non-LLM) - mutationScopeGlobal is empty, using current mutations list ({0} elements)", mutations.Length);
-				}
-				else
-				{
-					phase2Source = Enumerable.Empty<MutableItem>();
-					logger.Warn("MutateDataModel: Phase 2 (Non-LLM) - No mutable elements available (mutationScopeGlobal and mutations are both empty)");
-				}
-				var fieldsToMutate = GetMutationCount();
-				fieldsToMutate = Math.Max(1, Math.Min(fieldsToMutate, phase2Scope.Count));
-				var phase2Mutations = Random.WeightedSample(phase2Scope, fieldsToMutate);
-				foreach (var item in action.outputData)
-				{
-					if (ApplyPhaseMutation(item, action, false, phase2Mutations)) // false = non-LLM phase
-						phase2HasMutations = true;
-				}
+				try
+					{
+						SetLLMFixupsShouldFixup(action, false);
+
+						// Prepare Phase 2
+						foreach (var item in action.outputData)
+						{
+							if (ApplyPhaseMutation(item, action, false))
+								phase2HasMutations = true;
+						}
+
+						// If Phase 2 made changes, send Phase 2 message (similar to Phase 1)
+						if (phase2HasMutations)
+						{
+							var firstData = action.outputData.FirstOrDefault();
+							if (firstData != null && firstData.dataModel != null)
+							{
+								_currentPhaseName = "Phase 2 (Non-LLM)";
+								try
+								{
+									firstData.dataModel.Invalidate();
+									var _ = firstData.dataModel.Value;
+									SendOutputMessage(action, firstData, "Phase 2 (Non-LLM)");
+								}
+								catch (Exception ex)
+								{
+									logger.Error(ex, "MutateDataModel: Phase 2 (Non-LLM) - Failed to process data model for action {0}", action.Name);
+								}
+								finally
+								{
+									_currentPhaseName = null;
+								}
+							}
+						}
+					}
+					finally
+					{
+						// Always restore LLM fixups to true so later iterations are correct
+						SetLLMFixupsShouldFixup(action, true);
+					}
 			}
 			else
 			{
@@ -449,7 +464,7 @@ namespace Peach.Pro.Core.MutationStrategies
 			var instanceName = data.instanceName;
 			bool hasMutations = false;
 			int skippedCount = 0;  // 记录跳过的元素数量
-
+			// SetLLMFixupsShouldFixup(action, isLlmPhase); // 设置LLM fixup的ShouldFixup属性
 			// Use filtered mutations if provided, otherwise use the default mutations list
 			var mutationsToUse = filteredMutations ?? mutations;
 
