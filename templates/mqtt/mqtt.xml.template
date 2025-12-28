@@ -8,6 +8,8 @@
         <Number signed="false" endian="big"/>
     </Defaults>
 
+    @IMPORTS@
+
     <!-- MQTT UTF-8 String: 2-byte length prefix (big endian) + UTF-8 string -->
     <DataModel name="MQTT_String">
         <Number name="length" size="16">
@@ -325,7 +327,7 @@
 
     <StateModel name="TheState" initialState="Initial">
         <State name="Initial">
-            <Action type="output">
+            <Action type="output" @ON_COMPLETE@>
                 <DataModel ref="mqtt_packet_array"/>
                 <Data fileName="./seed/*.raw" />
             </Action>
