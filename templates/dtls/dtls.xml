@@ -125,19 +125,48 @@
 
     <DataModel name="dtls_client_key_exchange_body_t">
         <Choice name="u">
-            <Block name="ecdh" constraint="int(self.Children()[0].DefaultValue) + 1 == int(self.parent.parent.parent.find('length').DefaultValue)">
-                <Number name="ec_point_len" size="8"><Relation type="size" of="ec_point" /></Number>
+            <Block name="ecdh">
+                <Number name="ec_point_len" size="8" constraint="int(self.Children()[0].DefaultValue) + 1 == int(self.parent.parent.parent.find('length').DefaultValue)">
+                    <Relation type="size" of="ec_point" />
+                </Number>
                 <Blob name="ec_point" />
             </Block>
+
             <Block name="psk">
                 <Number name="identity_len" size="16"><Relation type="size" of="identity" /></Number>
                 <Blob name="identity" />
             </Block>
+
+            <Block name="dh">
+                <Number name="dh_Yc_len" size="16"><Relation type="size" of="dh_Yc" /></Number>
+                <Blob name="dh_Yc" />
+            </Block>
+
             <Block name="rsa">
                 <Number name="enc_pms_len" size="16"><Relation type="size" of="enc_pms" /></Number>
                 <Blob name="enc_pms" />
             </Block>
-            <!-- TODO -->
+
+            <Block name="dhe_psk">
+                <Number name="identity_len" size="16"><Relation type="size" of="identity" /></Number>
+                <Blob name="identity" />
+                <Number name="dh_Yc_len" size="16"><Relation type="size" of="dh_Yc" /></Number>
+                <Blob name="dh_Yc" />
+            </Block>
+
+            <Block name="rsa_psk">
+                <Number name="identity_len" size="16"><Relation type="size" of="identity" /></Number>
+                <Blob name="identity" />
+                <Number name="enc_pms_len" size="16"><Relation type="size" of="enc_pms" /></Number>
+                <Blob name="enc_pms" />
+            </Block>
+
+            <Block name="ecdhe_psk">
+                <Number name="identity_len" size="16"><Relation type="size" of="identity" /></Number>
+                <Blob name="identity" />
+                <Number name="ec_point_len" size="8"><Relation type="size" of="ec_point" /></Number>
+                <Blob name="ec_point" />
+            </Block>
         </Choice>
     </DataModel>
 
