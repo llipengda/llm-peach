@@ -115,7 +115,8 @@ namespace Peach.Pro.Core.Mutators.LLM.DTLS
         private void PerformMutation(DataElement obj)
         {
             var blob = obj as Blob;
-            if (blob.Value.Length == 0) blob.MutatedValue = new Variant(new byte[] { 0x30, 0x00 }); // Empty SEQ
+            if (blob.Value.Length == 0)
+                blob.MutatedValue = new Variant(new byte[] { 0x30, 0x00 }); // Empty SEQ
         }
     }
 

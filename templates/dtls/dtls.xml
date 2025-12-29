@@ -14,14 +14,14 @@
         <Number name="len" size="8">
             <Relation type="size" of="id" />
         </Number>
-        <Blob name="id" minOccurs="0" maxOccurs="1" />
+        <Blob name="id" />
     </DataModel>
 
     <DataModel name="dtls_extensions_block_t">
         <Number name="total_len" size="16">
             <Relation type="size" of="raw" />
         </Number>
-        <Blob name="raw" minOccurs="0" maxOccurs="1" />
+        <Blob name="raw" />
     </DataModel>
 
     <DataModel name="dtls_signature_and_hash_t">
@@ -34,7 +34,7 @@
         <Number name="signature_len" size="16">
             <Relation type="size" of="signature" />
         </Number>
-        <Blob name="signature" minOccurs="0" maxOccurs="1" />
+        <Blob name="signature" />
     </DataModel>
 
     <DataModel name="dtls_client_hello_t">
@@ -44,16 +44,16 @@
         <Number name="cookie_len" size="8">
             <Relation type="size" of="cookie" />
         </Number>
-        <Blob name="cookie" minOccurs="0" maxOccurs="1" />
+        <Blob name="cookie"  />
         <Number name="cipher_suites_len" size="16">
             <Relation type="size" of="cipher_suites" />
         </Number>
-        <Blob name="cipher_suites" minOccurs="0" maxOccurs="1" />
+        <Blob name="cipher_suites" />
         <Number name="compression_methods_len" size="8">
             <Relation type="size" of="compression_methods" />
         </Number>
-        <Blob name="compression_methods" minOccurs="0" maxOccurs="1" />
-        <Block name="extensions" ref="dtls_extensions_block_t" minOccurs="0" maxOccurs="1" />
+        <Blob name="compression_methods" />
+        <Block name="extensions" ref="dtls_extensions_block_t" />
     </DataModel>
 
     <DataModel name="dtls_server_hello_t">
@@ -62,7 +62,7 @@
         <Block name="session_id" ref="dtls_session_id_t" />
         <Number name="cipher_suite" size="16" />
         <Number name="compression_method" size="8" />
-        <Block name="extensions" ref="dtls_extensions_block_t" minOccurs="0" maxOccurs="1" />
+        <Block name="extensions" ref="dtls_extensions_block_t" />
     </DataModel>
 
     <DataModel name="dtls_hello_verify_request_t">
@@ -70,14 +70,14 @@
         <Number name="cookie_len" size="8">
             <Relation type="size" of="cookie" />
         </Number>
-        <Blob name="cookie" minOccurs="0" maxOccurs="1" />
+        <Blob name="cookie" />
     </DataModel>
 
     <DataModel name="dtls_certificate_body_t">
         <Number name="cert_blob_len" size="24">
             <Relation type="size" of="cert_blob" />
         </Number>
-        <Blob name="cert_blob" minOccurs="0" maxOccurs="1" />
+        <Blob name="cert_blob" />
     </DataModel>
 
     <DataModel name="dtls_server_dh_params_t">

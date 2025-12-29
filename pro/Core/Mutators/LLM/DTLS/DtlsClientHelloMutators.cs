@@ -50,7 +50,12 @@ namespace Peach.Pro.Core.Mutators.LLM.DTLS
             {
                 maj = 0xFE;
                 uint r = DtlsUtils.RndU32(8);
-                if (r == 0) min = 0xFD; else if (r == 1) min = 0xFF; else min = (byte)r;
+                if (r == 0)
+                    min = 0xFD;
+                else if (r == 1)
+                    min = 0xFF;
+                else
+                    min = (byte)r;
             }
             else
             {

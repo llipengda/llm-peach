@@ -28,7 +28,7 @@ namespace Peach.Pro.Core.Mutators.LLM.DTLS
         private void PerformMutation(DataElement obj)
         {
             var blob = obj as Blob;
-            if(blob.Value.Length == 0)
+            if (blob.Value.Length == 0)
             {
                 byte[] val = new byte[16];
                 NextBytes(val);
@@ -80,9 +80,9 @@ namespace Peach.Pro.Core.Mutators.LLM.DTLS
         {
             var blob = obj as Blob;
             byte[] cur = blob.Bytes();
-            if(cur.Length > 0 && cur.Length * 2 <= 2048)
+            if (cur.Length > 0 && cur.Length * 2 <= 2048)
             {
-                byte[] val = new byte[cur.Length*2];
+                byte[] val = new byte[cur.Length * 2];
                 cur.CopyTo(val, 0);
                 cur.CopyTo(val, cur.Length);
                 blob.MutatedValue = new Variant(val);
@@ -110,7 +110,7 @@ namespace Peach.Pro.Core.Mutators.LLM.DTLS
         {
             var blob = obj as Blob;
             byte[] val = blob.Bytes();
-            if(val.Length > 0) NextBytes(val);
+            if (val.Length > 0) NextBytes(val);
             blob.MutatedValue = new Variant(val);
         }
     }

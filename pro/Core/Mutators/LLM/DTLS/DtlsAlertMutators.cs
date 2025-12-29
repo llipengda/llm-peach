@@ -28,7 +28,7 @@ namespace Peach.Pro.Core.Mutators.LLM.DTLS
         private void PerformMutation(DataElement obj)
         {
             var num = obj as Number;
-            byte val = (byte)((DtlsUtils.RndU32(2)==0)?1:2);
+            byte val = (byte)((DtlsUtils.RndU32(2) == 0) ? 1 : 2);
             num.MutatedValue = new Variant((ulong)val);
         }
     }

@@ -17,7 +17,7 @@ namespace Peach.Core.Dom.Actions
             publisher.start();
             publisher.open();
 
-            foreach (var packet in data.dataModel.find("packets").Children())
+            foreach (var packet in data.dataModel.find("packets")?.Children() ?? Enumerable.Empty<DataElement>())
             {
                 publisher.output(packet.Value);
             }
