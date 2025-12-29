@@ -39,7 +39,7 @@ else
 fi
 
 if [ "$FIXUP" -eq 1 ]; then
-    FIXUP_XML='<Fixup class="DtlsFixup"><Param name="ref" value="packets"/></Fixup>'
+    FIXUP_XML='<Fixup class="DtlsFixup"><Param name="ref" value="dtls_record"/></Fixup>'
 else
     FIXUP_XML=""
 fi

@@ -347,7 +347,9 @@
 
     <DataModel name="dtls_packet_array">
         <Block name="packets" minOccurs="1" maxOccurs="100">
-            <Block name="dtls_packet" ref="dtls_packet_t" />
+            <Block name="dtls_packet" ref="dtls_packet_t">
+            @FIXUP@
+            </Block>
         </Block>
     </DataModel>
 
