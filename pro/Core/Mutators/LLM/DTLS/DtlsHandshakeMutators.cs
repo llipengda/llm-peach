@@ -76,8 +76,8 @@ namespace Peach.Pro.Core.Mutators.LLM.DTLS
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj is Number && obj.Name == "length" && obj.lengthAsBits == 24 &&
-                   obj.parent.Name.EndsWith("_hello") || obj.parent.Name == "certificate"; // Heuristic for handshake msgs
+            return obj is Number && obj.Name == "length" && obj.lengthAsBits == 24 && obj.parent != null &&
+                   (obj.parent.Name.EndsWith("_hello") || obj.parent.Name == "certificate"); // Heuristic for handshake msgs
         }
 
         public override int count => 1;
