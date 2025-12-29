@@ -171,6 +171,16 @@ namespace Peach.Pro.Core.MutationStrategies
 			mutationScopeAction = new List<MutationScope>();
 		}
 
+		/// <summary>
+		/// Filter mutators based on current mutation phase.
+		/// Default implementation includes all mutators; strategies can override this to provide
+		/// phase-specific filtering (e.g., TwoPhaseRandomStrategy).
+		/// </summary>
+		protected virtual bool ShouldIncludeMutator(Type mutatorType)
+		{
+			return true;
+		}
+
 		protected int GetMutationCount()
 		{
 			while (true)
@@ -213,7 +223,7 @@ namespace Peach.Pro.Core.MutationStrategies
 					var e = elem;
 
 					rec.Mutators.AddRange(dataMutators
-						.Where(m => SupportedDataElement(m, e))
+						.Where(m => SupportedDataElement(m, e) && ShouldIncludeMutator(m))
 						.Select(m => GetMutatorInstance(m, e))
 						.Where(m => m.SelectionWeight > 0));
 
@@ -236,7 +246,7 @@ namespace Peach.Pro.Core.MutationStrategies
 		}
 
 		[Conditional("DEBUG")]
-		void RecordMutation(string instanceName, string elementName, string mutatorName)
+		protected void RecordMutation(string instanceName, string elementName, string mutatorName)
 		{
 			mutationHistory.Add(instanceName + "." + elementName + " + " + mutatorName);
 		}
@@ -272,11 +282,14 @@ namespace Peach.Pro.Core.MutationStrategies
 			}
 		}
 
-		protected void MutateDataModel(Action action)
+
+
+		protected virtual void MutateDataModel(Action action)
 		{
 			// MutateDataModel should only be called after ParseDataModel
 			Debug.Assert(Iteration > 0);
 
+			// Original behavior: Apply mutations to each element independently
 			foreach (var item in action.outputData)
 			{
 				ApplyMutation(item);
