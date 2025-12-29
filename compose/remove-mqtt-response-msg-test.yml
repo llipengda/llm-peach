@@ -1,0 +1,77 @@
+# version: "3.3"
+
+name: remove-mqtt-response-msg-test
+services:
+  llm-peach-llm:
+    image: pdli/llm-peach:feature--remove-mqtt-response-msg
+    volumes:
+      - ./logs:/peach/logs
+    networks:
+      - llm-peach-net-1
+    environment:
+      HOST: mosquitto-llm
+      FIXUP: 1
+      MODE: llm
+      PEACH_ARGS: "--duration=6:00"
+
+  mosquitto-llm:
+    image: pdli/mosquitto
+    volumes:
+      - ./cov:/coverage_data
+    environment:
+      NAME: llm
+    networks:
+      - llm-peach-net-1
+    stop_grace_period: 120s
+
+  llm-peach-peach:
+    image: pdli/llm-peach:feature--remove-mqtt-response-msg
+    volumes:
+      - ./logs:/peach/logs
+    networks:
+      - llm-peach-net-2
+    environment:
+      HOST: mosquitto-peach
+      FIXUP: 0
+      MODE: peach
+      PEACH_ARGS: "--duration=6:00"
+
+  mosquitto-peach:
+    image: pdli/mosquitto
+    volumes:
+      - ./cov:/coverage_data
+    environment:
+      NAME: peach
+    networks:
+      - llm-peach-net-2
+    stop_grace_period: 120s
+
+  llm-peach-two-phase:
+    image: pdli/llm-peach:feature--remove-mqtt-response-msg
+    volumes:
+      - ./logs:/peach/logs
+    networks:
+      - llm-peach-net-3
+    environment:
+      HOST: mosquitto-two-phase
+      FIXUP: 1
+      STRATEGY: TwoPhaseRandom
+      PEACH_ARGS: "--duration=6:00"
+
+  mosquitto-two-phase:
+    image: pdli/mosquitto
+    volumes:
+      - ./cov:/coverage_data
+    environment:
+      NAME: two-phase
+    networks:
+      - llm-peach-net-3
+    stop_grace_period: 120s
+
+networks:
+  llm-peach-net-1:
+    driver: bridge
+  llm-peach-net-2:
+    driver: bridge
+  llm-peach-net-3:
+    driver: bridge
