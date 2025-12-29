@@ -125,8 +125,8 @@
 
     <DataModel name="dtls_client_key_exchange_body_t">
         <Choice name="u">
-            <Block name="ecdh">
-                <Number name="ec_point_len" size="8" constraint="int(self.Children()[0].DefaultValue) + 1 == int(self.parent.parent.parent.find('length').DefaultValue)">
+            <Block name="ecdh" constraint="int(self.Children()[0].DefaultValue) + 1 == int(self.parent.parent.parent.find('length').DefaultValue)">
+                <Number name="ec_point_len" size="8">
                     <Relation type="size" of="ec_point" />
                 </Number>
                 <Blob name="ec_point" />
@@ -351,7 +351,7 @@
 
     <StateModel name="TheState" initialState="Initial">
         <State name="Initial">
-            <Action type="output">
+            <Action type="outputPackets">
                 <DataModel ref="dtls_packet_array"/>
                 <Data fileName="./seed/*.raw" />
             </Action>
@@ -363,7 +363,7 @@
 
         <Publisher class="Udp">
             <Param name="Host" value="host.docker.internal"/>
-            <Param name="Port" value="443"/>
+            <Param name="Port" value="20220"/>
             <Param name="Timeout" value="200"/>
         </Publisher>
 
