@@ -5,6 +5,8 @@
         <Number endian="big" signed="false" />
     </Defaults>
 
+    @IMPORTS@
+
     <DataModel name="dtls_protocol_version_t">
         <Number name="major" size="8" value="254" />
         <Number name="minor" size="8" value="253" />
@@ -351,7 +353,7 @@
 
     <StateModel name="TheState" initialState="Initial">
         <State name="Initial">
-            <Action type="outputPackets">
+            <Action type="outputPackets" @ON_COMPLETE@>
                 <DataModel ref="dtls_packet_array"/>
                 <Data fileName="./seed/*.raw" />
             </Action>
@@ -362,16 +364,16 @@
         <StateModel ref="TheState"/>
 
         <Publisher class="Udp">
-            <Param name="Host" value="host.docker.internal"/>
-            <Param name="Port" value="20220"/>
-            <Param name="Timeout" value="200"/>
+            <Param name="Host" value="@HOST@"/>
+            <Param name="Port" value="@PORT@"/>
+            <Param name="Timeout" value="@TIMEOUT@"/>
         </Publisher>
 
-        <Logger class="File">
-            <Param name="Path" value="/peach/logs"/>
-        </Logger>
+        @LOGGER@
 
-        <Strategy class="Random"/>
+        @STRATEGY@
+
+        @MUTATORS@
 
     </Test>
 
