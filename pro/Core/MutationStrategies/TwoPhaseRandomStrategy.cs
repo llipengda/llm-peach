@@ -34,8 +34,8 @@ namespace Peach.Pro.Core.MutationStrategies
 
 		/// <summary>
 		/// Static variable to track the current mutation phase for fixup logging.
-	/// Historically this allowed LLM-specific fixups to identify which phase triggered the fixup.
-	/// Prefer toggling fixup execution via LLMFixup.ShouldFixup instead of relying on this value.
+		/// Historically this allowed LLM-specific fixups to identify which phase triggered the fixup.
+		/// Prefer toggling fixup execution via LLMFixup.ShouldFixup instead of relying on this value.
 		/// Using ThreadStatic to ensure thread safety.
 		/// </summary>
 		[ThreadStatic]
@@ -63,6 +63,18 @@ namespace Peach.Pro.Core.MutationStrategies
 		public bool TwoPhaseMutation { get; set; }
 
 		/// <summary>
+		/// Mutation phase: None, LLMOnly, NonLLMOnly
+		/// None: Use all mutators (default)
+		/// LLMOnly: Only use LLM mutators
+		/// NonLLMOnly: Only use non-LLM mutators
+		/// </summary>
+		public string MutationPhase
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
 		/// Initialize the two-phase random strategy with support for MultipleMutationsPerElement and TwoPhaseMutation.
 		/// </summary>
 		public TwoPhaseRandomStrategy(Dictionary<string, Variant> args)
@@ -87,7 +99,7 @@ namespace Peach.Pro.Core.MutationStrategies
 		public override void Initialize(RunContext context, Engine engine)
 		{
 			base.Initialize(context, engine);
-			
+
 			// Register ActionFinished handler to clean up the two-phase messages sent flag
 			if (TwoPhaseMutation)
 			{
@@ -105,7 +117,7 @@ namespace Peach.Pro.Core.MutationStrategies
 			{
 				context.ActionFinished -= ActionFinished;
 			}
-			
+
 			base.Finalize(context, engine);
 		}
 
@@ -115,10 +127,10 @@ namespace Peach.Pro.Core.MutationStrategies
 		private void ActionFinished(RunContext context, Action action)
 		{
 			// Clean up the flag to ensure it doesn't affect the next iteration
-			if (context.stateStore.ContainsKey(TwoPhaseMessagesSentKey))
-			{
-				context.stateStore.Remove(TwoPhaseMessagesSentKey);
-			}
+			// if (context.stateStore.ContainsKey(TwoPhaseMessagesSentKey))
+			// {
+			// 	context.stateStore.Remove(TwoPhaseMessagesSentKey);
+			// }
 		}
 
 		/// <summary>
@@ -136,7 +148,7 @@ namespace Peach.Pro.Core.MutationStrategies
 			// This gives: 1 gets highest weight, 2 gets half, 3 gets third, etc.
 			var weights = new int[MultipleMutationsPerElement];
 			int maxWeight = 100; // Base weight for count=1
-			
+
 			for (int i = 0; i < MultipleMutationsPerElement; i++)
 			{
 				weights[i] = maxWeight / (i + 1);
@@ -194,7 +206,7 @@ namespace Peach.Pro.Core.MutationStrategies
 			// MutateDataModel should only be called after ParseDataModel
 			Debug.Assert(Iteration > 0);
 
-			logger.Info("MutateDataModel: Starting mutation for action {0} (TwoPhaseMutation={1}, MultipleMutationsPerElement={2})", 
+			logger.Info("MutateDataModel: Starting mutation for action {0} (TwoPhaseMutation={1}, MultipleMutationsPerElement={2})",
 				action.Name, TwoPhaseMutation, MultipleMutationsPerElement);
 
 			if (TwoPhaseMutation)
@@ -222,7 +234,7 @@ namespace Peach.Pro.Core.MutationStrategies
 				}
 
 				// 2. Optimize: collect LLM-capable mutable items without duplication
-				void AddLLMMutableItems(IEnumerable<MutableItem> items)
+				Action<IEnumerable<MutableItem>> AddLLMMutableItems = items =>
 				{
 					if (items == null) return;
 					foreach (var item in items)
@@ -232,7 +244,7 @@ namespace Peach.Pro.Core.MutationStrategies
 						if (!phase1Scope.Any(p => p.InstanceName == item.InstanceName && p.ElementName == item.ElementName))
 							phase1Scope.Add(new MutableItem(item.InstanceName, item.ElementName, llmMutators));
 					}
-				}
+				};
 
 				// Collect LLM-capable items from all sources (no short-circuiting): phase1Source → mutations → mutableItems
 				AddLLMMutableItems(phase1Source);
@@ -253,12 +265,12 @@ namespace Peach.Pro.Core.MutationStrategies
 				{
 					// 修复：日志打印真实的筛选来源数量
 					logger.Info("MutateDataModel: Phase 1 (LLM) - Found {0} unique elements with LLM mutators.", phase1Scope.Count);
-					
+
 					// 选择需要变异的项
 					var fieldsToMutate = GetMutationCount();
 					fieldsToMutate = Math.Max(1, Math.Min(fieldsToMutate, phase1Scope.Count));
 					var phase1Mutations = Random.WeightedSample(phase1Scope, fieldsToMutate);
-					
+
 					logger.Info("MutateDataModel: Phase 1 (LLM) - Selected {0} elements to mutate", phase1Mutations.Length);
 
 					// 优化：先将phase1Mutations的InstanceName存入HashSet，提升查询效率
@@ -300,45 +312,46 @@ namespace Peach.Pro.Core.MutationStrategies
 					}
 				}
 				try
-					{
-						SetLLMFixupsShouldFixup(action, false);
+				{
+					SetLLMFixupsShouldFixup(action, false);
 
-						// Prepare Phase 2
-						foreach (var item in action.outputData)
-						{
-							if (ApplyPhaseMutation(item, action, false))
-								phase2HasMutations = true;
-						}
-
-						// If Phase 2 made changes, send Phase 2 message (similar to Phase 1)
-						if (phase2HasMutations)
-						{
-							var firstData = action.outputData.FirstOrDefault();
-							if (firstData != null && firstData.dataModel != null)
-							{
-								_currentPhaseName = "Phase 2 (Non-LLM)";
-								try
-								{
-									firstData.dataModel.Invalidate();
-									var _ = firstData.dataModel.Value;
-									SendOutputMessage(action, firstData, "Phase 2 (Non-LLM)");
-								}
-								catch (Exception ex)
-								{
-									logger.Error(ex, "MutateDataModel: Phase 2 (Non-LLM) - Failed to process data model for action {0}", action.Name);
-								}
-								finally
-								{
-									_currentPhaseName = null;
-								}
-							}
-						}
-					}
-					finally
+					// Prepare Phase 2
+					foreach (var item in action.outputData)
 					{
-						// Always restore LLM fixups to true so later iterations are correct
-						SetLLMFixupsShouldFixup(action, true);
+						if (ApplyPhaseMutation(item, action, false))
+							phase2HasMutations = true;
 					}
+
+
+					// If Phase 2 made changes, send Phase 2 message (similar to Phase 1)
+					if (phase2HasMutations)
+					{
+						// var firstData = action.outputData.FirstOrDefault();
+						// if (firstData != null && firstData.dataModel != null)
+						// {
+						// 	_currentPhaseName = "Phase 2 (Non-LLM)";
+						// 	try
+						// 	{
+						// 		firstData.dataModel.Invalidate();
+						// 		var _ = firstData.dataModel.Value;
+						// 		SendOutputMessage(action, firstData, "Phase 2 (Non-LLM)");
+						// 	}
+						// 	catch (Exception ex)
+						// 	{
+						// 		logger.Error(ex, "MutateDataModel: Phase 2 (Non-LLM) - Failed to process data model for action {0}", action.Name);
+						// 	}
+						// 	finally
+						// 	{
+						// 		_currentPhaseName = null;
+						// 	}
+						// }
+					}
+				}
+				finally
+				{
+					// Always restore LLM fixups to true so later iterations are correct
+					// SetLLMFixupsShouldFixup(action, true);
+				}
 			}
 			else
 			{
@@ -350,7 +363,7 @@ namespace Peach.Pro.Core.MutationStrategies
 		/// <summary>
 		/// Override ApplyMutation to support MultipleMutationsPerElement.
 		/// </summary>
-		protected override void ApplyMutation(ActionData data, Action action)
+		protected void ApplyMutation(ActionData data, Action action)
 		{
 			var instanceName = data.instanceName;
 
@@ -366,7 +379,7 @@ namespace Peach.Pro.Core.MutationStrategies
 					// Only the final mutation result will be kept
 					// Get random mutation count (1 to MultipleMutationsPerElement, weighted toward 1)
 					int mutationCount = GetRandomMutationCountPerElement();
-					
+
 					// Filter mutators based on phase if needed
 					WeightedList<Mutator> availableMutators;
 					if (MutationPhase != null && MutationPhase != "None")
@@ -375,7 +388,7 @@ namespace Peach.Pro.Core.MutationStrategies
 						var filteredMutators = item.Mutators.Where(m => ShouldIncludeMutator(m.GetType())).ToList();
 						if (filteredMutators.Count == 0)
 						{
-							logger.Debug("Action_Starting: No available mutators for phase {0} on element {1}", 
+							logger.Debug("Action_Starting: No available mutators for phase {0} on element {1}",
 								MutationPhase, item.ElementName);
 							break;
 						}
@@ -388,7 +401,7 @@ namespace Peach.Pro.Core.MutationStrategies
 
 					if (availableMutators.Count == 0)
 					{
-						logger.Debug("Action_Starting: No available mutators for phase {0} on element {1}", 
+						logger.Debug("Action_Starting: No available mutators for phase {0} on element {1}",
 							MutationPhase, item.ElementName);
 						break;
 					}
@@ -399,7 +412,7 @@ namespace Peach.Pro.Core.MutationStrategies
 						var currentElem = data.dataModel.find(item.ElementName);
 						if (currentElem == null)
 						{
-							logger.Debug("Action_Starting: Element {0} was removed after mutation {1}/{2}, stopping", 
+							logger.Debug("Action_Starting: Element {0} was removed after mutation {1}/{2}, stopping",
 								item.ElementName, i, mutationCount);
 							break;
 						}
@@ -419,10 +432,10 @@ namespace Peach.Pro.Core.MutationStrategies
 						}
 
 						Context.OnDataMutating(data, currentElem, mutator);
-						logger.Debug("Action_Starting: Fuzzing: {0} (mutation {1}/{2})", 
+						logger.Debug("Action_Starting: Fuzzing: {0} (mutation {1}/{2})",
 							item.ElementName, i + 1, mutationCount);
 						logger.Debug("Action_Starting: Mutator: {0}", mutator.Name);
-						
+
 						// Apply the mutation
 						try
 						{
@@ -433,7 +446,7 @@ namespace Peach.Pro.Core.MutationStrategies
 						{
 							// If mutation fails (e.g., type mismatch after previous mutation),
 							// log warning and continue with next mutation attempt
-							logger.Warn("Action_Starting: Mutation failed for element {0} with mutator {1} at mutation {2}/{3}: {4}", 
+							logger.Warn("Action_Starting: Mutation failed for element {0} with mutator {1} at mutation {2}/{3}: {4}",
 								item.ElementName, mutator.Name, i + 1, mutationCount, ex.Message);
 							logger.Trace(ex);
 							// Break out of loop since this element may no longer be compatible with mutators
@@ -452,20 +465,20 @@ namespace Peach.Pro.Core.MutationStrategies
 		}
 
 		/// <summary>
-	/// Apply mutations for a single phase (LLM or non-LLM) to a single element.
-	/// Returns true if any mutations were applied.
-	/// </summary>
-	/// <param name="data">The action data containing the data model</param>
-	/// <param name="action">The action being executed</param>
-	/// <param name="isLlmPhase">True for LLM phase, false for non-LLM phase</param>
-	/// <param name="filteredMutations">Optional filtered mutations list. If null, uses the default mutations list.</param>
-	private bool ApplyPhaseMutation(ActionData data, Action action, bool isLlmPhase, MutableItem[] filteredMutations = null)
+		/// Apply mutations for a single phase (LLM or non-LLM) to a single element.
+		/// Returns true if any mutations were applied.
+		/// </summary>
+		/// <param name="data">The action data containing the data model</param>
+		/// <param name="action">The action being executed</param>
+		/// <param name="isLlmPhase">True for LLM phase, false for non-LLM phase</param>
+		/// <param name="filteredMutations">Optional filtered mutations list. If null, uses the default mutations list.</param>
+		private bool ApplyPhaseMutation(ActionData data, Action action, bool isLlmPhase, MutableItem[] filteredMutations = null)
 		{
 			var instanceName = data.instanceName;
 			bool hasMutations = false;
 			int skippedCount = 0;  // 记录跳过的元素数量
-			// SetLLMFixupsShouldFixup(action, isLlmPhase); // 设置LLM fixup的ShouldFixup属性
-			// Use filtered mutations if provided, otherwise use the default mutations list
+								   // SetLLMFixupsShouldFixup(action, isLlmPhase); // 设置LLM fixup的ShouldFixup属性
+								   // Use filtered mutations if provided, otherwise use the default mutations list
 			var mutationsToUse = filteredMutations ?? mutations;
 
 			// 首先尝试从已选择的 mutations 列表中选择元素
@@ -480,25 +493,25 @@ namespace Peach.Pro.Core.MutationStrategies
 
 				// Get random mutation count for this element (1 to MultipleMutationsPerElement, weighted toward 1)
 				int mutationCount = GetRandomMutationCountPerElement();
-				
-				// Filter mutators based on phase
-			var phaseMutators = isLlmPhase 
-				? item.Mutators.Where(m => IsLLMMutator(m.GetType())).ToList()
-				: item.Mutators.Where(m => !IsLLMMutator(m.GetType())).ToList();
-			
-			if (phaseMutators.Count == 0)
-			{
-				skippedCount++;
-				logger.Debug("Action_Starting: Phase {0} - No {1} mutators available for element {2}", 
-					isLlmPhase ? "1 (LLM)" : "2 (Non-LLM)", 
-					isLlmPhase ? "LLM" : "non-LLM",
-					item.ElementName);
-				continue;
-			}
 
-			var mutatorList = new WeightedList<Mutator>(phaseMutators);
-			string phaseName = isLlmPhase ? "Phase 1 (LLM)" : "Phase 2 (Non-LLM)";
-				logger.Info("Action_Starting: {0} - Fuzzing element {1}, will apply {2} mutations", 
+				// Filter mutators based on phase
+				var phaseMutators = isLlmPhase
+					? item.Mutators.Where(m => IsLLMMutator(m.GetType())).ToList()
+					: item.Mutators.Where(m => !IsLLMMutator(m.GetType())).ToList();
+
+				if (phaseMutators.Count == 0)
+				{
+					skippedCount++;
+					logger.Debug("Action_Starting: Phase {0} - No {1} mutators available for element {2}",
+						isLlmPhase ? "1 (LLM)" : "2 (Non-LLM)",
+						isLlmPhase ? "LLM" : "non-LLM",
+						item.ElementName);
+					continue;
+				}
+
+				var mutatorList = new WeightedList<Mutator>(phaseMutators);
+				string phaseName = isLlmPhase ? "Phase 1 (LLM)" : "Phase 2 (Non-LLM)";
+				logger.Info("Action_Starting: {0} - Fuzzing element {1}, will apply {2} mutations",
 					phaseName, item.ElementName, mutationCount);
 
 				for (int i = 0; i < mutationCount; i++)
@@ -507,20 +520,20 @@ namespace Peach.Pro.Core.MutationStrategies
 					var currentElem = data.dataModel.find(item.ElementName);
 					if (currentElem == null)
 					{
-						logger.Info("Action_Starting: {0} - Element {1} was removed after mutation {2}/{3}, stopping", 
+						logger.Info("Action_Starting: {0} - Element {1} was removed after mutation {2}/{3}, stopping",
 							phaseName, item.ElementName, i, mutationCount);
 						break;
 					}
-					
+
 					// Randomly select a mutator from the full list (may select the same mutator multiple times)
 					var mutator = Random.WeightedChoice(mutatorList);
-					
+
 					// OnDataMutating will output phase information automatically via ConsoleWatcher
 					Context.OnDataMutating(data, currentElem, mutator);
-					logger.Info("Action_Starting: {0} - Fuzzing: {1} (mutation {2}/{3})", 
+					logger.Info("Action_Starting: {0} - Fuzzing: {1} (mutation {2}/{3})",
 						phaseName, item.ElementName, i + 1, mutationCount);
 					logger.Info("Action_Starting: {0} - Mutator: {1}", phaseName, mutator.Name);
-					
+
 					try
 					{
 						mutator.randomMutation(currentElem);
@@ -531,7 +544,7 @@ namespace Peach.Pro.Core.MutationStrategies
 					{
 						// If mutation fails (e.g., type mismatch after previous mutation),
 						// log warning and break out of loop
-						logger.Warn("Action_Starting: {0} - Mutation failed for element {1} with mutator {2} at mutation {3}/{4}: {5}", 
+						logger.Warn("Action_Starting: {0} - Mutation failed for element {1} with mutator {2} at mutation {3}/{4}: {5}",
 							phaseName, item.ElementName, mutator.Name, i + 1, mutationCount, ex.Message);
 						logger.Trace(ex);
 						// Break out of loop since this element may no longer be compatible with mutators
@@ -582,13 +595,13 @@ namespace Peach.Pro.Core.MutationStrategies
 			{
 				// Ensure phase name is set for fixup (in case it was cleared)
 				_currentPhaseName = phaseName;
-				
+
 				// Get publisher (same logic as Action.Run())
 				if (action.publisher != null && action.publisher != "Peach.Agent")
 				{
 					if (!Context.test.publishers.ContainsKey(action.publisher))
 					{
-						logger.Warn("SendOutputMessage: Publisher '{0}' not found for {1}, skipping output", 
+						logger.Warn("SendOutputMessage: Publisher '{0}' not found for {1}, skipping output",
 							action.publisher, phaseName);
 						return;
 					}
@@ -601,24 +614,25 @@ namespace Peach.Pro.Core.MutationStrategies
 
 				// Ensure publisher is started (this is safe to call multiple times)
 				publisher.start();
-				
+
 				// Open publisher - this will initialize the connection if needed
 				// Note: open() checks _isOpen internally, so it's safe to call even if already open
 				publisher.open();
-				
+
 				// Send the mutated data
 				logger.Info("SendOutputMessage: Sending output message after {0} mutations", phaseName);
 				publisher.output(data.dataModel);
 				logger.Info("SendOutputMessage: Successfully sent output message after {0} mutations", phaseName);
-				
+
 				// Mark that we've sent messages via two-phase strategy
 				// Only set the flag after Phase 2 completes, to prevent Action.Run() from sending a third message
 				// This ensures both Phase 1 and Phase 2 messages have been sent before blocking Action.Run()
-				if (phaseName.Contains("Phase 2") || phaseName.Contains("Non-LLM"))
-				{
-					Context.stateStore[TwoPhaseMessagesSentKey] = true;
-					logger.Debug("SendOutputMessage: Set flag to prevent Action.Run() from sending third message");
-				}
+				// if (phaseName.Contains("Phase 2") || phaseName.Contains("Non-LLM"))
+				// {
+				// 	Context.stateStore[TwoPhaseMessagesSentKey] = true;
+				// 	logger.Debug("SendOutputMessage: Set flag to prevent Action.Run() from sending third message");
+				// }
+				publisher.close();
 			}
 			catch (Exception ex)
 			{
@@ -632,15 +646,15 @@ namespace Peach.Pro.Core.MutationStrategies
 						// Close publisher to reset _isOpen flag
 						// This allows open() to actually reconnect instead of returning early
 						publisher.close();
-						
+
 						// Reopen the connection
 						publisher.open();
-						
+
 						// Retry sending
 						logger.Info("SendOutputMessage: Retrying send after reconnection for {0}", phaseName);
 						publisher.output(data.dataModel);
 						logger.Info("SendOutputMessage: Successfully sent output message after {0} mutations (retry)", phaseName);
-						
+
 						// Mark that we've sent messages via two-phase strategy (after retry)
 						// Only set the flag after Phase 2 completes
 						if (phaseName.Contains("Phase 2") || phaseName.Contains("Non-LLM"))
@@ -653,7 +667,7 @@ namespace Peach.Pro.Core.MutationStrategies
 					catch (Exception retryEx)
 					{
 						// If retry also fails, log and continue (final data will still be sent by normal Action output)
-						logger.Warn("SendOutputMessage: Retry also failed for {0}: {1}. The final data will still be sent by the normal Action output.", 
+						logger.Warn("SendOutputMessage: Retry also failed for {0}: {1}. The final data will still be sent by the normal Action output.",
 							phaseName, retryEx.Message);
 						logger.Trace(retryEx);
 					}
@@ -662,7 +676,7 @@ namespace Peach.Pro.Core.MutationStrategies
 				{
 					// For other errors, just log and continue
 					// The normal Action output will still send the final mutated data
-					logger.Warn("SendOutputMessage: Failed to send output message after {0}: {1}. The final data will still be sent by the normal Action output.", 
+					logger.Warn("SendOutputMessage: Failed to send output message after {0}: {1}. The final data will still be sent by the normal Action output.",
 						phaseName, ex.Message);
 					logger.Trace(ex);
 				}
