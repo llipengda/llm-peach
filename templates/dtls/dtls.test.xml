@@ -350,7 +350,7 @@
         </Block>
     </DataModel>
 
-        <StateModel name="TheState" initialState="Initial">
+    <StateModel name="TheState" initialState="Initial">
         <State name="Initial">
             <Action type="outputPackets">
                 <DataModel ref="dtls_packet_array"/>

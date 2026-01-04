@@ -19,6 +19,7 @@ PORT=$PORT
 TIMEOUT=$TIMEOUT
 PEACH_ARGS=$PEACH_ARGS
 COUNT_PKT=$COUNT_PKT
+MUTATION_PER_ELEM=$MUTATION_PER_ELEM
 
 
 if [ "$MODE" == "peach" ]; then
@@ -50,7 +51,7 @@ if [ "$COUNT_PKT" -eq 1 ]; then
 fi
 
 if [ "$STRATEGY" == "TwoPhaseRandom" ]; then
-    STRATEGY_XML='<Strategy class="TwoPhaseRandom"><Param name="TwoPhaseMutation" value="True" /><Param name="MultipleMutationsPerElement" value="3" /></Strategy>'
+    STRATEGY_XML='<Strategy class="TwoPhaseRandom"><Param name="TwoPhaseMutation" value="True" /><Param name="MultipleMutationsPerElement" value="'$MUTATION_PER_ELEM'" /></Strategy>'
 else
     STRATEGY_XML="<Strategy class=\"$STRATEGY\" />"
 fi

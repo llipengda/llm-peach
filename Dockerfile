@@ -71,6 +71,7 @@ ENV PROTOCOL=mqtt \
     TIMEOUT=200 \
     FIXUP=1 \
     COUNT_PKT=0 \
+    MUTATION_PER_ELEM=3 \
     PEACH_ARGS=
 
 CMD ["./entrypoint.sh"]
