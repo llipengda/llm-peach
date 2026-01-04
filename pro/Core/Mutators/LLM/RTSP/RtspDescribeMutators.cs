@@ -221,7 +221,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe");
+            return obj.IsIn("describe") && (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"));
         }
 
         public override int count => 1;

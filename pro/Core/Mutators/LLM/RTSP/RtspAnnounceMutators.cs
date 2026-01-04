@@ -488,7 +488,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("announce");
+            return obj.IsIn("announce") && (obj.Name == "content_encoding" || obj.Name.Contains("Content-Encoding"));
         }
 
         public override int count => 1;

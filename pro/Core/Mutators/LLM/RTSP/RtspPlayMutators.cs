@@ -259,7 +259,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("play");
+            return obj.IsIn("play") && (obj.Name == "speed" || obj.Name.Contains("Speed"));
         }
 
         public override int count => 1;
@@ -319,7 +319,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("play");
+            return obj.IsIn("play") && (obj.Name == "speed" || obj.Name.Contains("Speed"));
         }
 
         public override int count => 1;
