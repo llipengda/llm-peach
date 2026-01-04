@@ -10,6 +10,7 @@ subdirs = [
 	'PitTool',
 	'Service',
 	'SDK',
+	'MutatorsTest',
 	'Test/Apps/AsanTest',
 	'Test/Apps/ComTest',
 	'Test/Apps/CrashableServer',
