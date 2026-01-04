@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
@@ -15,10 +16,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe") && obj.name == "accept";
+            return obj.IsIn("describe") && (obj.Name == "accept" || obj.Name.Contains("Accept"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -26,7 +29,10 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            obj.MutatedValue = new Variant("application/sdp");
+            if (obj.Name == "accept" || obj.Name.Contains("Accept"))
+            {
+                obj.MutatedValue = new Variant("application/sdp");
+            }
         }
     }
 
@@ -40,10 +46,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe") && obj.name == "accept";
+            return obj.IsIn("describe") && (obj.Name == "accept" || obj.Name.Contains("Accept"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -51,8 +59,10 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            // Delete by setting empty value
-            obj.MutatedValue = new Variant("");
+            if (obj.Name == "accept" || obj.Name.Contains("Accept"))
+            {
+                obj.MutatedValue = new Variant("");
+            }
         }
     }
 
@@ -66,10 +76,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe") && obj.name == "accept";
+            return obj.IsIn("describe") && (obj.Name == "accept" || obj.Name.Contains("Accept"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -77,7 +89,10 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            obj.MutatedValue = new Variant("application/sdp, */*;q=0.1, text/plain");
+            if (obj.Name == "accept" || obj.Name.Contains("Accept"))
+            {
+                obj.MutatedValue = new Variant("application/sdp, */*;q=0.1, text/plain");
+            }
         }
     }
 
@@ -91,10 +106,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe") && obj.name == "accept";
+            return obj.IsIn("describe") && (obj.Name == "accept" || obj.Name.Contains("Accept"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -102,32 +119,35 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            var random = RtspUtils.GetRandom();
-            int[] weights = { 100, 100, 100, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0 };
-            
-            int opIdx = RtspUtils.WeightedPickIdxAccept(weights, weights.Length, random);
-            string mutatedValue = "";
-
-            switch (opIdx)
+            if (obj.Name == "accept" || obj.Name.Contains("Accept"))
             {
-                case 0: // acc_set_valid_sdp
-                    mutatedValue = "application/sdp";
-                    break;
-                case 1: // acc_set_wildcard_any
-                    mutatedValue = "*/*";
-                    break;
-                case 2: // acc_set_with_params
-                    mutatedValue = "application/sdp;level=1;q=1.0;charset=utf-8";
-                    break;
-                case 9: // acc_multi_values_in_one
-                    mutatedValue = "application/sdp, */*;q=0.1, text/plain";
-                    break;
-                default:
-                    mutatedValue = "application/sdp";
-                    break;
-            }
+                var random = RtspUtils.GetRandom();
+                int[] weights = { 100, 100, 100, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0 };
+                
+                int opIdx = RtspUtils.WeightedPickIdxAccept(weights, weights.Length, random);
+                string mutatedValue = "";
 
-            obj.MutatedValue = new Variant(mutatedValue);
+                switch (opIdx)
+                {
+                    case 0: // acc_set_valid_sdp
+                        mutatedValue = "application/sdp";
+                        break;
+                    case 1: // acc_set_wildcard_any
+                        mutatedValue = "*/*";
+                        break;
+                    case 2: // acc_set_with_params
+                        mutatedValue = "application/sdp;level=1;q=1.0;charset=utf-8";
+                        break;
+                    case 9: // acc_multi_values_in_one
+                        mutatedValue = "application/sdp, */*;q=0.1, text/plain";
+                        break;
+                    default:
+                        mutatedValue = "application/sdp";
+                        break;
+                }
+
+                obj.MutatedValue = new Variant(mutatedValue);
+            }
         }
     }
 
@@ -141,10 +161,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe");
+            return obj.IsIn("describe") && (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -152,11 +174,9 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            // This would need to add a new Accept-Encoding header block
-            // For now, we'll mutate if the field exists
-            if (obj.name == "accept_encoding" || obj.name.Contains("encoding"))
+            if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
-                obj.MutatedValue = new Variant("gzip");
+                obj.MutatedValue = new Variant("gzip, deflate, br");
             }
         }
     }
@@ -171,10 +191,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe");
+            return obj.IsIn("describe") && (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -182,7 +204,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_encoding" || obj.name.Contains("encoding"))
+            if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -204,13 +226,15 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public override int count => 1;
 
+        public override uint mutation { get; set; }
+
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_encoding" || obj.name.Contains("encoding"))
+            if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
                 obj.MutatedValue = new Variant("gzip, deflate, br");
             }
@@ -227,10 +251,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe");
+            return obj.IsIn("describe") && (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -238,7 +264,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_encoding" || obj.name.Contains("encoding"))
+            if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 100, 0, 100 };
@@ -286,10 +312,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe");
+            return obj.IsIn("describe") && (obj.Name == "accept_language" || obj.Name.Contains("language"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -297,7 +325,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_language" || obj.name.Contains("language"))
+            if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
                 obj.MutatedValue = new Variant("en-US");
             }
@@ -314,10 +342,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe");
+            return obj.IsIn("describe") && (obj.Name == "accept_language" || obj.Name.Contains("language"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -325,7 +355,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_language" || obj.name.Contains("language"))
+            if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -342,10 +372,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe");
+            return obj.IsIn("describe") && (obj.Name == "accept_language" || obj.Name.Contains("language"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -353,7 +385,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_language" || obj.name.Contains("language"))
+            if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
                 obj.MutatedValue = new Variant("en-US, fr-FR, de-DE");
             }
@@ -370,10 +402,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe");
+            return obj.IsIn("describe") && (obj.Name == "accept_language" || obj.Name.Contains("language"));    
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -381,7 +415,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_language" || obj.name.Contains("language"))
+            if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

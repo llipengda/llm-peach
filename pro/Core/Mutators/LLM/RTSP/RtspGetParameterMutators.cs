@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
@@ -17,10 +18,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "connection" || obj.Name.Contains("Connection"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -28,7 +32,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "connection" || obj.name.Contains("Connection"))
+            if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -45,18 +49,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "connection" || obj.Name.Contains("Connection"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "connection" || obj.name.Contains("Connection"))
+            if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
                 obj.MutatedValue = new Variant("keep-alive, close");
             }
@@ -73,10 +78,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "connection" || obj.Name.Contains("Connection"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -84,7 +92,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "connection" || obj.name.Contains("Connection"))
+            if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
                 var random = RtspUtils.GetRandom();
                 string[] values = { "keep-alive", "close", "keep-alive, foo, bar" };
@@ -105,9 +113,10 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "date" || obj.Name.Contains("Date"));
         }
-
+        public override uint mutation { get; set; } 
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -116,7 +125,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "date" || obj.name.Contains("Date"))
+            if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -133,10 +142,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "date" || obj.Name.Contains("Date"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -144,7 +156,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "date" || obj.name.Contains("Date"))
+            if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
                 obj.MutatedValue = new Variant("Tue, 15 Nov 1994 08:12:31 GMT, Wed, 16 Nov 1994 09:13:32 GMT");
             }
@@ -161,10 +173,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "date" || obj.Name.Contains("Date"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -172,7 +187,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "date" || obj.name.Contains("Date"))
+            if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
                 var random = RtspUtils.GetRandom();
                 string[] values = {
@@ -199,10 +214,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "via" || obj.Name.Contains("Via"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -210,7 +228,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "via" || obj.name.Contains("Via"))
+            if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -227,10 +245,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "via" || obj.Name.Contains("Via"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -238,7 +259,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "via" || obj.name.Contains("Via"))
+            if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
                 obj.MutatedValue = new Variant("RTSP/1.0 example.com, RTSP/1.0 proxy.com");
             }
@@ -255,10 +276,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "via" || obj.Name.Contains("Via"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -266,7 +290,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "via" || obj.name.Contains("Via"))
+            if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
                 var random = RtspUtils.GetRandom();
                 string[] values = {
@@ -292,9 +316,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter") && obj.name == "accept";
+            // 严格检查：必须是get_parameter上下文，名称必须是accept，且必须是String类型
+            return obj.IsIn("get_parameter") && 
+                   obj.Name == "accept" && 
+                   obj is Peach.Core.Dom.String;
         }
 
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -303,7 +331,11 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            obj.MutatedValue = new Variant("");
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "accept" && obj is Peach.Core.Dom.String)
+            {
+                obj.MutatedValue = new Variant("");
+            }
         }
     }
 
@@ -317,10 +349,15 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter") && obj.name == "accept";
+            // 严格检查：必须是get_parameter上下文，名称必须是accept，且必须是String类型
+            return obj.IsIn("get_parameter") && 
+                   obj.Name == "accept" && 
+                   obj is Peach.Core.Dom.String;
         }
 
+        public override uint mutation { get; set; }
         public override int count => 1;
+
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -328,7 +365,11 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            obj.MutatedValue = new Variant("application/sdp, */*;q=0.1, text/plain");
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "accept" && obj is Peach.Core.Dom.String)
+            {
+                obj.MutatedValue = new Variant("application/sdp, */*;q=0.1, text/plain");
+            }
         }
     }
 
@@ -342,10 +383,25 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter") && obj.name == "accept";
+            // 严格检查：必须是get_parameter上下文，名称必须是accept，且必须是String类型
+            if (obj == null)
+                return false;
+            
+            if (!obj.IsIn("get_parameter"))
+                return false;
+            
+            if (obj.Name != "accept")
+                return false;
+            
+            if (!(obj is Peach.Core.Dom.String))
+                return false;
+            
+            return true;
         }
 
+        public override uint mutation { get; set; }
         public override int count => 1;
+
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -353,6 +409,20 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
+            // 多重检查：确保类型和名称都正确
+            if (obj == null)
+                return;
+            
+            if (obj.Name != "accept")
+                return;
+            
+            if (!(obj is Peach.Core.Dom.String))
+                return;
+            
+            // 确保在get_parameter上下文中
+            if (!obj.IsIn("get_parameter"))
+                return;
+
             var random = RtspUtils.GetRandom();
             int[] weights = { 100, 100, 100, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0, 0 };
             
@@ -394,10 +464,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"));
         }
 
+        public override uint mutation { get; set; }
         public override int count => 1;
+
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -405,7 +478,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_encoding" || obj.name.Contains("encoding"))
+            if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -422,18 +495,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; } 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_encoding" || obj.name.Contains("encoding"))
+            if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
                 obj.MutatedValue = new Variant("gzip, deflate, br");
             }
@@ -450,18 +524,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }     
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_encoding" || obj.name.Contains("encoding"))
+            if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 100, 0, 100 };
@@ -511,18 +586,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "accept_language" || obj.Name.Contains("language"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }     
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_language" || obj.name.Contains("language"))
+            if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -539,18 +615,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "accept_language" || obj.Name.Contains("language"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }     
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_language" || obj.name.Contains("language"))
+            if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
                 obj.MutatedValue = new Variant("en-US, fr-FR, de-DE");
             }
@@ -567,18 +644,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "accept_language" || obj.Name.Contains("language"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }         
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "accept_language" || obj.name.Contains("language"))
+            if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -610,378 +688,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
         }
     }
 
-    // ==================== Authorization ====================
-    
-    // C Function: delete_authorization
-    [Mutator("DeleteGetParameterAuthorization")]
-    [CMutator("delete_authorization")]
-    [Description("Deletes Authorization header for GET_PARAMETER")]
-    public class RtspDeleteGetParameterAuthorization : LLMMutator
-    {
-        public RtspDeleteGetParameterAuthorization(DataElement obj) : base(obj) { }
 
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "authorization" || obj.name.Contains("Authorization"))
-            {
-                obj.MutatedValue = new Variant("");
-            }
-        }
-    }
-
-    // C Function: repeat_authorization
-    [Mutator("RepeatGetParameterAuthorization")]
-    [CMutator("repeat_authorization")]
-    [Description("Repeats Authorization header for GET_PARAMETER")]
-    public class RtspRepeatGetParameterAuthorization : LLMMutator
-    {
-        public RtspRepeatGetParameterAuthorization(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "authorization" || obj.name.Contains("Authorization"))
-            {
-                obj.MutatedValue = new Variant("Basic dXNlcjpwYXNz, Basic Zm9vOmJhcg==, Basic Og==");
-            }
-        }
-    }
-
-    // C Function: mutate_authorization
-    [Mutator("MutateGetParameterAuthorization")]
-    [CMutator("mutate_authorization")]
-    [Description("Mutates Authorization header for GET_PARAMETER")]
-    public class RtspMutateGetParameterAuthorization : LLMMutator
-    {
-        public RtspMutateGetParameterAuthorization(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "authorization" || obj.name.Contains("Authorization"))
-            {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 0, 0, 0, 0, 0, 100, 0, 0, 0, 100, 0, 100, 0, 0, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                switch (opIdx)
-                {
-                    case 0: // auth_basic_valid
-                        mutatedValue = "Basic Z3Vlc3Q6Z3Vlc3Q=";
-                        break;
-                    case 6: // auth_digest_valid
-                        mutatedValue = "Digest username=\"user\", realm=\"live\", nonce=\"abc\", uri=\"rtsp://x\", response=\"0123456789abcdef\", qop=auth, nc=00000001, cnonce=\"xyz\"";
-                        break;
-                    case 10: // auth_digest_dup_params
-                        mutatedValue = "Digest username=\"u\", username=\"u2\", realm=\"r\", nonce=\"n\", uri=\"/\", response=\"r\"";
-                        break;
-                    case 12: // auth_unknown_scheme
-                        mutatedValue = "Bearer tok_tok_tok";
-                        break;
-                    default:
-                        mutatedValue = "Basic Z3Vlc3Q6Z3Vlc3Q=";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
-            }
-        }
-    }
-
-    // ==================== Bandwidth ====================
-    
-    // C Function: delete_bandwidth
-    [Mutator("DeleteGetParameterBandwidth")]
-    [CMutator("delete_bandwidth")]
-    [Description("Deletes Bandwidth header for GET_PARAMETER")]
-    public class RtspDeleteGetParameterBandwidth : LLMMutator
-    {
-        public RtspDeleteGetParameterBandwidth(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "bandwidth" || obj.name.Contains("Bandwidth"))
-            {
-                obj.MutatedValue = new Variant("");
-            }
-        }
-    }
-
-    // C Function: repeat_bandwidth
-    [Mutator("RepeatGetParameterBandwidth")]
-    [CMutator("repeat_bandwidth")]
-    [Description("Repeats Bandwidth header for GET_PARAMETER")]
-    public class RtspRepeatGetParameterBandwidth : LLMMutator
-    {
-        public RtspRepeatGetParameterBandwidth(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "bandwidth" || obj.name.Contains("Bandwidth"))
-            {
-                obj.MutatedValue = new Variant("1000");
-            }
-        }
-    }
-
-    // C Function: mutate_bandwidth
-    [Mutator("MutateGetParameterBandwidth")]
-    [CMutator("mutate_bandwidth")]
-    [Description("Mutates Bandwidth header for GET_PARAMETER")]
-    public class RtspMutateGetParameterBandwidth : LLMMutator
-    {
-        public RtspMutateGetParameterBandwidth(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "bandwidth" || obj.name.Contains("Bandwidth"))
-            {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 100, 0, 0, 0, 0, 100, 100, 100, 0, 0, 0, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                // Get current value
-                string currentValue = obj.DefaultValue?.ToString() ?? "5000";
-                int currentNum = 5000;
-                int.TryParse(currentValue, out currentNum);
-
-                switch (opIdx)
-                {
-                    case 0: // bw_valid_typical
-                        mutatedValue = "5000";
-                        break;
-                    case 1: // bw_zero
-                        mutatedValue = "0";
-                        break;
-                    case 6: // bw_small_random
-                        mutatedValue = random.Next(1024).ToString();
-                        break;
-                    case 7: // bw_scale_up
-                        long scaledUp = (long)currentNum * (1 + random.Next(8));
-                        if (scaledUp > int.MaxValue) scaledUp = int.MaxValue;
-                        mutatedValue = scaledUp.ToString();
-                        break;
-                    case 8: // bw_scale_down
-                        int divisor = 1 + random.Next(8);
-                        mutatedValue = (currentNum / divisor).ToString();
-                        break;
-                    default:
-                        mutatedValue = "5000";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
-            }
-        }
-    }
-
-    // ==================== Blocksize ====================
-    
-    // C Function: delete_blocksize
-    [Mutator("DeleteGetParameterBlocksize")]
-    [CMutator("delete_blocksize")]
-    [Description("Deletes Blocksize header for GET_PARAMETER")]
-    public class RtspDeleteGetParameterBlocksize : LLMMutator
-    {
-        public RtspDeleteGetParameterBlocksize(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "blocksize" || obj.name.Contains("Blocksize"))
-            {
-                obj.MutatedValue = new Variant("");
-            }
-        }
-    }
-
-    // C Function: repeat_blocksize
-    [Mutator("RepeatGetParameterBlocksize")]
-    [CMutator("repeat_blocksize")]
-    [Description("Repeats Blocksize header for GET_PARAMETER")]
-    public class RtspRepeatGetParameterBlocksize : LLMMutator
-    {
-        public RtspRepeatGetParameterBlocksize(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "blocksize" || obj.name.Contains("Blocksize"))
-            {
-                obj.MutatedValue = new Variant("1024");
-            }
-        }
-    }
-
-    // C Function: mutate_blocksize
-    [Mutator("MutateGetParameterBlocksize")]
-    [CMutator("mutate_blocksize")]
-    [Description("Mutates Blocksize header for GET_PARAMETER")]
-    public class RtspMutateGetParameterBlocksize : LLMMutator
-    {
-        public RtspMutateGetParameterBlocksize(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "blocksize" || obj.name.Contains("Blocksize"))
-            {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 100, 100, 0, 0, 0, 100, 100, 100, 100, 0, 100, 100, 100, 0, 0, 0, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                // Get current value
-                string currentValue = obj.DefaultValue?.ToString() ?? "4096";
-                int currentNum = 4096;
-                int.TryParse(currentValue, out currentNum);
-
-                switch (opIdx)
-                {
-                    case 0: // bs_valid_typical
-                        mutatedValue = "4096";
-                        break;
-                    case 1: // bs_zero
-                        mutatedValue = "0";
-                        break;
-                    case 2: // bs_one
-                        mutatedValue = "1";
-                        break;
-                    case 6: // bs_power_of_two
-                        int[] powers = { 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536 };
-                        mutatedValue = powers[random.Next(powers.Length)].ToString();
-                        break;
-                    case 7: // bs_odd_unaligned
-                        mutatedValue = ((random.Next(8191) * 2) + 1).ToString();
-                        break;
-                    case 8: // bs_mtu_edge
-                        int[] mtus = { 1460, 1472, 1500, 9000 };
-                        mutatedValue = mtus[random.Next(mtus.Length)].ToString();
-                        break;
-                    case 9: // bs_ts_like
-                        int[] ts = { 188, 376, 564, 752 };
-                        mutatedValue = ts[random.Next(ts.Length)].ToString();
-                        break;
-                    case 11: // bs_small_random
-                        mutatedValue = (2 + random.Next(8192)).ToString();
-                        break;
-                    case 12: // bs_scale_up
-                        long scaledUp = (long)currentNum * (2 + random.Next(8));
-                        if (scaledUp > int.MaxValue) scaledUp = int.MaxValue;
-                        mutatedValue = scaledUp.ToString();
-                        break;
-                    case 13: // bs_scale_down
-                        int divisor = 1 + random.Next(8);
-                        mutatedValue = (currentNum / divisor).ToString();
-                        break;
-                    default:
-                        mutatedValue = "4096";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
-            }
-        }
-    }
 
     // ==================== Session ====================
     
@@ -995,18 +702,22 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            // 严格检查：必须是get_parameter上下文，名称必须是session，且必须是String类型
+            return obj.IsIn("get_parameter") && 
+                   obj.Name == "session" && 
+                   obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }         
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "session" || obj.name.Contains("Session"))
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "session" && obj is Peach.Core.Dom.String)
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -1023,18 +734,22 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            // 严格检查：必须是get_parameter上下文，名称必须是session，且必须是String类型
+            return obj.IsIn("get_parameter") && 
+                   obj.Name == "session" && 
+                   obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }         
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "session" || obj.name.Contains("Session"))
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "session" && obj is Peach.Core.Dom.String)
             {
                 obj.MutatedValue = new Variant("ABCDEF, 1234");
             }
@@ -1051,626 +766,75 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            // 严格检查：必须是get_parameter上下文，名称必须是session，且必须是String类型
+            if (obj == null)
+                return false;
+            
+            if (!obj.IsIn("get_parameter"))
+                return false;
+            
+            if (obj.Name != "session")
+                return false;
+            
+            if (!(obj is Peach.Core.Dom.String))
+                return false;
+            
+            return true;
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }         
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "session" || obj.name.Contains("Session"))
+            // 多重检查：确保类型和名称都正确
+            if (obj == null)
+                return;
+            
+            if (obj.Name != "session")
+                return;
+            
+            if (!(obj is Peach.Core.Dom.String))
+                return;
+            
+            // 确保在get_parameter上下文中
+            if (!obj.IsIn("get_parameter"))
+                return;
+
+            var random = RtspUtils.GetRandom();
+            int[] weights = { 100, 100, 0, 0, 100, 100, 0, 0, 0, 0, 0, 0 };
+            
+            int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
+            string mutatedValue = "";
+
+            switch (opIdx)
             {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 100, 0, 0, 100, 100, 0, 0, 0, 0, 0, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                switch (opIdx)
-                {
-                    case 0: // ss_ok_id_timeout
-                        mutatedValue = "12345678;timeout=60";
-                        break;
-                    case 1: // ss_ok_id_no_timeout
-                        mutatedValue = "12345678";
-                        break;
-                    case 4: // ss_long_id
-                        byte[] longId = new byte[200];
-                        RtspUtils.MakeRepeatedChar(longId, 200, (byte)'A', 199);
-                        mutatedValue = Encoding.UTF8.GetString(longId).TrimEnd('\0') + ";timeout=60";
-                        break;
-                    case 5: // ss_zero_timeout
-                        mutatedValue = "12345678;timeout=0";
-                        break;
-                    default:
-                        mutatedValue = "12345678;timeout=60";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
+                case 0: // ss_ok_id_timeout
+                    mutatedValue = "12345678;timeout=60";
+                    break;
+                case 1: // ss_ok_id_no_timeout
+                    mutatedValue = "12345678";
+                    break;
+                case 4: // ss_long_id
+                    byte[] longId = new byte[200];
+                    RtspUtils.MakeRepeatedChar(longId, 200, (byte)'A', 199);
+                    mutatedValue = System.Text.Encoding.UTF8.GetString(longId).TrimEnd('\0') + ";timeout=60";
+                    break;
+                case 5: // ss_zero_timeout
+                    mutatedValue = "12345678;timeout=0";
+                    break;
+                default:
+                    mutatedValue = "12345678;timeout=60";
+                    break;
             }
+
+            obj.MutatedValue = new Variant(mutatedValue);
         }
     }
 
-    // ==================== User-Agent ====================
-    
-    // C Function: delete_user_agent
-    [Mutator("DeleteGetParameterUserAgent")]
-    [CMutator("delete_user_agent")]
-    [Description("Deletes User-Agent header for GET_PARAMETER")]
-    public class RtspDeleteGetParameterUserAgent : LLMMutator
-    {
-        public RtspDeleteGetParameterUserAgent(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "user_agent" || obj.name.Contains("User-Agent"))
-            {
-                obj.MutatedValue = new Variant("");
-            }
-        }
-    }
-
-    // C Function: repeat_user_agent
-    [Mutator("RepeatGetParameterUserAgent")]
-    [CMutator("repeat_user_agent")]
-    [Description("Repeats User-Agent header for GET_PARAMETER")]
-    public class RtspRepeatGetParameterUserAgent : LLMMutator
-    {
-        public RtspRepeatGetParameterUserAgent(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "user_agent" || obj.name.Contains("User-Agent"))
-            {
-                obj.MutatedValue = new Variant("Foo/1.0, Bar/2.0");
-            }
-        }
-    }
-
-    // C Function: mutate_user_agent
-    [Mutator("MutateGetParameterUserAgent")]
-    [CMutator("mutate_user_agent")]
-    [Description("Mutates User-Agent header for GET_PARAMETER")]
-    public class RtspMutateGetParameterUserAgent : LLMMutator
-    {
-        public RtspMutateGetParameterUserAgent(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "user_agent" || obj.name.Contains("User-Agent"))
-            {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 0, 100, 0, 100, 0, 100, 0, 0, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                switch (opIdx)
-                {
-                    case 0: // ua_ok
-                        mutatedValue = "VLC/3.0.11";
-                        break;
-                    case 2: // ua_long
-                        byte[] longUa = new byte[400];
-                        RtspUtils.MakeRepeatedChar(longUa, 400, (byte)'A', 399);
-                        mutatedValue = Encoding.UTF8.GetString(longUa).TrimEnd('\0');
-                        break;
-                    case 4: // ua_tabs
-                        mutatedValue = "App\t/1.2\t(arm64)";
-                        break;
-                    case 6: // ua_many_products
-                        mutatedValue = "A/1 B/2 C/3 D/4";
-                        break;
-                    default:
-                        mutatedValue = "VLC/3.0.11";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
-            }
-        }
-    }
-
-    // ==================== From ====================
-    
-    // C Function: delete_from
-    [Mutator("DeleteGetParameterFrom")]
-    [CMutator("delete_from")]
-    [Description("Deletes From header for GET_PARAMETER")]
-    public class RtspDeleteGetParameterFrom : LLMMutator
-    {
-        public RtspDeleteGetParameterFrom(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "from" || obj.name.Contains("From"))
-            {
-                obj.MutatedValue = new Variant("");
-            }
-        }
-    }
-
-    // C Function: repeat_from
-    [Mutator("RepeatGetParameterFrom")]
-    [CMutator("repeat_from")]
-    [Description("Repeats From header for GET_PARAMETER")]
-    public class RtspRepeatGetParameterFrom : LLMMutator
-    {
-        public RtspRepeatGetParameterFrom(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "from" || obj.name.Contains("From"))
-            {
-                obj.MutatedValue = new Variant("<sip:a@b>, <sip:c@d>");
-            }
-        }
-    }
-
-    // C Function: mutate_from
-    [Mutator("MutateGetParameterFrom")]
-    [CMutator("mutate_from")]
-    [Description("Mutates From header for GET_PARAMETER")]
-    public class RtspMutateGetParameterFrom : LLMMutator
-    {
-        public RtspMutateGetParameterFrom(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "from" || obj.name.Contains("From"))
-            {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 100, 100, 0, 0, 0, 0, 100, 100, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                switch (opIdx)
-                {
-                    case 0: // fr_ok_sip
-                        mutatedValue = "<sip:user@example.com>";
-                        break;
-                    case 1: // fr_ok_mailto
-                        mutatedValue = "<mailto:user@example.com>";
-                        break;
-                    case 2: // fr_no_angle
-                        mutatedValue = "sip:user@example.com";
-                        break;
-                    case 7: // fr_long_uri
-                        byte[] longUri = new byte[256];
-                        longUri[0] = (byte)'<';
-                        RtspUtils.MakeRepeatedChar(longUri, 254, (byte)'A', 252);
-                        longUri[253] = (byte)'>';
-                        mutatedValue = Encoding.UTF8.GetString(longUri).TrimEnd('\0');
-                        break;
-                    case 8: // fr_inject_comma_list
-                        mutatedValue = "<sip:a@x>, <sip:b@y>";
-                        break;
-                    default:
-                        mutatedValue = "<sip:user@example.com>";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
-            }
-        }
-    }
-
-    // ==================== Proxy-Require ====================
-    
-    // C Function: delete_proxy_require
-    [Mutator("DeleteGetParameterProxyRequire")]
-    [CMutator("delete_proxy_require")]
-    [Description("Deletes Proxy-Require header for GET_PARAMETER")]
-    public class RtspDeleteGetParameterProxyRequire : LLMMutator
-    {
-        public RtspDeleteGetParameterProxyRequire(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "proxy_require" || obj.name.Contains("Proxy-Require"))
-            {
-                obj.MutatedValue = new Variant("");
-            }
-        }
-    }
-
-    // C Function: repeat_proxy_require
-    [Mutator("RepeatGetParameterProxyRequire")]
-    [CMutator("repeat_proxy_require")]
-    [Description("Repeats Proxy-Require header for GET_PARAMETER")]
-    public class RtspRepeatGetParameterProxyRequire : LLMMutator
-    {
-        public RtspRepeatGetParameterProxyRequire(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "proxy_require" || obj.name.Contains("Proxy-Require"))
-            {
-                obj.MutatedValue = new Variant("play.basic, funky.ext, foo");
-            }
-        }
-    }
-
-    // C Function: mutate_proxy_require
-    [Mutator("MutateGetParameterProxyRequire")]
-    [CMutator("mutate_proxy_require")]
-    [Description("Mutates Proxy-Require header for GET_PARAMETER")]
-    public class RtspMutateGetParameterProxyRequire : LLMMutator
-    {
-        public RtspMutateGetParameterProxyRequire(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "proxy_require" || obj.name.Contains("Proxy-Require"))
-            {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 0, 0, 0, 100, 0, 100, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                switch (opIdx)
-                {
-                    case 0: // pr_ok_multi
-                        mutatedValue = "play.basic, com.vendor.feature";
-                        break;
-                    case 4: // pr_long_tag
-                        byte[] longTag = new byte[256];
-                        RtspUtils.MakeRepeatedChar(longTag, 256, (byte)'A', 255);
-                        mutatedValue = Encoding.UTF8.GetString(longTag).TrimEnd('\0');
-                        break;
-                    case 6: // pr_space_list
-                        mutatedValue = "  a  ,   b  ,c ";
-                        break;
-                    default:
-                        mutatedValue = "play.basic, com.vendor.feature";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
-            }
-        }
-    }
-
-    // ==================== Referer ====================
-    
-    // C Function: delete_referer
-    [Mutator("DeleteGetParameterReferer")]
-    [CMutator("delete_referer")]
-    [Description("Deletes Referer header for GET_PARAMETER")]
-    public class RtspDeleteGetParameterReferer : LLMMutator
-    {
-        public RtspDeleteGetParameterReferer(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "referer" || obj.name.Contains("Referer"))
-            {
-                obj.MutatedValue = new Variant("");
-            }
-        }
-    }
-
-    // C Function: repeat_referer
-    [Mutator("RepeatGetParameterReferer")]
-    [CMutator("repeat_referer")]
-    [Description("Repeats Referer header for GET_PARAMETER")]
-    public class RtspRepeatGetParameterReferer : LLMMutator
-    {
-        public RtspRepeatGetParameterReferer(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "referer" || obj.name.Contains("Referer"))
-            {
-                obj.MutatedValue = new Variant("rtsp://a/1, rtsp://b/2");
-            }
-        }
-    }
-
-    // C Function: mutate_referer
-    [Mutator("MutateGetParameterReferer")]
-    [CMutator("mutate_referer")]
-    [Description("Mutates Referer header for GET_PARAMETER")]
-    public class RtspMutateGetParameterReferer : LLMMutator
-    {
-        public RtspMutateGetParameterReferer(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "referer" || obj.name.Contains("Referer"))
-            {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 100, 100, 0, 0, 0, 0, 100, 100, 100, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                switch (opIdx)
-                {
-                    case 0: // rf_ok_rtsp
-                        mutatedValue = "rtsp://host/prev";
-                        break;
-                    case 1: // rf_ok_http
-                        mutatedValue = "http://host/page";
-                        break;
-                    case 2: // rf_no_schema
-                        mutatedValue = "//host/path";
-                        break;
-                    case 7: // rf_long_uri
-                        byte[] longUri = new byte[300];
-                        longUri[0] = (byte)'r'; longUri[1] = (byte)'t'; longUri[2] = (byte)'s'; 
-                        longUri[3] = (byte)'p'; longUri[4] = (byte)':'; longUri[5] = (byte)'/'; 
-                        longUri[6] = (byte)'/';
-                        RtspUtils.MakeRepeatedChar(longUri, 293, (byte)'A', 293);
-                        mutatedValue = Encoding.UTF8.GetString(longUri).TrimEnd('\0');
-                        break;
-                    case 8: // rf_quoted
-                        mutatedValue = "\"rtsp://host/with space\"";
-                        break;
-                    case 9: // rf_two_values
-                        mutatedValue = "rtsp://a, http://b";
-                        break;
-                    default:
-                        mutatedValue = "rtsp://host/prev";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
-            }
-        }
-    }
-
-    // ==================== Require ====================
-    
-    // C Function: delete_require
-    [Mutator("DeleteGetParameterRequire")]
-    [CMutator("delete_require")]
-    [Description("Deletes Require header for GET_PARAMETER")]
-    public class RtspDeleteGetParameterRequire : LLMMutator
-    {
-        public RtspDeleteGetParameterRequire(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "require" || obj.name.Contains("Require"))
-            {
-                obj.MutatedValue = new Variant("");
-            }
-        }
-    }
-
-    // C Function: repeat_require
-    [Mutator("RepeatGetParameterRequire")]
-    [CMutator("repeat_require")]
-    [Description("Repeats Require header for GET_PARAMETER")]
-    public class RtspRepeatGetParameterRequire : LLMMutator
-    {
-        public RtspRepeatGetParameterRequire(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "require" || obj.name.Contains("Require"))
-            {
-                obj.MutatedValue = new Variant("implicit-play, com.foo.bar, x");
-            }
-        }
-    }
-
-    // C Function: mutate_require
-    [Mutator("MutateGetParameterRequire")]
-    [CMutator("mutate_require")]
-    [Description("Mutates Require header for GET_PARAMETER")]
-    public class RtspMutateGetParameterRequire : LLMMutator
-    {
-        public RtspMutateGetParameterRequire(DataElement obj) : base(obj) { }
-
-        public new static bool supportedDataElement(DataElement obj)
-        {
-            return obj.IsIn("get_parameter");
-        }
-
-        public override int count => 1;
-
-        public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
-
-        public override void randomMutation(DataElement obj) { PerformMutation(obj); }
-
-        private void PerformMutation(DataElement obj)
-        {
-            if (obj.name == "require" || obj.name.Contains("Require"))
-            {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 100, 0, 0, 0, 0, 100, 0, 100, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                switch (opIdx)
-                {
-                    case 0: // rq_ok_one
-                        mutatedValue = "implicit-play";
-                        break;
-                    case 1: // rq_ok_multi
-                        mutatedValue = "com.vendor.feature,play.basic";
-                        break;
-                    case 6: // rq_long_tag
-                        byte[] longTag = new byte[256];
-                        RtspUtils.MakeRepeatedChar(longTag, 256, (byte)'R', 255);
-                        mutatedValue = Encoding.UTF8.GetString(longTag).TrimEnd('\0');
-                        break;
-                    case 8: // rq_spaces_list
-                        mutatedValue = "  a ,   b, c  ";
-                        break;
-                    default:
-                        mutatedValue = "implicit-play";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
-            }
-        }
-    }
 
     // ==================== Content-Base ====================
     
@@ -1684,10 +848,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_base" || obj.Name.Contains("Content-Base"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -1695,7 +862,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_base" || obj.name.Contains("Content-Base"))
+            if (obj.Name == "content_base" || obj.Name.Contains("Content-Base"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -1712,18 +879,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_base" || obj.Name.Contains("Content-Base"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }             
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_base" || obj.name.Contains("Content-Base"))
+            if (obj.Name == "content_base" || obj.Name.Contains("Content-Base"))
             {
                 obj.MutatedValue = new Variant("rtsp://a/ , rtsp://b/");
             }
@@ -1740,18 +908,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_base" || obj.Name.Contains("Content-Base"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }             
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_base" || obj.name.Contains("Content-Base"))
+            if (obj.Name == "content_base" || obj.Name.Contains("Content-Base"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0 };
@@ -1798,18 +967,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_length" || obj.Name.Contains("Content-Length"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                   
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_length" || obj.name.Contains("Content-Length"))
+            if (obj.Name == "content_length" || obj.Name.Contains("Content-Length"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -1826,18 +996,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_length" || obj.Name.Contains("Content-Length"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                   
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_length" || obj.name.Contains("Content-Length"))
+            if (obj.Name == "content_length" || obj.Name.Contains("Content-Length"))
             {
                 obj.MutatedValue = new Variant("1234");
             }
@@ -1854,18 +1025,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_length" || obj.Name.Contains("Content-Length"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                   
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_length" || obj.name.Contains("Content-Length"))
+            if (obj.Name == "content_length" || obj.Name.Contains("Content-Length"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 0, 0, 0, 0, 100, 100, 0, 0, 0, 0 };
@@ -1909,18 +1081,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_location" || obj.Name.Contains("Content-Location"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                       
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_location" || obj.name.Contains("Content-Location"))
+            if (obj.Name == "content_location" || obj.Name.Contains("Content-Location"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -1937,18 +1110,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_location" || obj.Name.Contains("Content-Location"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                       
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_location" || obj.name.Contains("Content-Location"))
+            if (obj.Name == "content_location" || obj.Name.Contains("Content-Location"))
             {
                 obj.MutatedValue = new Variant("rtsp://a/s.sdp, rtsp://b/s.sdp");
             }
@@ -1965,18 +1139,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "content_location" || obj.Name.Contains("Content-Location"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                       
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "content_location" || obj.name.Contains("Content-Location"))
+            if (obj.Name == "content_location" || obj.Name.Contains("Content-Location"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 100, 100, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -2023,18 +1198,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "last_modified" || obj.Name.Contains("Last-Modified"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                         
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "last_modified" || obj.name.Contains("Last-Modified"))
+            if (obj.Name == "last_modified" || obj.Name.Contains("Last-Modified"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -2051,18 +1227,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "last_modified" || obj.Name.Contains("Last-Modified"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                         
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "last_modified" || obj.name.Contains("Last-Modified"))
+            if (obj.Name == "last_modified" || obj.Name.Contains("Last-Modified"))
             {
                 obj.MutatedValue = new Variant("Tue, 15 Nov 1994 08:12:31 GMT, Wed, 16 Nov 1994 09:13:32 GMT");
             }
@@ -2079,18 +1256,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("get_parameter");
+            return obj.IsIn("get_parameter") &&
+                   (obj.Name == "last_modified" || obj.Name.Contains("Last-Modified"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                           
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "last_modified" || obj.name.Contains("Last-Modified"))
+            if (obj.Name == "last_modified" || obj.Name.Contains("Last-Modified"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

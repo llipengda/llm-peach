@@ -3,9 +3,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 namespace Peach.Pro.Core.Mutators.LLM.RTSP
 {
-    // C Function: set_cstr
-    // 安全字符串复制，防越界并确保 NUL 结尾
-    public static void SetCstr(byte[] dst, int cap, string s)
+    public static class RtspUtils
+    {
+        // C Function: set_cstr
+        // 安全字符串复制，防越界并确保 NUL 结尾
+        public static void SetCstr(byte[] dst, int cap, string s)
     {
         if (dst == null || cap == 0) return;
         if (string.IsNullOrEmpty(s))
@@ -380,6 +382,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         SetColonSpace(colonSpace, separatorLen);
         if (slash == 0) slash = (byte)'/';
+    }
     }
 }
 

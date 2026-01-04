@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
@@ -17,12 +18,15 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "authorization" || obj.Name.Contains("Authorization"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -30,7 +34,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "authorization" || obj.name.Contains("Authorization"))
+            if (obj.Name == "authorization" || obj.Name.Contains("Authorization"))
             {
                 obj.MutatedValue = new Variant("Basic dXNlcjpwYXNz");
             }
@@ -47,9 +51,10 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "authorization" || obj.Name.Contains("Authorization"));
         }
 
         public override int count => 1;
@@ -58,9 +63,11 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
+        public override uint mutation { get; set; }
+
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "authorization" || obj.name.Contains("Authorization"))
+            if (obj.Name == "authorization" || obj.Name.Contains("Authorization"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -77,11 +84,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "authorization" || obj.Name.Contains("Authorization"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -90,7 +98,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "authorization" || obj.name.Contains("Authorization"))
+            if (obj.Name == "authorization" || obj.Name.Contains("Authorization"))
             {
                 obj.MutatedValue = new Variant("Basic dXNlcjpwYXNz, Basic Zm9vOmJhcg==, Basic Og==");
             }
@@ -107,11 +115,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "authorization" || obj.Name.Contains("Authorization"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -120,7 +129,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "authorization" || obj.name.Contains("Authorization"))
+            if (obj.Name == "authorization" || obj.Name.Contains("Authorization"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 0, 0, 0, 0, 0, 100, 0, 0, 0, 100, 0, 100, 0, 0, 0 };
@@ -164,11 +173,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "bandwidth" || obj.Name.Contains("Bandwidth"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -177,7 +187,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "bandwidth" || obj.name.Contains("Bandwidth"))
+            if (obj.Name == "bandwidth" || obj.Name.Contains("Bandwidth"))
             {
                 obj.MutatedValue = new Variant("64000");
             }
@@ -194,11 +204,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "bandwidth" || obj.Name.Contains("Bandwidth"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -207,7 +218,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "bandwidth" || obj.name.Contains("Bandwidth"))
+            if (obj.Name == "bandwidth" || obj.Name.Contains("Bandwidth"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -224,11 +235,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "bandwidth" || obj.Name.Contains("Bandwidth"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -237,7 +249,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "bandwidth" || obj.name.Contains("Bandwidth"))
+            if (obj.Name == "bandwidth" || obj.Name.Contains("Bandwidth"))
             {
                 obj.MutatedValue = new Variant("1000");
             }
@@ -254,11 +266,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "bandwidth" || obj.Name.Contains("Bandwidth"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -267,7 +280,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "bandwidth" || obj.name.Contains("Bandwidth"))
+            if (obj.Name == "bandwidth" || obj.Name.Contains("Bandwidth"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 0, 0, 0, 0, 100, 100, 100, 0, 0, 0, 0 };
@@ -322,11 +335,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("setup") || obj.IsIn("describe") || obj.IsIn("play") || 
+            return (obj.IsIn("setup") || obj.IsIn("describe") || obj.IsIn("play") || 
                    obj.IsIn("pause") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter") ||
-                   obj.IsIn("redirect");
+                   obj.IsIn("redirect")) &&
+                   (obj.Name == "blocksize" || obj.Name.Contains("Blocksize"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -335,7 +349,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "blocksize" || obj.name.Contains("Blocksize"))
+            if (obj.Name == "blocksize" || obj.Name.Contains("Blocksize"))
             {
                 obj.MutatedValue = new Variant("4096");
             }
@@ -352,11 +366,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("setup") || obj.IsIn("describe") || obj.IsIn("play") || 
+            return (obj.IsIn("setup") || obj.IsIn("describe") || obj.IsIn("play") || 
                    obj.IsIn("pause") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter") ||
-                   obj.IsIn("redirect");
+                   obj.IsIn("redirect")) &&
+                   (obj.Name == "blocksize" || obj.Name.Contains("Blocksize"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -365,7 +380,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "blocksize" || obj.name.Contains("Blocksize"))
+            if (obj.Name == "blocksize" || obj.Name.Contains("Blocksize"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -382,11 +397,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("setup") || obj.IsIn("describe") || obj.IsIn("play") || 
+            return (obj.IsIn("setup") || obj.IsIn("describe") || obj.IsIn("play") || 
                    obj.IsIn("pause") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter") ||
-                   obj.IsIn("redirect");
+                   obj.IsIn("redirect")) &&
+                   (obj.Name == "blocksize" || obj.Name.Contains("Blocksize"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -395,7 +411,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "blocksize" || obj.name.Contains("Blocksize"))
+            if (obj.Name == "blocksize" || obj.Name.Contains("Blocksize"))
             {
                 obj.MutatedValue = new Variant("1024");
             }
@@ -412,11 +428,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("setup") || obj.IsIn("describe") || obj.IsIn("play") || 
+            return (obj.IsIn("setup") || obj.IsIn("describe") || obj.IsIn("play") || 
                    obj.IsIn("pause") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter") ||
-                   obj.IsIn("redirect");
+                   obj.IsIn("redirect")) &&
+                   (obj.Name == "blocksize" || obj.Name.Contains("Blocksize"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -425,7 +442,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "blocksize" || obj.name.Contains("Blocksize"))
+            if (obj.Name == "blocksize" || obj.Name.Contains("Blocksize"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 0, 0, 0, 100, 100, 100, 100, 0, 100, 100, 100, 0, 0, 0, 0 };
@@ -498,10 +515,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
-                   obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+            // 严格检查：必须是支持的上下文，名称必须是session，且必须是String类型
+            return (obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
+                   obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   obj.Name == "session" &&
+                   obj is Peach.Core.Dom.String;
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -510,7 +530,8 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "session" || obj.name.Contains("Session"))
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "session" && obj is Peach.Core.Dom.String)
             {
                 obj.MutatedValue = new Variant("12345678;timeout=60");
             }
@@ -527,10 +548,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
-                   obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+            // 严格检查：必须是支持的上下文，名称必须是session，且必须是String类型
+            return (obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
+                   obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   obj.Name == "session" &&
+                   obj is Peach.Core.Dom.String;
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -539,7 +563,8 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "session" || obj.name.Contains("Session"))
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "session" && obj is Peach.Core.Dom.String)
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -556,10 +581,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
-                   obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+            // 严格检查：必须是支持的上下文，名称必须是session，且必须是String类型
+            return (obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
+                   obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   obj.Name == "session" &&
+                   obj is Peach.Core.Dom.String;
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -568,7 +596,8 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "session" || obj.name.Contains("Session"))
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "session" && obj is Peach.Core.Dom.String)
             {
                 obj.MutatedValue = new Variant("ABCDEF, 1234");
             }
@@ -585,10 +614,23 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
-                   obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+            // 严格检查：必须是支持的上下文，名称必须是session，且必须是String类型
+            if (obj == null)
+                return false;
+            
+            if (!(obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
+                  obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter")))
+                return false;
+            
+            if (obj.Name != "session")
+                return false;
+            
+            if (!(obj is Peach.Core.Dom.String))
+                return false;
+            
+            return true;
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -597,37 +639,49 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "session" || obj.name.Contains("Session"))
+            // 多重检查：确保类型和名称都正确
+            if (obj == null)
+                return;
+            
+            if (obj.Name != "session")
+                return;
+            
+            if (!(obj is Peach.Core.Dom.String))
+                return;
+            
+            // 确保在支持的上下文中
+            if (!(obj.IsIn("describe") || obj.IsIn("play") || obj.IsIn("pause") || 
+                  obj.IsIn("teardown") || obj.IsIn("get_parameter") || obj.IsIn("set_parameter")))
+                return;
+
+            var random = RtspUtils.GetRandom();
+            int[] weights = { 100, 100, 0, 0, 100, 100, 0, 0, 0, 0, 0, 0 };
+            
+            int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
+            string mutatedValue = "";
+
+            switch (opIdx)
             {
-                var random = RtspUtils.GetRandom();
-                int[] weights = { 100, 100, 0, 0, 100, 100, 0, 0, 0, 0, 0, 0 };
-                
-                int opIdx = RtspUtils.WeightedPickIdx(weights, weights.Length, random);
-                string mutatedValue = "";
-
-                switch (opIdx)
-                {
-                    case 0: // ss_ok_id_timeout
-                        mutatedValue = "12345678;timeout=60";
-                        break;
-                    case 1: // ss_ok_id_no_timeout
-                        mutatedValue = "12345678";
-                        break;
-                    case 4: // ss_long_id
-                        byte[] longId = new byte[200];
-                        RtspUtils.MakeRepeatedChar(longId, 200, (byte)'A', 199);
-                        mutatedValue = Encoding.UTF8.GetString(longId).TrimEnd('\0') + ";timeout=60";
-                        break;
-                    case 5: // ss_zero_timeout
-                        mutatedValue = "12345678;timeout=0";
-                        break;
-                    default:
-                        mutatedValue = "12345678;timeout=60";
-                        break;
-                }
-
-                obj.MutatedValue = new Variant(mutatedValue);
+                case 0: // ss_ok_id_timeout
+                    mutatedValue = "12345678;timeout=60";
+                    break;
+                case 1: // ss_ok_id_no_timeout
+                    mutatedValue = "12345678";
+                    break;
+                case 4: // ss_long_id
+                    byte[] longId = new byte[200];
+                    RtspUtils.MakeRepeatedChar(longId, 200, (byte)'A', 199);
+                    mutatedValue = System.Text.Encoding.UTF8.GetString(longId).TrimEnd('\0') + ";timeout=60";
+                    break;
+                case 5: // ss_zero_timeout
+                    mutatedValue = "12345678;timeout=0";
+                    break;
+                default:
+                    mutatedValue = "12345678;timeout=60";
+                    break;
             }
+
+            obj.MutatedValue = new Variant(mutatedValue);
         }
     }
 
@@ -643,11 +697,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "user_agent" || obj.Name.Contains("User-Agent"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -656,7 +711,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "user_agent" || obj.name.Contains("User-Agent"))
+            if (obj.Name == "user_agent" || obj.Name.Contains("User-Agent"))
             {
                 obj.MutatedValue = new Variant("Live555/0.92");
             }
@@ -673,11 +728,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "user_agent" || obj.Name.Contains("User-Agent"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -686,7 +742,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "user_agent" || obj.name.Contains("User-Agent"))
+            if (obj.Name == "user_agent" || obj.Name.Contains("User-Agent"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -703,11 +759,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "user_agent" || obj.Name.Contains("User-Agent"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -716,7 +773,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "user_agent" || obj.name.Contains("User-Agent"))
+            if (obj.Name == "user_agent" || obj.Name.Contains("User-Agent"))
             {
                 obj.MutatedValue = new Variant("Foo/1.0, Bar/2.0");
             }
@@ -733,11 +790,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
-                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter");
+                   obj.IsIn("get_parameter") || obj.IsIn("set_parameter")) &&
+                   (obj.Name == "user_agent" || obj.Name.Contains("User-Agent"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -746,7 +804,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "user_agent" || obj.name.Contains("User-Agent"))
+            if (obj.Name == "user_agent" || obj.Name.Contains("User-Agent"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 0, 100, 0, 100, 0, 100, 0, 0, 0 };
@@ -762,7 +820,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
                     case 2: // ua_long
                         byte[] longUa = new byte[400];
                         RtspUtils.MakeRepeatedChar(longUa, 400, (byte)'A', 399);
-                        mutatedValue = Encoding.UTF8.GetString(longUa).TrimEnd('\0');
+                        mutatedValue = System.Text.Encoding.UTF8.GetString(longUa).TrimEnd('\0');
                         break;
                     case 4: // ua_tabs
                         mutatedValue = "App\t/1.2\t(arm64)";
@@ -792,12 +850,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "from" || obj.Name.Contains("From"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -806,7 +865,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "from" || obj.name.Contains("From"))
+            if (obj.Name == "from" || obj.Name.Contains("From"))
             {
                 obj.MutatedValue = new Variant("<sip:user@example.com>");
             }
@@ -823,12 +882,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "from" || obj.Name.Contains("From"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -837,7 +897,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "from" || obj.name.Contains("From"))
+            if (obj.Name == "from" || obj.Name.Contains("From"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -854,12 +914,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "from" || obj.Name.Contains("From"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -868,7 +929,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "from" || obj.name.Contains("From"))
+            if (obj.Name == "from" || obj.Name.Contains("From"))
             {
                 obj.MutatedValue = new Variant("<sip:a@b>, <sip:c@d>");
             }
@@ -885,12 +946,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "from" || obj.Name.Contains("From"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -899,7 +961,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "from" || obj.name.Contains("From"))
+            if (obj.Name == "from" || obj.Name.Contains("From"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 0, 0, 0, 0, 100, 100, 0 };
@@ -923,7 +985,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
                         longUri[0] = (byte)'<';
                         RtspUtils.MakeRepeatedChar(longUri, 254, (byte)'A', 252);
                         longUri[253] = (byte)'>';
-                        mutatedValue = Encoding.UTF8.GetString(longUri).TrimEnd('\0');
+                        mutatedValue = System.Text.Encoding.UTF8.GetString(longUri).TrimEnd('\0');
                         break;
                     case 8: // fr_inject_comma_list
                         mutatedValue = "<sip:a@x>, <sip:b@y>";
@@ -950,12 +1012,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
-        }
-
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "proxy_require" || obj.Name.Contains("Proxy-Require"));
+        }   
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -964,7 +1027,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "proxy_require" || obj.name.Contains("Proxy-Require"))
+            if (obj.Name == "proxy_require" || obj.Name.Contains("Proxy-Require"))
             {
                 obj.MutatedValue = new Variant("play.basic");
             }
@@ -981,12 +1044,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
-        }
-
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "proxy_require" || obj.Name.Contains("Proxy-Require"));
+        }   
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -995,7 +1059,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "proxy_require" || obj.name.Contains("Proxy-Require"))
+            if (obj.Name == "proxy_require" || obj.Name.Contains("Proxy-Require"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -1012,12 +1076,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "proxy_require" || obj.Name.Contains("Proxy-Require"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1026,7 +1091,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "proxy_require" || obj.name.Contains("Proxy-Require"))
+            if (obj.Name == "proxy_require" || obj.Name.Contains("Proxy-Require"))
             {
                 obj.MutatedValue = new Variant("play.basic, funky.ext, foo");
             }
@@ -1043,12 +1108,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "proxy_require" || obj.Name.Contains("Proxy-Require"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1057,7 +1123,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "proxy_require" || obj.name.Contains("Proxy-Require"))
+            if (obj.Name == "proxy_require" || obj.Name.Contains("Proxy-Require"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 0, 0, 0, 100, 0, 100, 0 };
@@ -1073,7 +1139,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
                     case 4: // pr_long_tag
                         byte[] longTag = new byte[256];
                         RtspUtils.MakeRepeatedChar(longTag, 256, (byte)'A', 255);
-                        mutatedValue = Encoding.UTF8.GetString(longTag).TrimEnd('\0');
+                        mutatedValue = System.Text.Encoding.UTF8.GetString(longTag).TrimEnd('\0');
                         break;
                     case 6: // pr_space_list
                         mutatedValue = "  a  ,   b  ,c ";
@@ -1100,12 +1166,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "referer" || obj.Name.Contains("Referer"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1114,7 +1181,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "referer" || obj.name.Contains("Referer"))
+            if (obj.Name == "referer" || obj.Name.Contains("Referer"))
             {
                 obj.MutatedValue = new Variant("rtsp://example.com/prev");
             }
@@ -1131,12 +1198,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "referer" || obj.Name.Contains("Referer"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1145,7 +1213,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "referer" || obj.name.Contains("Referer"))
+            if (obj.Name == "referer" || obj.Name.Contains("Referer"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -1162,12 +1230,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "referer" || obj.Name.Contains("Referer"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1176,7 +1245,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "referer" || obj.name.Contains("Referer"))
+            if (obj.Name == "referer" || obj.Name.Contains("Referer"))
             {
                 obj.MutatedValue = new Variant("rtsp://a/1, rtsp://b/2");
             }
@@ -1193,12 +1262,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "referer" || obj.Name.Contains("Referer"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1207,7 +1277,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "referer" || obj.name.Contains("Referer"))
+            if (obj.Name == "referer" || obj.Name.Contains("Referer"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 100, 0, 0, 0, 0, 100, 100, 100, 0 };
@@ -1232,7 +1302,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
                         longUri[3] = (byte)'p'; longUri[4] = (byte)':'; longUri[5] = (byte)'/'; 
                         longUri[6] = (byte)'/';
                         RtspUtils.MakeRepeatedChar(longUri, 293, (byte)'A', 293);
-                        mutatedValue = Encoding.UTF8.GetString(longUri).TrimEnd('\0');
+                        mutatedValue = System.Text.Encoding.UTF8.GetString(longUri).TrimEnd('\0');
                         break;
                     case 8: // rf_quoted
                         mutatedValue = "\"rtsp://host/with space\"";
@@ -1262,12 +1332,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "require" || obj.Name.Contains("Require"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1276,7 +1347,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "require" || obj.name.Contains("Require"))
+            if (obj.Name == "require" || obj.Name.Contains("Require"))
             {
                 obj.MutatedValue = new Variant("implicit-play");
             }
@@ -1293,12 +1364,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "require" || obj.Name.Contains("Require"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1307,7 +1379,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "require" || obj.name.Contains("Require"))
+            if (obj.Name == "require" || obj.Name.Contains("Require"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -1324,12 +1396,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "require" || obj.Name.Contains("Require"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1338,7 +1411,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "require" || obj.name.Contains("Require"))
+            if (obj.Name == "require" || obj.Name.Contains("Require"))
             {
                 obj.MutatedValue = new Variant("implicit-play, com.foo.bar, x");
             }
@@ -1355,12 +1428,13 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
+            return (obj.IsIn("options") || obj.IsIn("setup") || obj.IsIn("describe") || 
                    obj.IsIn("play") || obj.IsIn("pause") || obj.IsIn("teardown") || 
                    obj.IsIn("get_parameter") || obj.IsIn("set_parameter") || obj.IsIn("redirect") ||
-                   obj.IsIn("announce");
+                   obj.IsIn("announce")) &&
+                   (obj.Name == "require" || obj.Name.Contains("Require"));
         }
-
+        public override uint mutation { get; set; }
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -1369,7 +1443,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "require" || obj.name.Contains("Require"))
+            if (obj.Name == "require" || obj.Name.Contains("Require"))
             {
                 var random = RtspUtils.GetRandom();
                 int[] weights = { 100, 100, 0, 0, 0, 0, 100, 0, 100, 0 };
@@ -1388,7 +1462,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
                     case 6: // rq_long_tag
                         byte[] longTag = new byte[256];
                         RtspUtils.MakeRepeatedChar(longTag, 256, (byte)'R', 255);
-                        mutatedValue = Encoding.UTF8.GetString(longTag).TrimEnd('\0');
+                        mutatedValue = System.Text.Encoding.UTF8.GetString(longTag).TrimEnd('\0');
                         break;
                     case 8: // rq_spaces_list
                         mutatedValue = "  a ,   b, c  ";

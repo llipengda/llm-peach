@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
@@ -20,10 +21,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("pause") && obj.name == "range";
+            return obj.IsIn("pause") && obj.Name == "range" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -45,10 +48,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("pause") && obj.name == "range";
+            return obj.IsIn("pause") && obj.Name == "range" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -70,10 +75,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("pause") && obj.name == "range";
+            return obj.IsIn("pause") && obj.Name == "range" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -95,10 +102,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("pause") && obj.name == "range";
+            return obj.IsIn("pause") && obj.Name == "range" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 

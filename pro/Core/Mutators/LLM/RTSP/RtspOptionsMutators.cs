@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
@@ -15,9 +16,10 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "connection" || obj.Name.Contains("Connection"));
         }
-
+        public override uint mutation { get; set; }         
         public override int count => 1;
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
@@ -26,7 +28,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "connection" || obj.name.Contains("Connection"))
+            if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
                 obj.MutatedValue = new Variant("keep-alive");
             }
@@ -43,18 +45,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "connection" || obj.Name.Contains("Connection"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }         
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "connection" || obj.name.Contains("Connection"))
+            if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -71,18 +74,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "connection" || obj.Name.Contains("Connection"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }         
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "connection" || obj.name.Contains("Connection"))
+            if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
                 obj.MutatedValue = new Variant("keep-alive, close");
             }
@@ -99,18 +103,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "connection" || obj.Name.Contains("Connection"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }             
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "connection" || obj.name.Contains("Connection"))
+            if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
                 var random = RtspUtils.GetRandom();
                 string[] values = { "keep-alive", "close", "keep-alive, foo, bar" };
@@ -129,18 +134,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "date" || obj.Name.Contains("Date"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }            
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "date" || obj.name.Contains("Date"))
+            if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
                 obj.MutatedValue = new Variant("Tue, 15 Nov 1994 08:12:31 GMT");
             }
@@ -157,18 +163,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "date" || obj.Name.Contains("Date"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }            
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "date" || obj.name.Contains("Date"))
+            if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -185,18 +192,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "date" || obj.Name.Contains("Date"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }            
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "date" || obj.name.Contains("Date"))
+            if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
                 obj.MutatedValue = new Variant("Tue, 15 Nov 1994 08:12:31 GMT, Wed, 16 Nov 1994 09:13:32 GMT");
             }
@@ -213,18 +221,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "date" || obj.Name.Contains("Date"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }            
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "date" || obj.name.Contains("Date"))
+            if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
                 var random = RtspUtils.GetRandom();
                 string[] values = {
@@ -249,18 +258,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "via" || obj.Name.Contains("Via"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }            
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "via" || obj.name.Contains("Via"))
+            if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
                 obj.MutatedValue = new Variant("RTSP/1.0 example.com");
             }
@@ -277,18 +287,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "via" || obj.Name.Contains("Via"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }             
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "via" || obj.name.Contains("Via"))
+            if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -305,18 +316,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "via" || obj.Name.Contains("Via"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }             
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "via" || obj.name.Contains("Via"))
+            if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
                 obj.MutatedValue = new Variant("RTSP/1.0 example.com, RTSP/1.0 proxy.com");
             }
@@ -333,18 +345,19 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("options");
+            return obj.IsIn("options") &&
+                   (obj.Name == "via" || obj.Name.Contains("Via"));
         }
 
         public override int count => 1;
-
+        public override uint mutation { get; set; }                
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "via" || obj.name.Contains("Via"))
+            if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
                 var random = RtspUtils.GetRandom();
                 string[] values = {

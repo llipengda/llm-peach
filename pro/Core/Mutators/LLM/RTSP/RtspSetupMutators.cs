@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
@@ -15,10 +16,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("setup") && obj.name == "transport";
+            return obj.IsIn("setup") && obj.Name == "transport" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -26,7 +29,11 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            obj.MutatedValue = new Variant("RTP/AVP;unicast;client_port=8000-8001;mode=play");
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "transport" && obj is Peach.Core.Dom.String)
+            {
+                obj.MutatedValue = new Variant("RTP/AVP;unicast;client_port=8000-8001;mode=play");
+            }
         }
     }
 
@@ -40,10 +47,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("setup") && obj.name == "transport";
+            return obj.IsIn("setup") && obj.Name == "transport" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -51,7 +60,11 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            obj.MutatedValue = new Variant("");
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "transport" && obj is Peach.Core.Dom.String)
+            {
+                obj.MutatedValue = new Variant("");
+            }
         }
     }
 
@@ -65,10 +78,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("setup") && obj.name == "transport";
+            return obj.IsIn("setup") && obj.Name == "transport" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -76,7 +91,11 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            obj.MutatedValue = new Variant("RTP/AVP;unicast;client_port=8000-8001, RTP/AVP;unicast;client_port=9000-9001");
+            // 双重检查：确保是String类型且名称正确
+            if (obj.Name == "transport" && obj is Peach.Core.Dom.String)
+            {
+                obj.MutatedValue = new Variant("RTP/AVP;unicast;client_port=8000-8001, RTP/AVP;unicast;client_port=9000-9001");
+            }
         }
     }
 
@@ -90,10 +109,25 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("setup") && obj.name == "transport";
+            // 严格检查：必须是setup上下文，名称必须是transport，且必须是String类型
+            if (obj == null)
+                return false;
+            
+            if (!obj.IsIn("setup"))
+                return false;
+            
+            if (obj.Name != "transport")
+                return false;
+            
+            if (!(obj is Peach.Core.Dom.String))
+                return false;
+            
+            return true;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -101,6 +135,20 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
+            // 多重检查：确保类型和名称都正确
+            if (obj == null)
+                return;
+            
+            if (obj.Name != "transport")
+                return;
+            
+            if (!(obj is Peach.Core.Dom.String))
+                return;
+            
+            // 确保在setup上下文中
+            if (!obj.IsIn("setup"))
+                return;
+
             var random = RtspUtils.GetRandom();
             string[] values = {
                 "RTP/AVP;unicast;client_port=8000-8001;mode=play",

@@ -1,9 +1,12 @@
 using System;
+using System.ComponentModel;
 using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
+using Peach.Pro.Core;
+using Peach.Pro.Core.Mutators.LLM;
 
-namespace LLM.RTSP
+namespace Peach.Pro.Core.Mutators.LLM.RTSP
 {
     // C Function: mutate_request_uri
     // 变异请求 URI，支持多种合法和非法形式
@@ -16,10 +19,12 @@ namespace LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj is String && obj.IsIn("request_line") && obj.name == "uri";
+            return obj.IsIn("request_line") && obj is Peach.Core.Dom.String && obj.Name == "uri";
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -54,7 +59,7 @@ namespace LLM.RTSP
                 case 3: // mut_op_very_long_path
                     byte[] pathBuf = new byte[256];
                     RtspUtils.MakeRepeatedChar(pathBuf, 256, (byte)'A', 246);
-                    mutatedValue = "rtsp://host/" + Encoding.UTF8.GetString(pathBuf).TrimEnd('\0');
+                    mutatedValue = "rtsp://host/" + System.Text.Encoding.UTF8.GetString(pathBuf).TrimEnd('\0');
                     break;
                 case 4: // mut_op_traversal
                     mutatedValue = "rtsp://host/../../../../../../etc/passwd";
@@ -63,7 +68,7 @@ namespace LLM.RTSP
                     mutatedValue = "rtsp://host/stream%2Esdp?x=%00%2F..%2F&y=%FF";
                     break;
                 case 6: // mut_op_utf8
-                    mutatedValue = "rtsp://host/摄像头/通道一.sdp";
+                    mutatedValue = "rtsp://host/%E6%91%84%E5%83%8F%E5%A4%B4/%E9%80%9A%E9%81%93%E4%B8%80.sdp";
                     break;
                 case 7: // mut_op_ipv6_edge_port
                     mutatedValue = "rtsp://[2001:db8::1]:65535/stream";
@@ -100,10 +105,12 @@ namespace LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj is String && obj.IsIn("common_headers") && obj.name == "cseq";
+            return obj.IsIn("common_headers") && obj is Peach.Core.Dom.String && obj.Name == "cseq";
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 

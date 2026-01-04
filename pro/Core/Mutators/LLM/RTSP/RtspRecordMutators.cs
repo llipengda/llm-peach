@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Text;
 using Peach.Core;
 using Peach.Core.Dom;
@@ -20,10 +21,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("record") && obj.name == "range";
+            return obj.IsIn("record") && obj.Name == "range" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -45,10 +48,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("record") && obj.name == "range";
+            return obj.IsIn("record") && obj.Name == "range" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -70,10 +75,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("record") && obj.name == "range";
+            return obj.IsIn("record") && obj.Name == "range" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -95,10 +102,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("record") && obj.name == "range";
+            return obj.IsIn("record") && obj.Name == "range" && obj is Peach.Core.Dom.String;
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -128,10 +137,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("record");
+            return obj.IsIn("record") && (obj.Name == "scale" || obj.Name.Contains("Scale"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -139,7 +150,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "scale" || obj.name.Contains("Scale"))
+            if (obj.Name == "scale" || obj.Name.Contains("Scale"))
             {
                 obj.MutatedValue = new Variant("1.0");
             }
@@ -156,10 +167,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("record");
+            return obj.IsIn("record") && (obj.Name == "scale" || obj.Name.Contains("Scale"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -167,7 +180,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "scale" || obj.name.Contains("Scale"))
+            if (obj.Name == "scale" || obj.Name.Contains("Scale"))
             {
                 obj.MutatedValue = new Variant("");
             }
@@ -184,10 +197,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("record");
+            return obj.IsIn("record") && (obj.Name == "scale" || obj.Name.Contains("Scale"));
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -195,7 +210,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "scale" || obj.name.Contains("Scale"))
+            if (obj.Name == "scale" || obj.Name.Contains("Scale"))
             {
                 obj.MutatedValue = new Variant("1.0, 2.0");
             }
@@ -212,10 +227,12 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         public new static bool supportedDataElement(DataElement obj)
         {
-            return obj.IsIn("record");
+            return obj.IsIn("record") && (obj.Name == "scale" || obj.Name.Contains("Scale"));   
         }
 
         public override int count => 1;
+
+        public override uint mutation { get; set; }
 
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
 
@@ -223,7 +240,7 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 
         private void PerformMutation(DataElement obj)
         {
-            if (obj.name == "scale" || obj.name.Contains("Scale"))
+            if (obj.Name == "scale" || obj.Name.Contains("Scale"))
             {
                 var random = RtspUtils.GetRandom();
                 string[] values = { "1.0", "2.0", "0.5", "-1.0", "0.0", "999.9" };
