@@ -5,9 +5,9 @@ namespace Peach.Pro.Core.Mutators.LLM.RTSP
 {
     public static class RtspUtils
     {
-        // C Function: set_cstr
-        // 安全字符串复制，防越界并确保 NUL 结尾
-        public static void SetCstr(byte[] dst, int cap, string s)
+    // C Function: set_cstr
+    // 安全字符串复制，防越界并确保 NUL 结尾
+    public static void SetCstr(byte[] dst, int cap, string s)
     {
         if (dst == null || cap == 0) return;
         if (string.IsNullOrEmpty(s))
