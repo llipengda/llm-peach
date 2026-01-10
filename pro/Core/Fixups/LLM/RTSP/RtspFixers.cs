@@ -914,7 +914,7 @@ namespace Peach.Pro.Core.Fixups.LLM.RTSP
         {
             ResetTracking();
 
-            var requests = elem.find("requests") as Array;
+            var requests = elem as Array;
             if (requests == null) return;
 
             string lastAbsBase = "";
