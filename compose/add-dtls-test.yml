@@ -1,0 +1,76 @@
+# version: "3.3"
+
+name: add-dtls-test
+services:
+  llm-peach-llm:
+    image: pdli/llm-peach:feature--add-dtls
+    network_mode: "bridge"
+    volumes:
+      - ./logs:/peach/logs
+    environment:
+      PROTOCOL: dtls
+      PORT: 20220
+      HOST: tinydtls-llm
+      FIXUP: 1
+      MODE: llm
+      PEACH_ARGS: "--duration=10:00"
+    links:
+      - tinydtls-llm
+
+  tinydtls-llm:
+    image: pdli/tinydtls
+    network_mode: "bridge"
+    volumes:
+      - ./cov:/coverage_data
+    environment:
+      NAME: llm
+    stop_grace_period: 120s
+
+  llm-peach-peach:
+    image: pdli/llm-peach:feature--add-dtls
+    network_mode: "bridge"
+    volumes:
+      - ./logs:/peach/logs
+    environment:
+      PROTOCOL: dtls
+      PORT: 20220
+      HOST: tinydtls-peach
+      FIXUP: 0
+      MODE: peach
+      PEACH_ARGS: "--duration=10:00"
+    links:
+      - tinydtls-peach
+
+  tinydtls-peach:
+    image: pdli/tinydtls
+    network_mode: "bridge"
+    volumes:
+      - ./cov:/coverage_data
+    environment:
+      NAME: peach
+    stop_grace_period: 120s
+
+  llm-peach-two-phase:
+    image: pdli/llm-peach:feature--add-dtls
+    network_mode: "bridge"
+    volumes:
+      - ./logs:/peach/logs
+    environment:
+      PROTOCOL: dtls
+      PORT: 20220
+      HOST: tinydtls-two-phase
+      FIXUP: 1
+      MUTATION_PER_ELEM: 1
+      STRATEGY: TwoPhaseRandom
+      PEACH_ARGS: "--duration=10:00"
+    links:
+      - tinydtls-two-phase
+
+  tinydtls-two-phase:
+    image: pdli/tinydtls
+    network_mode: "bridge"
+    volumes:
+      - ./cov:/coverage_data
+    environment:
+      NAME: two-phase
+    stop_grace_period: 120s
