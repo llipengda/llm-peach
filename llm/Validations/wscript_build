@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 subdirs = [
-	'Mutator'
+	'Mutator',
+    'DataModel'
 ]
 
 bld.recurse(subdirs)

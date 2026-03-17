@@ -9,13 +9,15 @@ using System.Collections.Generic;
 using System.IO;
 using Peach.LLM.Core.Mutators;
 
+using DM = Peach.Core.Dom.DataModel;
+
 namespace Peach.LLM.Validations.Mutator
 {
     class Program
     {
         static readonly List<Type> mutators = new List<Type>();
 
-        static DataModel originalDataModel = null;
+        static DM originalDataModel = null;
 
         static Dom dom = null;
 
@@ -125,7 +127,7 @@ namespace Peach.LLM.Validations.Mutator
                 {
                     if (i % 10 == 0)
                         WriteColored($"TESTING [{t:000}/{tests.Count:000}][{i + 1:000}/{testIterations}] {test.MutatorType.Name} on {test.Element.fullName}\n", ConsoleColor.Yellow);
-                    var rootClone = ObjectCopier.Clone(root) as DataModel;
+                    var rootClone = ObjectCopier.Clone(root) as DM;
                     var elem = rootClone.find(test.Element.fullName);
                     if (!(Activator.CreateInstance(test.MutatorType, new object[] { elem }) is LLMMutator mutator))
                     {
@@ -220,7 +222,7 @@ namespace Peach.LLM.Validations.Mutator
             {
                 throw new Exception($"Failed to find DataModel '{modelName}' in Pit File.");
             }
-            DataModel dataModel = dom.dataModels[modelName];
+            DM dataModel = dom.dataModels[modelName];
 
             if (!File.Exists(dataFile))
             {

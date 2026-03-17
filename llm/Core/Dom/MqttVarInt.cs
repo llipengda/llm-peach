@@ -23,8 +23,8 @@ namespace Peach.LLM.Core.Dom
 	/// Encodes/decodes values using MQTT VarInt format (1-4 bytes)
 	/// Supports Relation for dynamic length fields
 	/// </summary>
-	[DataElement("VarInt", DataElementTypes.NonDataElements)]
-	[PitParsable("VarInt")]
+	[DataElement("MqttVarInt", DataElementTypes.NonDataElements)]
+	[PitParsable("MqttVarInt")]
 	[Parameter("name", typeof(string), "Element name", "")]
 	[Parameter("fieldId", typeof(string), "Element field ID", "")]
 	[Parameter("value", typeof(string), "Default value", "")]
@@ -340,7 +340,7 @@ namespace Peach.LLM.Core.Dom
 		/// </summary>
 		public new static DataElement PitParser(PitParser context, XmlNode node, DataElementContainer parent)
 		{
-			if (node.Name != "VarInt")
+			if (node.Name != "MqttVarInt")
 				return null;
 
 			var varInt = DataElement.Generate<MqttVarInt>(node, parent);
@@ -357,7 +357,7 @@ namespace Peach.LLM.Core.Dom
 		/// </summary>
 		public override void WritePit(XmlWriter pit)
 		{
-			pit.WriteStartElement("VarInt");
+			pit.WriteStartElement("MqttVarInt");
 			WritePitCommonAttributes(pit);
 			WritePitCommonChildren(pit);
 			WritePitCommonValue(pit);

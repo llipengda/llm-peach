@@ -47,7 +47,7 @@ RUN sed -i '1i #define STATIC_ASSERT(cond)' core/BasicBlocks/bblocks.cpp
 
 RUN ./waf configure
 
-RUN ./waf build
+RUN ./waf build --variant=linux_x86_64_release
 
 #############################################################################################################################
 FROM base AS runner
@@ -60,7 +60,7 @@ COPY --from=builder /peach /peach
 
 WORKDIR /peach
 
-RUN ./waf install
+RUN ./waf install --variant=linux_x86_64_release
 
 ENV PROTOCOL=mqtt \
     STRATEGY=random \
