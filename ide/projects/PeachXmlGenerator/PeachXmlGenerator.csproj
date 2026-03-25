@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>PeachXmlGenerator</AssemblyName>
+    <RootNamespace>Peach.Pro</RootNamespace>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../pro/XmlGenerator/**/*.cs" />
+    <EmbeddedResource Include="../../../pro/XmlGenerator/**/*.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
+    <ProjectReference Include="../Peach.Pro/Peach.Pro.csproj" />
+  </ItemGroup>
+</Project>

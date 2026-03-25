@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Peach.Core</AssemblyName>
+    <RootNamespace>Peach.Core</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../core/Core/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="IronPython">
+      <HintPath>../../../3rdParty/IronPython.2.7.5/lib/Net45/IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>../../../3rdParty/IronPython.2.7.5/lib/Net45/Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>../../../3rdParty/IronPython.2.7.5/lib/Net45/Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Metadata">
+      <HintPath>../../../3rdParty/IronPython.2.7.5/lib/Net45/Microsoft.Scripting.Metadata.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

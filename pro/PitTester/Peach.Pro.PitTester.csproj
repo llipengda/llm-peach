@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <AssemblyName>Peach.Pro.PitTester</AssemblyName>
+    <RootNamespace>Peach.Pro.PitTester</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="**/.NETFramework*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\Core\Peach.Core.csproj" />
+    <ProjectReference Include="..\Core\Peach.Pro.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.3.2" />
+    <PackageReference Include="NUnit" Version="3.2.1" />
+    <PackageReference Include="DiffPlex" Version="1.4.1" />
+  </ItemGroup>
+
+</Project>
+

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <AssemblyName>Peach.Pro.Test.OS.Linux</AssemblyName>
+    <RootNamespace>Peach.Pro.Test.OS.Linux</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="**/.NETFramework*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\core\Core\Peach.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\core\Test\Peach.Core.Test.csproj" />
+    <ProjectReference Include="..\..\..\Core\Peach.Pro.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.3.2" />
+    <PackageReference Include="NUnit" Version="3.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+
+</Project>
+
