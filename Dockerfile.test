@@ -34,7 +34,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E03280
 
 WORKDIR /peach/3rdParty/pin
 
-RUN wget https://software.intel.com/sites/landingpage/pintool/downloads/pin-3.19-98425-gd666b2bee-gcc-linux.tar.gz && \
+RUN wget --no-check-certificate https://software.intel.com/sites/landingpage/pintool/downloads/pin-3.19-98425-gd666b2bee-gcc-linux.tar.gz && \
     tar -xzf pin-3.19-98425-gd666b2bee-gcc-linux.tar.gz && \
     mv pin-3.19-98425-gd666b2bee-gcc-linux pin-3.19-98425-gcc-linux && \
     rm pin-3.19-98425-gd666b2bee-gcc-linux.tar.gz
