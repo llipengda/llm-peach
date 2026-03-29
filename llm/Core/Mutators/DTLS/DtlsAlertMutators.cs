@@ -25,7 +25,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var num = obj as Number;
             byte val = (byte)((DtlsUtils.RndU32(2) == 0) ? 1 : 2);
@@ -49,7 +49,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var num = obj as Number;
             byte val = (byte)DtlsUtils.RndU32(256);

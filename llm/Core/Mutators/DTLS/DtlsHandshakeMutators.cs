@@ -26,7 +26,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             // Logic derived from C function: mutate_handshake_header_msg_type
             var num = obj as Number;
@@ -84,7 +84,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var num = obj as Number;
             uint cur = (uint)(ulong)num.InternalValue;
@@ -133,7 +133,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var num = obj as Number;
             ushort cur = (ushort)(ulong)num.InternalValue;
@@ -167,7 +167,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var num = obj as Number;
             uint cur = (uint)(ulong)num.InternalValue;
@@ -199,7 +199,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var num = obj as Number;
             uint cur = (uint)(ulong)num.InternalValue;

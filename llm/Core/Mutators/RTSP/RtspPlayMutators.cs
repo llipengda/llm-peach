@@ -27,7 +27,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             obj.MutatedValue = new Variant("npt=0-");
         }
@@ -54,7 +54,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             obj.MutatedValue = new Variant("");
         }
@@ -81,7 +81,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             obj.MutatedValue = new Variant("npt=0-, npt=10-20");
         }
@@ -108,7 +108,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var random = RtspUtils.GetRandom();
             string[] values = {
@@ -148,7 +148,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "scale" || obj.Name.Contains("Scale"))
             {
@@ -178,7 +178,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "scale" || obj.Name.Contains("Scale"))
             {
@@ -208,7 +208,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "scale" || obj.Name.Contains("Scale"))
             {
@@ -238,7 +238,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "scale" || obj.Name.Contains("Scale"))
             {
@@ -270,7 +270,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "speed" || obj.Name.Contains("Speed"))
             {
@@ -300,7 +300,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "speed" || obj.Name.Contains("Speed"))
             {
@@ -330,7 +330,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "speed" || obj.Name.Contains("Speed"))
             {
@@ -360,7 +360,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "speed" || obj.Name.Contains("Speed"))
             {

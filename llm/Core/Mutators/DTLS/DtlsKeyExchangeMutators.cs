@@ -25,7 +25,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             // Traverse down to find blobs like 'dh_p', 'ec_point' etc. and mutate them.
             // C code logic dispatches based on structure. Here we rely on recursive
@@ -61,7 +61,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var blk = obj as Block;
             var u = blk.find("u") as Choice;

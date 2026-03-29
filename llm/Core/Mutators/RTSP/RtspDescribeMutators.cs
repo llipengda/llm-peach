@@ -27,7 +27,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept" || obj.Name.Contains("Accept"))
             {
@@ -57,7 +57,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept" || obj.Name.Contains("Accept"))
             {
@@ -87,7 +87,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept" || obj.Name.Contains("Accept"))
             {
@@ -117,7 +117,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept" || obj.Name.Contains("Accept"))
             {
@@ -172,7 +172,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
@@ -202,7 +202,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
@@ -232,7 +232,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
@@ -262,7 +262,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept_encoding" || obj.Name.Contains("encoding"))
             {
@@ -323,7 +323,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
@@ -353,7 +353,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
@@ -383,7 +383,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {
@@ -413,7 +413,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "accept_language" || obj.Name.Contains("language"))
             {

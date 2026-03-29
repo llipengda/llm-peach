@@ -25,7 +25,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var blob = obj as Blob;
             if (blob.Value.Length == 0)
@@ -53,7 +53,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var blob = obj as Blob;
             blob.MutatedValue = new Variant(new byte[0]);
@@ -76,7 +76,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var blob = obj as Blob;
             byte[] cur = blob.Bytes();
@@ -106,7 +106,7 @@ namespace Peach.LLM.Core.Mutators.DTLS
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var blob = obj as Blob;
             byte[] val = blob.Bytes();

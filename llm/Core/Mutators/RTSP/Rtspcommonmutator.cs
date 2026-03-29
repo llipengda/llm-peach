@@ -30,7 +30,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var random = RtspUtils.GetRandom();
             int[] weights = { 100, 100, 0, 0, 0, 0, 100, 100, 0, 0, 0, 0 };
@@ -116,7 +116,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             var random = RtspUtils.GetRandom();
             int[] weights = { 100, 0, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

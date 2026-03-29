@@ -26,7 +26,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
@@ -55,7 +55,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
@@ -84,7 +84,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
@@ -113,7 +113,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "connection" || obj.Name.Contains("Connection"))
             {
@@ -144,7 +144,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
@@ -173,7 +173,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
@@ -202,7 +202,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
@@ -231,7 +231,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "date" || obj.Name.Contains("Date"))
             {
@@ -268,7 +268,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
@@ -297,7 +297,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
@@ -326,7 +326,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
@@ -355,7 +355,7 @@ namespace Peach.LLM.Core.Mutators.RTSP
 
         public override void randomMutation(DataElement obj) { PerformMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             if (obj.Name == "via" || obj.Name.Contains("Via"))
             {
