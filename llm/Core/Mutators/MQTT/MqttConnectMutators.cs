@@ -156,7 +156,7 @@ namespace Peach.LLM.Core.Mutators.MQTT
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             // mutate_connect_properties logic from C
             obj.MutatedValue = new Variant(GenerateRandomProperties());
@@ -752,7 +752,7 @@ namespace Peach.LLM.Core.Mutators.MQTT
         }
         public override void randomMutation(DataElement obj) { sequentialMutation(obj); }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             using (var ms = new MemoryStream())
             using (var bw = new BinaryWriter(ms))

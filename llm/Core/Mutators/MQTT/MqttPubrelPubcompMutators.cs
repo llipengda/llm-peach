@@ -422,7 +422,7 @@ namespace Peach.LLM.Core.Mutators.MQTT
         public override uint mutation { get; set; }
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             byte[] original = obj.Bytes();
             if (original == null || original.Length == 0) return;
@@ -546,7 +546,7 @@ namespace Peach.LLM.Core.Mutators.MQTT
         public override uint mutation { get; set; }
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             byte[] original = obj.Bytes();
             if (original == null || original.Length == 0) return;

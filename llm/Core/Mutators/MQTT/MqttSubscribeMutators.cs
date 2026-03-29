@@ -85,7 +85,7 @@ namespace Peach.LLM.Core.Mutators.MQTT
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             obj.MutatedValue = new Variant(GenerateProperties());
         }
@@ -151,7 +151,7 @@ namespace Peach.LLM.Core.Mutators.MQTT
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             byte[] original = GetOriginalBytes(obj);
             if (original == null) original = new byte[0];
@@ -267,7 +267,7 @@ namespace Peach.LLM.Core.Mutators.MQTT
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             byte[] original = GetOriginalBytes(obj);
             if (original == null || original.Length == 0) return;
@@ -459,7 +459,7 @@ namespace Peach.LLM.Core.Mutators.MQTT
         public override void sequentialMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
         public override void randomMutation(DataElement obj) { PerformMutation(obj); obj.mutationFlags = MutateOverride.Default; }
 
-        private void PerformMutation(DataElement obj)
+        protected override void PerformMutation(DataElement obj)
         {
             // Placeholder: Peach Mutators can't easily add children to Block unless using ArrayMutator strategies
             // Attempt to act as ArrayVariance
