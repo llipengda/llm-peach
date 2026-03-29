@@ -9,7 +9,9 @@ namespace Peach.LLM.Core.Mutators
     {
         public LLMMutator(DataElement obj) : base(obj) { }
 
-        public override uint mutation { get; set; }
+        public override uint mutation { get; set; } = 1;
+
+        public override int count => 1;
 
         public int PickWeighted(int[] weights)
         {
@@ -38,8 +40,16 @@ namespace Peach.LLM.Core.Mutators
             }
         }
 
-        // public override int SelectionWeight => 100;
+        public override void sequentialMutation(DataElement obj)
+        {
+            throw new NotImplementedException();
+        }
 
-        // public override int weight => 100;
+        public override void randomMutation(DataElement obj)
+        {
+            PerformMutation(obj);
+        }
+
+        protected abstract void PerformMutation(DataElement obj);
     }
 }
