@@ -50,6 +50,9 @@ namespace Peach.LLM.Core.Mutators
             PerformMutation(obj);
         }
 
-        protected abstract void PerformMutation(DataElement obj);
+        protected virtual void PerformMutation(DataElement obj)
+        {
+            throw new NotImplementedException("PerformMutation should be implemented by derived mutators.");
+        }
     }
 }
