@@ -62,16 +62,6 @@ WORKDIR /peach
 
 RUN ./waf install --variant=linux_x86_64_release
 
-ENV PROTOCOL=mqtt \
-    STRATEGY=random \
-    MODE=llm-peach \
-    LOG_DIR=/peach/logs \
-    HOST=host.docker.internal \
-    PORT=1883 \
-    TIMEOUT=200 \
-    FIXUP=1 \
-    COUNT_PKT=0 \
-    MUTATION_PER_ELEM=3 \
-    PEACH_ARGS=
+WORKDIR /peach/output/linux_x86_64_release/bin
 
-CMD ["./entrypoint.sh"]
+CMD ["/bin/bash"]
