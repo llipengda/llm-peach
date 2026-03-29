@@ -34,7 +34,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E03280
 
 WORKDIR /peach/3rdParty/pin
 
-RUN wget https://software.intel.com/sites/landingpage/pintool/downloads/pin-3.19-98425-gd666b2bee-gcc-linux.tar.gz && \
+RUN wget --no-check-certificate https://software.intel.com/sites/landingpage/pintool/downloads/pin-3.19-98425-gd666b2bee-gcc-linux.tar.gz && \
     tar -xzf pin-3.19-98425-gd666b2bee-gcc-linux.tar.gz && \
     mv pin-3.19-98425-gd666b2bee-gcc-linux pin-3.19-98425-gcc-linux && \
     rm pin-3.19-98425-gd666b2bee-gcc-linux.tar.gz
@@ -47,7 +47,7 @@ RUN sed -i '1i #define STATIC_ASSERT(cond)' core/BasicBlocks/bblocks.cpp
 
 RUN ./waf configure
 
-RUN ./waf build
+RUN ./waf build --variant=linux_x86_64_release
 
 #############################################################################################################################
 FROM base AS runner
@@ -60,7 +60,7 @@ COPY --from=builder /peach /peach
 
 WORKDIR /peach
 
-RUN ./waf install
+RUN ./waf install --variant=linux_x86_64_release
 
 WORKDIR /peach/output/linux_x86_64_release/bin
 

@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>ExtendExamples</AssemblyName>
+    <RootNamespace>ExtendExamples</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../pro/SDK/extend/examples/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
+  </ItemGroup>
+</Project>

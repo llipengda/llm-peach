@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Peach.Pro</AssemblyName>
+    <RootNamespace>Peach.Pro.Core</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../pro/Core/**/*.cs" />
+    <Compile Remove="../../../pro/Core/OS/Windows/**/*.cs" />
+    <Compile Include="../../../pro/Core/OS/Windows/Pal.cs" />
+    <Compile Include="../../../pro/Core/OS/Windows/WinSerialStream.cs" />
+    <Compile Include="../../../pro/Core/OS/Windows/SingleInstance.cs" />
+    <Compile Include="../../../pro/Core/OS/Windows/Publishers/**/*.cs" />
+    <EmbeddedResource Include="../../../pro/Core/Resources/**/*" />
+    <EmbeddedResource Include="../../../pro/Core/WebServices/Views/**/*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Data.SQLite">
+      <HintPath>../../../3rdParty/System.Data.SQLite.x64.1.0.98.1/lib/net45/System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Web" />
+    <Reference Include="IronPython">
+      <HintPath>../../../3rdParty/IronPython.2.7.5/lib/Net45/IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamic">
+      <HintPath>../../../3rdParty/IronPython.2.7.5/lib/Net45/Microsoft.Dynamic.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>../../../3rdParty/IronPython.2.7.5/lib/Net45/Microsoft.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting.Metadata">
+      <HintPath>../../../3rdParty/IronPython.2.7.5/lib/Net45/Microsoft.Scripting.Metadata.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

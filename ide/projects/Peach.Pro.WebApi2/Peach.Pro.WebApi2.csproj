@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Peach.Pro.WebApi2</AssemblyName>
+    <RootNamespace>Peach.Pro.WebApi2</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../pro/WebApi2/**/*.cs" />
+    <EmbeddedResource Include="../../../pro/WebApi2/Resources/**/*" />
+    <EmbeddedResource Include="../../../pro/WebApi2/Views/**/*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
+    <ProjectReference Include="../Peach.Pro/Peach.Pro.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+</Project>

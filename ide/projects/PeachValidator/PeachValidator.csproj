@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>PeachValidator</AssemblyName>
+    <RootNamespace>Peach.Pro</RootNamespace>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../pro/Validator/**/*.cs" />
+    <EmbeddedResource Include="../../../pro/Validator/**/*.resx" />
+    <EmbeddedResource Include="../../../pro/Validator/icons/*.*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
+    <ProjectReference Include="../Peach.Pro/Peach.Pro.csproj" />
+  </ItemGroup>
+</Project>

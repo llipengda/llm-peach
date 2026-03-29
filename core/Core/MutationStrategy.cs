@@ -204,10 +204,18 @@ namespace Peach.Core
 
 			Func<Type, MutatorAttribute, bool> predicate = (type, attr) =>
 			{
-				if (Context.test.includedMutators.Count > 0 && !Context.test.includedMutators.Contains(type.Name))
+				var aliasAttrs = type.GetCustomAttributes<AliasAttribute>();
+
+				var aliases = aliasAttrs.Select(a => a.Name).ToList();
+
+				if (Context.test.includedMutators.Count > 0 &&
+					!Context.test.includedMutators.Contains(type.Name) &&
+					!aliases.Any(alias => Context.test.includedMutators.Contains(alias)))
 					return false;
 
-				if (Context.test.excludedMutators.Count > 0 && Context.test.excludedMutators.Contains(type.Name))
+				if (Context.test.excludedMutators.Count > 0 &&
+					(Context.test.excludedMutators.Contains(type.Name) ||
+					aliases.Any(alias => Context.test.excludedMutators.Contains(alias))))
 					return false;
 
 				return true;
@@ -237,7 +245,7 @@ namespace Peach.Core
 		}
 	}
 
-	[AttributeUsage(AttributeTargets.Class, Inherited=false)]
+	[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 	public class DefaultMutationStrategyAttribute : Attribute
 	{
 	}

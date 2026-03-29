@@ -1,0 +1,40 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>latestMajor</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <NoWarn>$(NoWarn);1701;1702</NoWarn>
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac.WebApi2.Owin" Version="3.3.0" />
+    <PackageReference Include="Dapper" Version="1.42" />
+    <PackageReference Include="DiffPlex" Version="1.4.1" />
+    <PackageReference Include="DotNetZip" Version="1.9.8" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
+    <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="0.8.27-beta" />
+    <PackageReference Include="Microsoft.Owin.Host.HttpListener" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Owin.Hosting" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Owin.StaticFiles" Version="3.0.1" />
+    <PackageReference Include="Mono.Posix-4.5" Version="4.5.0" />
+    <PackageReference Include="NLog" Version="4.3.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="6.0.8" />
+    <PackageReference Include="NUnit" Version="3.2.1" />
+    <PackageReference Include="Nustache" Version="1.16.0.1" />
+    <PackageReference Include="PacketDotNet" Version="0.16.0" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.10" />
+    <PackageReference Include="SharpPcap" Version="4.4.0" />
+    <PackageReference Include="SocketHttpListener" Version="1.0.0.30" />
+    <PackageReference Include="Swashbuckle.Core.Net45" Version="5.2.1" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
+    <PackageReference Include="System.Management" Version="6.0.1" />
+    <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
+    <PackageReference Include="TreeViewAdv" Version="1.7.0" />
+    <PackageReference Include="vtortola.WebSocketListener" Version="2.2.0.1" />
+    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc9" />
+  </ItemGroup>
+</Project>

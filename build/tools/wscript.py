@@ -227,6 +227,9 @@ def build(bld):
 		Options.options.destdir = bld.path.abspath()
 
 	if subdirs:
+		if 'llm' in subdirs:
+			subdirs.remove('llm')
+			subdirs.append('llm')
 		bld.recurse(subdirs)
 		return
 
