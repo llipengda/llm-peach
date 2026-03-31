@@ -19,7 +19,7 @@ namespace Peach.LLM.Core.Dom
 	[PitParsable("Optional")]
 	[Parameter("name", typeof(string), "Element name", "")]
 	[Parameter("fieldId", typeof(string), "Element field ID", "")]
-	[Parameter("ref", typeof(string), "Reference to element to optionally include", "")]
+	[Parameter("ref", typeof(string), "Reference to element to use in expression", "")]
 	[Parameter("expression", typeof(string), "Scripting expression for conditional inclusion (ref value available as 'value'; use '&gt;' for '>' and '&lt;' for '<')", "")]
 	[Parameter("length", typeof(uint?), "Length in data element", "")]
 	[Parameter("lengthType", typeof(LengthType), "Units of the length attribute", "bytes")]
