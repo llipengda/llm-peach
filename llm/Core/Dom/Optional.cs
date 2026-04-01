@@ -266,42 +266,17 @@ namespace Peach.LLM.Core.Dom
 
             Optional optional;
 
-			if (node.hasAttr("src"))
-			{
-				var name = node.getAttr("name", null);
-				var srcName = node.getAttrString("src");
-				var dom = ((DataModel)parent.root).dom;
-				var refObj = dom.getRef(srcName, parent);
+			optional = Generate<Optional>(node, parent);
+			optional.parent = parent;
 
-				if (refObj == null)
-					throw new PeachException("Error, Optional {0}could not resolve ref '{1}'. XML:\n{2}".Fmt(
-						name == null ? "" : "'" + name + "' ", srcName, node.OuterXml));
-
-				if (!(refObj is DataElement))
-					throw new PeachException("Error, Optional {0}resolved ref '{1}' to unsupported element {2}. XML:\n{3}".Fmt(
-						name == null ? "" : "'" + name + "' ", srcName, refObj.debugName, node.OuterXml));
-				
-				if (string.IsNullOrEmpty(name))
-					name = new Optional().Name;
-
-                optional = new Optional(name)
-                {
-                    parent = parent,
-                    isReference = true,
-					referenceName = srcName,
-					SourcePath = srcName
-                };
-            }
-			else
-			{
-				optional = Generate<Optional>(node, parent);
-				optional.parent = parent;
-			}
 
 			// Parse 'expression' attribute
 			var exprAttr = node.Attributes["expression"];
 			if (exprAttr != null)
 				optional.Expression = exprAttr.Value;
+			var srcAttr = node.Attributes["src"];
+			if (srcAttr != null && string.IsNullOrWhiteSpace(optional.SourcePath))
+				optional.SourcePath = srcAttr.Value;
 
 			context.handleCommonDataElementAttributes(node, optional);
 			context.handleCommonDataElementChildren(node, optional);
