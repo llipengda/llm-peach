@@ -13,14 +13,14 @@ namespace Peach.LLM.Core.Dom
 	/// <summary>
 	/// Optional data element - Conditional element wrapper
 	/// Includes or excludes wrapped content based on expression evaluation
-	/// ref element's value is available as 'value' in the expression
+	/// src element's value is available as 'value' in the expression
 	/// </summary>
 	[DataElement("Optional")]
 	[PitParsable("Optional")]
 	[Parameter("name", typeof(string), "Element name", "")]
 	[Parameter("fieldId", typeof(string), "Element field ID", "")]
-	[Parameter("ref", typeof(string), "Reference to element to use in expression", "")]
-	[Parameter("expression", typeof(string), "Scripting expression for conditional inclusion (ref value available as 'value'; use '&gt;' for '>' and '&lt;' for '<')", "")]
+	[Parameter("src", typeof(string), "Reference to element to use in expression. `src` is a dot-separated path that can start from any node; if multiple matches exist, the one with the nearest common ancestor to the current context is selected.", "")]
+	[Parameter("expression", typeof(string), "Scripting expression for conditional inclusion (src value available as 'value'; use '&gt;' for '>' and '&lt;' for '<')", "")]
 	[Parameter("length", typeof(uint?), "Length in data element", "")]
 	[Parameter("lengthType", typeof(LengthType), "Units of the length attribute", "bytes")]
 	[Parameter("mutable", typeof(bool), "Is element mutable", "true")]
@@ -35,7 +35,7 @@ namespace Peach.LLM.Core.Dom
 		/// <summary>
 		/// Reference to the element that should be optionally included
 		/// </summary>
-		public string Ref { get; set; }
+		public string SourcePath { get; set; }
 
 		/// <summary>
 		/// Expression that determines if the element should be included
@@ -65,7 +65,7 @@ namespace Peach.LLM.Core.Dom
 			if (_refElement != null)
 				return _refElement;
 
-			if (string.IsNullOrWhiteSpace(Ref))
+			if (string.IsNullOrWhiteSpace(SourcePath))
 				return null;
 
 			DataElement elem = null;
@@ -73,7 +73,7 @@ namespace Peach.LLM.Core.Dom
 			var p = parent;
 			while (p != null)
 			{
-				elem = p.find(Ref);
+				elem = p.find(SourcePath);
 
 				if (elem != null)
 					break;
@@ -173,7 +173,7 @@ namespace Peach.LLM.Core.Dom
 
 		/// <summary>
 		/// Evaluate the conditional expression
-		/// ref element's value is available as 'value' in the expression
+		/// src element's value is available as 'value' in the expression
 		/// </summary>
 		public bool EvaluateCondition()
 		{
@@ -185,7 +185,7 @@ namespace Peach.LLM.Core.Dom
 				var refElement = GetReferencedElement();
 				if (refElement == null)
 					throw new PeachException(string.Format(
-						"Optional '{0}': Referenced element '{1}' not found", debugName, Ref));
+						"Optional '{0}': Referenced element '{1}' not found", debugName, SourcePath));
 
 				// Get the value from the referenced element
 				var refValue = refElement.DefaultValue;
@@ -266,20 +266,20 @@ namespace Peach.LLM.Core.Dom
 
             Optional optional;
 
-            if (node.hasAttr("ref"))
+			if (node.hasAttr("src"))
 			{
 				var name = node.getAttr("name", null);
-				var refName = node.getAttrString("ref");
+				var srcName = node.getAttrString("src");
 				var dom = ((DataModel)parent.root).dom;
-				var refObj = dom.getRef(refName, parent);
+				var refObj = dom.getRef(srcName, parent);
 
 				if (refObj == null)
 					throw new PeachException("Error, Optional {0}could not resolve ref '{1}'. XML:\n{2}".Fmt(
-						name == null ? "" : "'" + name + "' ", refName, node.OuterXml));
+						name == null ? "" : "'" + name + "' ", srcName, node.OuterXml));
 
 				if (!(refObj is DataElement))
 					throw new PeachException("Error, Optional {0}resolved ref '{1}' to unsupported element {2}. XML:\n{3}".Fmt(
-						name == null ? "" : "'" + name + "' ", refName, refObj.debugName, node.OuterXml));
+						name == null ? "" : "'" + name + "' ", srcName, refObj.debugName, node.OuterXml));
 				
 				if (string.IsNullOrEmpty(name))
 					name = new Optional().Name;
@@ -288,8 +288,8 @@ namespace Peach.LLM.Core.Dom
                 {
                     parent = parent,
                     isReference = true,
-                    referenceName = refName,
-                    Ref = refName
+					referenceName = srcName,
+					SourcePath = srcName
                 };
             }
 			else
@@ -318,7 +318,7 @@ namespace Peach.LLM.Core.Dom
 			pit.WriteStartElement("Optional");
 
 			if (referenceName != null)
-				pit.WriteAttributeString("ref", referenceName);
+				pit.WriteAttributeString("src", referenceName);
 
 			if (!string.IsNullOrEmpty(Expression))
 				pit.WriteAttributeString("expression", Expression);
