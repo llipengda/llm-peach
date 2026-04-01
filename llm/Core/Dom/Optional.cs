@@ -311,7 +311,7 @@ namespace Peach.LLM.Core.Dom
 		protected override Variant GenerateDefaultValue()
 		{
 			if (!Exists)
-				return new Variant();
+				return new Variant(new byte[0]);
 
 			return base.GenerateDefaultValue();
 		}
