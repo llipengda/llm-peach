@@ -47,6 +47,8 @@ namespace Peach.LLM.Core.Dom
 		/// </summary>
 		private DataElement _refElement;
 
+		public bool Exists => EvaluateCondition();
+
 		public Optional()
 			: base()
 		{
@@ -96,8 +98,7 @@ namespace Peach.LLM.Core.Dom
 
 			try
 			{
-				// Evaluate the conditional expression
-				if (!EvaluateCondition())
+				if (!Exists)
 				{
 					logger.Trace("Optional '{0}': Condition `{1}` evaluated to false, skipping cracking", debugName, Expression);
 					return;
@@ -305,6 +306,14 @@ namespace Peach.LLM.Core.Dom
 				obj.WritePit(pit);
 
 			pit.WriteEndElement();
+		}
+
+		protected override Variant GenerateDefaultValue()
+		{
+			if (!Exists)
+				return new Variant();
+
+			return base.GenerateDefaultValue();
 		}
 	}
 }
