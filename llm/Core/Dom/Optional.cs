@@ -70,20 +70,15 @@ namespace Peach.LLM.Core.Dom
 
 			DataElement elem = null;
 
-			// Try to find the element in the parent container
-			if (parent != null)
+			var p = parent;
+			while (p != null)
 			{
-				if (parent is DataElementContainer container)
-				{
-					foreach (var child in container)
-					{
-						if (child.Name == Ref)
-						{
-							elem = child as DataElement;
-							break;
-						}
-					}
-				}
+				elem = p.find(Ref);
+
+				if (elem != null)
+					break;
+
+				p = p.parent;
 			}
 
 			_refElement = elem;
