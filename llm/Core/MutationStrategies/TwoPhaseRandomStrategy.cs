@@ -8,6 +8,7 @@ using Peach.Core.Dom;
 using Peach.Pro.Core;
 using Peach.Pro.Core.Mutators.Utility;
 using Peach.Pro.Core.Runtime;
+using Peach.LLM.Core.Mutators;
 using Peach.LLM.Core.Fixups;
 using Peach.Pro.Core.MutationStrategies;
 using Action = Peach.Core.Dom.Action;
@@ -177,11 +178,11 @@ namespace Peach.LLM.Core.MutationStrategies
 		}
 
 		/// <summary>
-		/// Check if a mutator type belongs to LLM mutators namespace
+		/// Check if a mutator type belongs to LLM mutators
 		/// </summary>
 		protected bool IsLLMMutator(Type mutatorType)
 		{
-			return mutatorType != null && mutatorType.Namespace != null && mutatorType.Namespace.StartsWith("Peach.LLM.Core.Mutators");
+			return mutatorType != null && typeof(LLMMutator).IsAssignableFrom(mutatorType);
 		}
 
 		/// <summary>
