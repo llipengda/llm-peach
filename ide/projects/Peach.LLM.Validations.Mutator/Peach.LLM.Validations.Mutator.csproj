@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Peach.LLM.Validations.Mutator</AssemblyName>
+    <RootNamespace>Peach.LLM.Validations.Mutator</RootNamespace>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../llm/Validations/Mutator/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../../llm/Validations/Mutator/app.config" Link="app.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
+    <ProjectReference Include="../Peach.Pro/Peach.Pro.csproj" />
+    <ProjectReference Include="../Peach.LLM/Peach.LLM.csproj" />
+  </ItemGroup>
+</Project>

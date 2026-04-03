@@ -7,6 +7,7 @@ using Peach.Core.IO;
 using Peach.Pro.Core;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using Peach.LLM.Core.Mutators;
 
 using DM = Peach.Core.Dom.DataModel;
@@ -58,9 +59,11 @@ namespace Peach.LLM.Validations.Mutator
 
         static void Main(string[] args)
         {
+            LoadPlugins();
+
             if (args.Length != 3)
             {
-                Console.WriteLine("Usage: MutatorsTest <pitFilePath> <dataFilePath> <dataModelName>");
+                Console.WriteLine("Usage: Peach.LLM.Validations.Mutator <pitFilePath> <dataFilePath> <dataModelName>");
                 return;
             }
 
@@ -204,6 +207,30 @@ namespace Peach.LLM.Validations.Mutator
                 .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(LLMMutator)));
             mutators.AddRange(m);
             mutators.Sort((a, b) => a.Name.CompareTo(b.Name));
+        }
+
+        static void LoadPlugins()
+        {
+            var pluginDir = Path.GetFullPath("./Plugins");
+            if (!Directory.Exists(pluginDir))
+            {
+                Console.WriteLine($"Plugin directory not found: {pluginDir}");
+                return;
+            }
+
+            var pluginDlls = Directory.GetFiles(pluginDir, "*.dll", SearchOption.TopDirectoryOnly);
+            foreach (var dll in pluginDlls)
+            {
+                try
+                {
+                    Assembly.LoadFrom(dll);
+                    Console.WriteLine($"Loaded : {Path.GetFileName(dll)}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to load '{Path.GetFileName(dll)}': {ex.Message}");
+                }
+            }
         }
 
         static DataElement ParseData(string pitFile, string dataFile, string modelName)
