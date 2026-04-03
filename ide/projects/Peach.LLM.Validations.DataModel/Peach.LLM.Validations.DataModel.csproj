@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Peach.LLM.Validations.DataModel</AssemblyName>
+    <RootNamespace>Peach.LLM.Validations.DataModel</RootNamespace>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../llm/Validations/DataModel/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../../../llm/Validations/DataModel/app.config" Link="app.config" />
+    <None Include="../../../llm/Validations/DataModel/NLog.Peach.LLM.Validations.DataModel.config" Link="NLog.Peach.LLM.Validations.DataModel.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
+    <ProjectReference Include="../Peach.Pro/Peach.Pro.csproj" />
+    <ProjectReference Include="../Peach.LLM/Peach.LLM.csproj" />
+  </ItemGroup>
+</Project>
