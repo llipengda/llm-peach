@@ -86,8 +86,6 @@ namespace Peach.LLM.Validations.Mutator
 
         static string dataFileFolder;
 
-        static readonly string logsFolder = "/logs";
-
         static void Main(string[] args)
         {
             if (args.Length != 3 && args.Length != 4)
@@ -345,14 +343,12 @@ namespace Peach.LLM.Validations.Mutator
 
         static void WriteFailureAndErrorLogs()
         {
-            Directory.CreateDirectory(logsFolder);
-
             foreach (var mutator in mutators)
             {
                 var mutatorName = mutator.Name;
                 var safeMutatorName = SanitizeFileName(mutatorName);
-                var failFilePath = Path.Combine(logsFolder, "fail", $"{safeMutatorName}.log");
-                var errorFilePath = Path.Combine(logsFolder, "error", $"{safeMutatorName}.log");
+                var failFilePath = Path.Combine("fail", $"{safeMutatorName}.log");
+                var errorFilePath = Path.Combine("error", $"{safeMutatorName}.log");
 
                 if (failLogs.TryGetValue(mutatorName, out var failEntries) && failEntries.Count > 0)
                 {
