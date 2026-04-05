@@ -68,7 +68,7 @@ namespace Peach.LLM.Core
             var o = obj;
             while (o != null)
             {
-                if (o.Name == name || o.Name.Contains("_" + name) || (o.referenceName != null && o.referenceName.Contains("_" + name)))
+                if (o.Name == name || o.referenceName == name || o.Name.Contains("_" + name) || (o.referenceName != null && o.referenceName.Contains("_" + name)))
                     return true;
                 o = o.parent;
             }
