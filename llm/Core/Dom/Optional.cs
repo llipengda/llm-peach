@@ -47,16 +47,36 @@ namespace Peach.LLM.Core.Dom
 		/// </summary>
 		private DataElement _refElement;
 
-		public bool Exists => EvaluateCondition();
+		public bool Exists
+		{
+			get
+			{
+				if (_exists.HasValue)
+					return _exists.Value;
+
+				return EvaluateCondition();
+			}
+			set => _exists = value;
+		}
+
+		private bool? _exists;
 
 		public Optional()
 			: base()
 		{
+			Invalidated += (sender, args) =>
+			{
+				_exists = true;
+			};
 		}
 
 		public Optional(string name)
 			: base(name)
 		{
+			Invalidated += (sender, args) =>
+			{
+				_exists = true;
+			};
 		}
 
 		/// <summary>
