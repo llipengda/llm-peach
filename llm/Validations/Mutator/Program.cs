@@ -6,8 +6,10 @@ using Peach.Core.Cracker;
 using Peach.Core.IO;
 using Peach.Pro.Core;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Peach.LLM.Core.Mutators;
 
 using DM = Peach.Core.Dom.DataModel;
@@ -26,12 +28,14 @@ namespace Peach.LLM.Validations.Mutator
         {
             public DataElement Element;
             public Type MutatorType;
+            public string DataFile;
         }
 
         enum TestResult
         {
             Pass,
-            Fail
+            Fail,
+            Error
         }
 
         class MockStrategy : MutationStrategy
@@ -53,31 +57,77 @@ namespace Peach.LLM.Validations.Mutator
             public override uint Iteration { get; set; } = 0;
         }
 
-        static Dictionary<TestInfo, List<TestResult>> testResults = new Dictionary<TestInfo, List<TestResult>>();
+        static ConcurrentDictionary<TestInfo, List<TestResult>> testResults = new ConcurrentDictionary<TestInfo, List<TestResult>>();
+
+        static Dictionary<string, int> mutatorTestCounts = new Dictionary<string, int>();
 
         static readonly List<TestInfo> tests = new List<TestInfo>();
 
+        static string pitFilePath;
+
+        static string dataModelName;
+
+        static string dataFileFolder;
+
         static void Main(string[] args)
         {
-            LoadPlugins();
-
-            if (args.Length != 3)
+            if (args.Length != 3 && args.Length != 4)
             {
-                Console.WriteLine("Usage: Peach.LLM.Validations.Mutator <pitFilePath> <dataFilePath> <dataModelName>");
+                Console.WriteLine("Usage: Peach.LLM.Validations.Mutator <pitFilePath> <dataFileFolder> <dataModelName> [<testIterations>]");
                 return;
             }
 
-            string pitFilePath = args[0];
-            string targetFilePath = args[1];
-            string dataModelName = args[2];
+            ClassLoader.Initialize("./Plugins");
+
+            pitFilePath = args[0];
+            dataFileFolder = args[1];
+            dataModelName = args[2];
+
+            if (args.Length == 4)
+            {
+                if (!int.TryParse(args[3], out int iterations))
+                {
+                    Console.WriteLine($"Invalid test iterations value: {args[3]}");
+                    return;
+                }
+                testIterations = iterations;
+            }
 
             FindMutators();
 
+            Console.WriteLine($"Found {mutators.Count} mutators to test.");
+
+            if (!Directory.Exists(dataFileFolder))
+            {
+                Console.WriteLine($"Data file folder does not exist: {dataFileFolder}");
+                return;
+            }
+            var dataFiles = Directory.GetFiles(dataFileFolder);
+            Console.WriteLine($"Found {dataFiles.Length} data files to test.");
+
+            Console.WriteLine($"Testing with {Environment.ProcessorCount} cpu cores");
+
+            foreach (var dataFile in dataFiles)
+            {
+                Console.WriteLine($"Testing data file: {dataFile}");
+                TestSingleFile(dataFile);
+                if (mutators.Count <= mutatorTestCounts.Count)
+                {
+                    Console.WriteLine("All mutators have reached the test limit. Ending tests.");
+                    break;
+                }
+            }
+
+            ShowResults();
+        }
+
+        static void TestSingleFile(string dataFilePath)
+        {
             DataElement root = null;
 
             try
             {
-                root = ParseData(pitFilePath, targetFilePath, dataModelName);
+                root = ParseData(pitFilePath, dataFilePath, dataModelName);
                 Console.WriteLine($"Root Element Name: {root?.Name}");
                 Console.WriteLine($"Data Length: {root?.Value.Length}");
             }
@@ -101,61 +151,114 @@ namespace Peach.LLM.Validations.Mutator
                     bool isSupported = (bool)supportedDataElementFn.Invoke(null, new object[] { elem });
                     if (isSupported)
                     {
+                        if (!mutatorTestCounts.ContainsKey(mutatorType.FullName))
+                            mutatorTestCounts[mutatorType.FullName] = 0;
+                        if (mutatorTestCounts[mutatorType.FullName] >= 1)
+                            continue;
+                        mutatorTestCounts[mutatorType.FullName]++;
                         tests.Add(new TestInfo()
                         {
                             Element = elem,
-                            MutatorType = mutatorType
+                            MutatorType = mutatorType,
+                            DataFile = dataFilePath
                         });
                     }
                 }
             }
 
-            Console.WriteLine($"Found {tests.Count} tests to run.");
+            Console.WriteLine($"Found {tests.Count} tests to run in file {dataFilePath}.");
 
             Test(root);
 
-            ShowResults();
+            tests.Clear();
         }
 
-        static readonly int testIterations = 100;
+        static readonly object consoleLock = new object();
+
+        static int testIterations = 100;
 
         static void Test(DataElement root)
         {
-            int t = 0;
+            // Initialize test results for all tests first
             foreach (var test in tests)
             {
-                t++;
-                testResults.Add(test, new List<TestResult>());
+                testResults.TryAdd(test, new List<TestResult>());
+            }
+
+            // Run tests in parallel
+            Parallel.ForEach(tests, new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }, (test, loopState) =>
+            {
+                var testIndex = tests.IndexOf(test) + 1;
+                var testResultList = testResults[test];
+
                 for (int i = 0; i < testIterations; i++)
                 {
                     if (i % 10 == 0)
-                        WriteColored($"TESTING [{t:000}/{tests.Count:000}][{i + 1:000}/{testIterations}] {test.MutatorType.Name} on {test.Element.fullName}\n", ConsoleColor.Yellow);
+                    {
+                        lock (consoleLock)
+                        {
+                            WriteColored($"TESTING [{testIndex:000}/{tests.Count:000}][{i + 1:000}/{testIterations}] {test.MutatorType.Name} on {test.Element.fullName}\n", ConsoleColor.Yellow);
+                        }
+                    }
+
                     var rootClone = ObjectCopier.Clone(root) as DM;
+                    rootClone.dom = dom;
                     var elem = rootClone.find(test.Element.fullName);
                     if (!(Activator.CreateInstance(test.MutatorType, new object[] { elem }) is LLMMutator mutator))
                     {
-                        Console.WriteLine($"Failed to create mutator of type {test.MutatorType.FullName} for element {elem.fullName}");
-                        testResults[test].Add(TestResult.Fail);
+                        lock (consoleLock)
+                        {
+                            Console.WriteLine($"Failed to create mutator of type {test.MutatorType.FullName} for element {elem.fullName}");
+                        }
+                        lock (testResultList)
+                        {
+                            testResultList.Add(TestResult.Error);
+                        }
                         continue;
                     }
                     mutator.context = new MockStrategy();
-                    mutator.randomMutation(elem);
-                    var v = rootClone.Value;
+                    BitwiseStream v;
+                    try
+                    {
+                        mutator.randomMutation(elem);
+                        v = rootClone.Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        lock (consoleLock)
+                        {
+                            Console.WriteLine($"Mutator {test.MutatorType.Name} threw an exception during mutation for element {elem.fullName}: {ex.Message}");
+                        }
+                        lock (testResultList)
+                        {
+                            testResultList.Add(TestResult.Error);
+                        }
+                        continue;
+                    }
                     var dataCracker = new DataCracker();
                     try
                     {
                         var dataModelClone = ObjectCopier.Clone(originalDataModel);
                         dataModelClone.dom = dom;
                         dataCracker.CrackData(dataModelClone, new BitStream(v));
-                        testResults[test].Add(TestResult.Pass);
+                        lock (testResultList)
+                        {
+                            testResultList.Add(TestResult.Pass);
+                        }
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Mutator {test.MutatorType.Name} failed to re-crack data for element {elem.fullName}: {ex.Message}");
-                        testResults[test].Add(TestResult.Fail);
+                        lock (consoleLock)
+                        {
+                            Console.WriteLine($"Mutator {test.MutatorType.Name} failed to re-crack data for element {elem.fullName}: {ex.Message}");
+                        }
+                        lock (testResultList)
+                        {
+                            testResultList.Add(TestResult.Fail);
+                        }
                     }
                 }
-            }
+            });
         }
 
         static void ShowResults()
@@ -166,8 +269,9 @@ namespace Peach.LLM.Validations.Mutator
                 Mutator = g.Key,
                 Pass = g.Sum(kvp => kvp.Value.Count(r => r == TestResult.Pass)),
                 Fail = g.Sum(kvp => kvp.Value.Count(r => r == TestResult.Fail)),
+                Error = g.Sum(kvp => kvp.Value.Count(r => r == TestResult.Error)),
                 Total = g.Sum(kvp => kvp.Value.Count()),
-                Status = g.Any(kvp => kvp.Value.Any(r => r == TestResult.Fail)) ? "FAIL" : "PASS"
+                Status = g.Any(kvp => kvp.Value.Any(r => r == TestResult.Error)) ? "ERROR" : (g.All(kvp => kvp.Value.All(r => r == TestResult.Pass)) ? "PASS" : "FAIL")
             }).ToDictionary(x => x.Mutator, x => x);
 
             foreach (var t in mutators)
@@ -179,9 +283,14 @@ namespace Peach.LLM.Validations.Mutator
                         WriteColored($"[PASS][{r.Pass:000}/{r.Total:000}]", ConsoleColor.Green);
                         Console.WriteLine($" {t.Name}");
                     }
-                    else
+                    else if (r.Status == "FAIL")
                     {
                         WriteColored($"[FAIL][{r.Pass:000}/{r.Total:000}]", ConsoleColor.Red);
+                        Console.WriteLine($" {t.Name}");
+                    }
+                    else
+                    {
+                        WriteColored($"[ERROR]", ConsoleColor.Magenta);
                         Console.WriteLine($" {t.Name}");
                     }
                 }
@@ -203,40 +312,37 @@ namespace Peach.LLM.Validations.Mutator
 
         static void FindMutators()
         {
-            var m = typeof(LLMMutator).Assembly.GetTypes()
-                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(LLMMutator)));
-            mutators.AddRange(m);
-            mutators.Sort((a, b) => a.Name.CompareTo(b.Name));
-        }
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var allTypes = new List<Type>();
 
-        static void LoadPlugins()
-        {
-            var pluginDir = Path.GetFullPath("./Plugins");
-            if (!Directory.Exists(pluginDir))
-            {
-                Console.WriteLine($"Plugin directory not found: {pluginDir}");
-                return;
-            }
-
-            var pluginDlls = Directory.GetFiles(pluginDir, "*.dll", SearchOption.TopDirectoryOnly);
-            foreach (var dll in pluginDlls)
+            foreach (var assembly in assemblies)
             {
                 try
                 {
-                    Assembly.LoadFrom(dll);
-                    Console.WriteLine($"Loaded : {Path.GetFileName(dll)}");
+                    allTypes.AddRange(assembly.GetTypes());
                 }
-                catch (Exception ex)
+                catch (ReflectionTypeLoadException ex)
                 {
-                    Console.WriteLine($"Failed to load '{Path.GetFileName(dll)}': {ex.Message}");
+                    allTypes.AddRange(ex.Types.Where(t => t != null));
+                }
+                catch
+                {
+                    // Ignore assemblies that cannot be reflected.
                 }
             }
+
+            var m = allTypes
+                .Where(t => t.IsClass && !t.IsAbstract && t.IsSubclassOf(typeof(LLMMutator)));
+
+            mutators.AddRange(m);
+            var unique = mutators.Distinct().ToList();
+            mutators.Clear();
+            mutators.AddRange(unique);
+            mutators.Sort((a, b) => a.Name.CompareTo(b.Name));
         }
 
         static DataElement ParseData(string pitFile, string dataFile, string modelName)
         {
-            ClassLoader.Initialize();
-
             var parser = new ProPitParser(null, null, pitFile);
 
             var parserArgs = new Dictionary<string, object>();
