@@ -61,12 +61,17 @@ namespace Peach.LLM.Core.Dom
 
 		private bool? _exists;
 
+		private bool _isCracking = true;
+
 		public Optional()
 			: base()
 		{
 			Invalidated += (sender, args) =>
 			{
-				_exists = true;
+				if (!_isCracking)
+				{
+					_exists = true;
+				}
 			};
 		}
 
@@ -75,7 +80,10 @@ namespace Peach.LLM.Core.Dom
 		{
 			Invalidated += (sender, args) =>
 			{
-				_exists = true;
+				if (!_isCracking)
+				{
+					_exists = true;
+				}
 			};
 		}
 
@@ -190,6 +198,8 @@ namespace Peach.LLM.Core.Dom
 				throw new CrackingFailure(string.Format(
 					"Optional '{0}' cracking failed: {1}", debugName, ex.Message), this, data, ex);
 			}
+
+			_isCracking = false;
 		}
 
 		/// <summary>
