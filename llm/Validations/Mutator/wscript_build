@@ -25,4 +25,5 @@ bld(
 		frameworks = ['net45'],
 	),
 	source = bld.path.ant_glob('**/*.cs'),
+	install_644 = 'NLog.Peach.LLM.Validations.Mutator.config'
 )

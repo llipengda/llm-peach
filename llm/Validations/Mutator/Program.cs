@@ -9,8 +9,10 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Peach.LLM.Core.Mutators;
+using NLog;
 
 using DM = Peach.Core.Dom.DataModel;
 
@@ -38,6 +40,15 @@ namespace Peach.LLM.Validations.Mutator
             Error
         }
 
+        class TestLogInfo
+        {
+            public string DataFile;
+            public string ElementFullName;
+            public int Iteration;
+            public string Message;
+            public string StackTrace;
+        }
+
         class MockStrategy : MutationStrategy
         {
             public MockStrategy() : base(new Dictionary<string, Variant>())
@@ -59,15 +70,23 @@ namespace Peach.LLM.Validations.Mutator
 
         static ConcurrentDictionary<TestInfo, List<TestResult>> testResults = new ConcurrentDictionary<TestInfo, List<TestResult>>();
 
+        static ConcurrentDictionary<string, ConcurrentBag<TestLogInfo>> failLogs = new ConcurrentDictionary<string, ConcurrentBag<TestLogInfo>>();
+
+        static ConcurrentDictionary<string, ConcurrentBag<TestLogInfo>> errorLogs = new ConcurrentDictionary<string, ConcurrentBag<TestLogInfo>>();
+
         static Dictionary<string, int> mutatorTestCounts = new Dictionary<string, int>();
 
         static readonly List<TestInfo> tests = new List<TestInfo>();
+
+        static readonly NLog.Logger NLogger = LogManager.GetCurrentClassLogger();
 
         static string pitFilePath;
 
         static string dataModelName;
 
         static string dataFileFolder;
+
+        static readonly string logsFolder = "/logs";
 
         static void Main(string[] args)
         {
@@ -229,6 +248,16 @@ namespace Peach.LLM.Validations.Mutator
                         {
                             Console.WriteLine($"Mutator {test.MutatorType.Name} threw an exception during mutation for element {elem.fullName}: {ex.Message}");
                         }
+                        var mutatorName = test.MutatorType.Name;
+                        var logs = errorLogs.GetOrAdd(mutatorName, _ => new ConcurrentBag<TestLogInfo>());
+                        logs.Add(new TestLogInfo
+                        {
+                            DataFile = test.DataFile,
+                            ElementFullName = elem.fullName,
+                            Iteration = i + 1,
+                            Message = ex.Message,
+                            StackTrace = ex.StackTrace
+                        });
                         lock (testResultList)
                         {
                             testResultList.Add(TestResult.Error);
@@ -252,6 +281,16 @@ namespace Peach.LLM.Validations.Mutator
                         {
                             Console.WriteLine($"Mutator {test.MutatorType.Name} failed to re-crack data for element {elem.fullName}: {ex.Message}");
                         }
+                        var mutatorName = test.MutatorType.Name;
+                        var logs = failLogs.GetOrAdd(mutatorName, _ => new ConcurrentBag<TestLogInfo>());
+                        logs.Add(new TestLogInfo
+                        {
+                            DataFile = test.DataFile,
+                            ElementFullName = elem.fullName,
+                            Iteration = i + 1,
+                            Message = ex.Message,
+                            StackTrace = ex.StackTrace
+                        });
                         lock (testResultList)
                         {
                             testResultList.Add(TestResult.Fail);
@@ -263,6 +302,8 @@ namespace Peach.LLM.Validations.Mutator
 
         static void ShowResults()
         {
+            WriteFailureAndErrorLogs();
+
             Console.WriteLine("Mutator Test Results:");
             var res = testResults.GroupBy(kvp => kvp.Key.MutatorType.Name).Select(g => new
             {
@@ -300,6 +341,87 @@ namespace Peach.LLM.Validations.Mutator
                     Console.WriteLine($" {t.Name}");
                 }
             }
+        }
+
+        static void WriteFailureAndErrorLogs()
+        {
+            Directory.CreateDirectory(logsFolder);
+
+            foreach (var mutator in mutators)
+            {
+                var mutatorName = mutator.Name;
+                var safeMutatorName = SanitizeFileName(mutatorName);
+                var failFilePath = Path.Combine(logsFolder, "fail", $"{safeMutatorName}.log");
+                var errorFilePath = Path.Combine(logsFolder, "error", $"{safeMutatorName}.log");
+
+                if (failLogs.TryGetValue(mutatorName, out var failEntries) && failEntries.Count > 0)
+                {
+                    WriteLogFileWithNLog(failFilePath, FormatLogContent(mutatorName, "FAIL", failEntries));
+                }
+                else if (File.Exists(failFilePath))
+                {
+                    File.Delete(failFilePath);
+                }
+
+                if (errorLogs.TryGetValue(mutatorName, out var errorEntries) && errorEntries.Count > 0)
+                {
+                    WriteLogFileWithNLog(errorFilePath, FormatLogContent(mutatorName, "ERROR", errorEntries));
+                }
+                else if (File.Exists(errorFilePath))
+                {
+                    File.Delete(errorFilePath);
+                }
+            }
+
+            LogManager.Flush();
+        }
+
+        static void WriteLogFileWithNLog(string filePath, string content)
+        {
+            LogManager.Configuration.Variables["logFileName"] = filePath;
+            LogManager.ReconfigExistingLoggers();
+
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            NLogger.Info(content);
+        }
+
+        static string FormatLogContent(string mutatorName, string status, IEnumerable<TestLogInfo> entries)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Mutator: {mutatorName}");
+            sb.AppendLine($"Status: {status}");
+            sb.AppendLine($"Count: {entries.Count()}");
+            sb.AppendLine();
+
+            foreach (var entry in entries
+                .OrderBy(e => e.DataFile, StringComparer.Ordinal)
+                .ThenBy(e => e.ElementFullName, StringComparer.Ordinal)
+                .ThenBy(e => e.Iteration))
+            {
+                sb.AppendLine($"DataFile: {entry.DataFile}");
+                sb.AppendLine($"Element: {entry.ElementFullName}");
+                sb.AppendLine($"Iteration: {entry.Iteration}");
+                sb.AppendLine($"Message: {entry.Message}");
+                if (!string.IsNullOrEmpty(entry.StackTrace))
+                {
+                    sb.AppendLine("StackTrace:");
+                    sb.AppendLine(entry.StackTrace);
+                }
+                sb.AppendLine(new string('-', 80));
+            }
+
+            return sb.ToString();
+        }
+
+        static string SanitizeFileName(string name)
+        {
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var chars = name.Select(ch => invalidChars.Contains(ch) ? '_' : ch).ToArray();
+            return new string(chars);
         }
 
         static void WriteColored(string message, ConsoleColor color)
