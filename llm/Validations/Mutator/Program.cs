@@ -11,6 +11,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using Peach.LLM.Core.Mutators;
 using NLog;
 
@@ -49,6 +50,28 @@ namespace Peach.LLM.Validations.Mutator
             public string StackTrace;
         }
 
+        class ReplayResult
+        {
+            public bool Reproduced;
+            public int Attempts;
+            public string ExpectedStatus;
+            public string DataFile;
+            public string ElementFullName;
+            public string MutatorName;
+            public string MutatedFilePath;
+            public string ReplayMessage;
+            public string PittoolCommandOriginal;
+            public string PittoolCommandMutated;
+            public string OriginalCrackOutput;
+            public string MutatedCrackOutput;
+        }
+
+        class CrackCommandResult
+        {
+            public string Command;
+            public string Output;
+        }
+
         class MockStrategy : MutationStrategy
         {
             public MockStrategy() : base(new Dictionary<string, Variant>())
@@ -77,6 +100,8 @@ namespace Peach.LLM.Validations.Mutator
         static Dictionary<string, int> mutatorTestCounts = new Dictionary<string, int>();
 
         static readonly List<TestInfo> tests = new List<TestInfo>();
+
+        static readonly Dictionary<string, ReplayResult> replayResults = new Dictionary<string, ReplayResult>();
 
         static readonly NLog.Logger NLogger = LogManager.GetCurrentClassLogger();
 
@@ -194,6 +219,8 @@ namespace Peach.LLM.Validations.Mutator
 
         static int testIterations = 100;
 
+        static int replayMaxAttempts = 100;
+
         static void Test(DataElement root)
         {
             // Initialize test results for all tests first
@@ -223,10 +250,16 @@ namespace Peach.LLM.Validations.Mutator
                     var elem = rootClone.find(test.Element.fullName);
                     if (!(Activator.CreateInstance(test.MutatorType, new object[] { elem }) is LLMMutator mutator))
                     {
-                        lock (consoleLock)
+                        var mutatorName = test.MutatorType.Name;
+                        var logs = errorLogs.GetOrAdd(mutatorName, _ => new ConcurrentBag<TestLogInfo>());
+                        logs.Add(new TestLogInfo
                         {
-                            Console.WriteLine($"Failed to create mutator of type {test.MutatorType.FullName} for element {elem.fullName}");
-                        }
+                            DataFile = test.DataFile,
+                            ElementFullName = elem.fullName,
+                            Iteration = i + 1,
+                            Message = $"Failed to create mutator of type {test.MutatorType.FullName}",
+                            StackTrace = null
+                        });
                         lock (testResultList)
                         {
                             testResultList.Add(TestResult.Error);
@@ -242,10 +275,6 @@ namespace Peach.LLM.Validations.Mutator
                     }
                     catch (Exception ex)
                     {
-                        lock (consoleLock)
-                        {
-                            Console.WriteLine($"Mutator {test.MutatorType.Name} threw an exception during mutation for element {elem.fullName}: {ex.Message}");
-                        }
                         var mutatorName = test.MutatorType.Name;
                         var logs = errorLogs.GetOrAdd(mutatorName, _ => new ConcurrentBag<TestLogInfo>());
                         logs.Add(new TestLogInfo
@@ -275,10 +304,6 @@ namespace Peach.LLM.Validations.Mutator
                     }
                     catch (Exception ex)
                     {
-                        lock (consoleLock)
-                        {
-                            Console.WriteLine($"Mutator {test.MutatorType.Name} failed to re-crack data for element {elem.fullName}: {ex.Message}");
-                        }
                         var mutatorName = test.MutatorType.Name;
                         var logs = failLogs.GetOrAdd(mutatorName, _ => new ConcurrentBag<TestLogInfo>());
                         logs.Add(new TestLogInfo
@@ -300,6 +325,7 @@ namespace Peach.LLM.Validations.Mutator
 
         static void ShowResults()
         {
+            ReplayFailuresAndErrors();
             WriteFailureAndErrorLogs();
 
             Console.WriteLine("Mutator Test Results:");
@@ -352,7 +378,8 @@ namespace Peach.LLM.Validations.Mutator
 
                 if (failLogs.TryGetValue(mutatorName, out var failEntries) && failEntries.Count > 0)
                 {
-                    WriteLogFileWithNLog(failFilePath, FormatLogContent(mutatorName, "FAIL", failEntries));
+                    replayResults.TryGetValue(GetReplayKey(mutatorName, "FAIL"), out var failReplayResult);
+                    WriteLogFileWithNLog(failFilePath, FormatLogContent(mutatorName, "FAIL", failEntries, failReplayResult));
                 }
                 else if (File.Exists(failFilePath))
                 {
@@ -361,7 +388,8 @@ namespace Peach.LLM.Validations.Mutator
 
                 if (errorLogs.TryGetValue(mutatorName, out var errorEntries) && errorEntries.Count > 0)
                 {
-                    WriteLogFileWithNLog(errorFilePath, FormatLogContent(mutatorName, "ERROR", errorEntries));
+                    replayResults.TryGetValue(GetReplayKey(mutatorName, "ERROR"), out var errorReplayResult);
+                    WriteLogFileWithNLog(errorFilePath, FormatLogContent(mutatorName, "ERROR", errorEntries, errorReplayResult));
                 }
                 else if (File.Exists(errorFilePath))
                 {
@@ -374,6 +402,12 @@ namespace Peach.LLM.Validations.Mutator
 
         static void WriteLogFileWithNLog(string filePath, string content)
         {
+            var dir = Path.GetDirectoryName(filePath);
+            if (!string.IsNullOrEmpty(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+
             LogManager.Configuration.Variables["logFileName"] = filePath;
             LogManager.ReconfigExistingLoggers();
 
@@ -385,7 +419,7 @@ namespace Peach.LLM.Validations.Mutator
             NLogger.Info(content);
         }
 
-        static string FormatLogContent(string mutatorName, string status, IEnumerable<TestLogInfo> entries)
+        static string FormatLogContent(string mutatorName, string status, IEnumerable<TestLogInfo> entries, ReplayResult replayResult)
         {
             var sb = new StringBuilder();
             sb.AppendLine($"Mutator: {mutatorName}");
@@ -393,24 +427,298 @@ namespace Peach.LLM.Validations.Mutator
             sb.AppendLine($"Count: {entries.Count()}");
             sb.AppendLine();
 
-            foreach (var entry in entries
-                .OrderBy(e => e.DataFile, StringComparer.Ordinal)
-                .ThenBy(e => e.ElementFullName, StringComparer.Ordinal)
-                .ThenBy(e => e.Iteration))
+            if (replayResult != null)
             {
-                sb.AppendLine($"DataFile: {entry.DataFile}");
-                sb.AppendLine($"Element: {entry.ElementFullName}");
-                sb.AppendLine($"Iteration: {entry.Iteration}");
-                sb.AppendLine($"Message: {entry.Message}");
-                if (!string.IsNullOrEmpty(entry.StackTrace))
+                sb.AppendLine("Replay:");
+                sb.AppendLine($"ExpectedStatus: {replayResult.ExpectedStatus}");
+                sb.AppendLine($"Reproduced: {replayResult.Reproduced}");
+                sb.AppendLine($"Attempts: {replayResult.Attempts}");
+                sb.AppendLine($"DataFile: {replayResult.DataFile}");
+                sb.AppendLine($"Element: {replayResult.ElementFullName}");
+                sb.AppendLine($"Mutator: {replayResult.MutatorName}");
+                if (!string.IsNullOrEmpty(replayResult.MutatedFilePath))
                 {
-                    sb.AppendLine("StackTrace:");
-                    sb.AppendLine(entry.StackTrace);
+                    sb.AppendLine($"MutatedFile: {replayResult.MutatedFilePath}");
                 }
-                sb.AppendLine(new string('-', 80));
+                if (!string.IsNullOrEmpty(replayResult.ReplayMessage))
+                {
+                    sb.AppendLine($"ReplayMessage: {replayResult.ReplayMessage}");
+                }
+                if (!string.IsNullOrEmpty(replayResult.PittoolCommandOriginal))
+                {
+                    sb.AppendLine($"OriginalCrackCommand: {replayResult.PittoolCommandOriginal}");
+                }
+                if (!string.IsNullOrEmpty(replayResult.OriginalCrackOutput))
+                {
+                    sb.AppendLine("OriginalCrackOutput:");
+                    sb.AppendLine(replayResult.OriginalCrackOutput);
+                }
+                if (!string.IsNullOrEmpty(replayResult.PittoolCommandMutated))
+                {
+                    sb.AppendLine($"MutatedCrackCommand: {replayResult.PittoolCommandMutated}");
+                }
+                if (!string.IsNullOrEmpty(replayResult.MutatedCrackOutput))
+                {
+                    sb.AppendLine("MutatedCrackOutput:");
+                    sb.AppendLine(replayResult.MutatedCrackOutput);
+                }
+                sb.AppendLine(new string('=', 80));
+            }
+            else
+            {
+                sb.AppendLine("Replay:");
+                sb.AppendLine("No replay result available.");
+                sb.AppendLine(new string('=', 80));
             }
 
             return sb.ToString();
+        }
+
+        static void ReplayFailuresAndErrors()
+        {
+            Console.WriteLine("Replaying failures and errors...");
+
+            replayResults.Clear();
+
+            foreach (var kvp in failLogs)
+            {
+                var sample = kvp.Value
+                    .OrderBy(e => e.DataFile, StringComparer.Ordinal)
+                    .ThenBy(e => e.ElementFullName, StringComparer.Ordinal)
+                    .ThenBy(e => e.Iteration)
+                    .FirstOrDefault();
+                if (sample == null)
+                    continue;
+
+                var result = ReplaySingleIssue(kvp.Key, "FAIL", sample);
+                replayResults[GetReplayKey(kvp.Key, "FAIL")] = result;
+            }
+
+            foreach (var kvp in errorLogs)
+            {
+                var sample = kvp.Value
+                    .OrderBy(e => e.DataFile, StringComparer.Ordinal)
+                    .ThenBy(e => e.ElementFullName, StringComparer.Ordinal)
+                    .ThenBy(e => e.Iteration)
+                    .FirstOrDefault();
+                if (sample == null)
+                    continue;
+
+                var result = ReplaySingleIssue(kvp.Key, "ERROR", sample);
+                replayResults[GetReplayKey(kvp.Key, "ERROR")] = result;
+            }
+        }
+
+        static string GetReplayKey(string mutatorName, string status)
+        {
+            return string.Format("{0}|{1}", mutatorName, status);
+        }
+
+        static ReplayResult ReplaySingleIssue(string mutatorName, string expectedStatus, TestLogInfo sample)
+        {
+            var result = new ReplayResult
+            {
+                Reproduced = false,
+                Attempts = 0,
+                ExpectedStatus = expectedStatus,
+                DataFile = sample.DataFile,
+                ElementFullName = sample.ElementFullName,
+                MutatorName = mutatorName,
+                ReplayMessage = "No replay attempts performed."
+            };
+
+            if (!File.Exists(sample.DataFile))
+            {
+                result.ReplayMessage = "Replay skipped: data file does not exist.";
+                return result;
+            }
+
+            var mutatorType = mutators.FirstOrDefault(m => m.Name == mutatorName);
+            if (mutatorType == null)
+            {
+                result.ReplayMessage = "Replay skipped: mutator type not found.";
+                return result;
+            }
+
+            DataElement replayRoot;
+            try
+            {
+                replayRoot = ParseData(pitFilePath, sample.DataFile, dataModelName);
+            }
+            catch (Exception ex)
+            {
+                result.ReplayMessage = string.Format("Replay skipped: unable to parse seed file. {0}", ex.Message);
+                return result;
+            }
+
+            var tempRoot = Path.Combine(Path.GetTempPath(), "peach-mutator-replay");
+            Directory.CreateDirectory(tempRoot);
+
+            var attempts = Math.Max(replayMaxAttempts, testIterations);
+
+            for (int i = 1; i <= attempts; i++)
+            {
+                result.Attempts = i;
+
+                var rootClone = ObjectCopier.Clone(replayRoot) as DM;
+                rootClone.dom = dom;
+
+                var elem = rootClone.find(sample.ElementFullName);
+                if (elem == null)
+                {
+                    result.ReplayMessage = "Replay failed: target element not found in cloned model.";
+                    return result;
+                }
+
+                if (!(Activator.CreateInstance(mutatorType, new object[] { elem }) is LLMMutator mutator))
+                {
+                    if (expectedStatus == "ERROR")
+                    {
+                        result.Reproduced = true;
+                        result.ReplayMessage = "Replay reproduced mutator creation error.";
+                        return result;
+                    }
+
+                    continue;
+                }
+
+                mutator.context = new MockStrategy();
+                BitwiseStream v = null;
+
+                try
+                {
+                    mutator.randomMutation(elem);
+                    v = rootClone.Value;
+                }
+                catch (Exception ex)
+                {
+                    if (expectedStatus == "ERROR")
+                    {
+                        var mutatedFile = BuildReplayTempFilePath(tempRoot, mutatorName, sample.DataFile, i);
+                        TryWriteMutatedFile(v, mutatedFile);
+
+                        result.Reproduced = true;
+                        result.MutatedFilePath = mutatedFile;
+                        result.ReplayMessage = string.Format("Replay reproduced mutation error: {0}", ex.Message);
+                        FillCrackDetails(result, sample.DataFile, mutatedFile);
+                        return result;
+                    }
+
+                    continue;
+                }
+
+                var mutatedPath = BuildReplayTempFilePath(tempRoot, mutatorName, sample.DataFile, i);
+                TryWriteMutatedFile(v, mutatedPath);
+
+                var cracker = new DataCracker();
+                try
+                {
+                    var dmClone = ObjectCopier.Clone(originalDataModel);
+                    dmClone.dom = dom;
+                    cracker.CrackData(dmClone, new BitStream(v));
+                }
+                catch (Exception ex)
+                {
+                    if (expectedStatus == "FAIL")
+                    {
+                        result.Reproduced = true;
+                        result.MutatedFilePath = mutatedPath;
+                        result.ReplayMessage = string.Format("Replay reproduced re-crack failure: {0}", ex.Message);
+                        FillCrackDetails(result, sample.DataFile, mutatedPath);
+                        return result;
+                    }
+                }
+            }
+
+            result.ReplayMessage = "Replay could not reproduce the same outcome within max attempts.";
+            return result;
+        }
+
+        static string BuildReplayTempFilePath(string tempRoot, string mutatorName, string seedFilePath, int attempt)
+        {
+            var safeMutatorName = SanitizeFileName(mutatorName);
+            var seedFileName = SanitizeFileName(Path.GetFileName(seedFilePath));
+            return Path.Combine(tempRoot, string.Format("{0}_{1}_attempt{2:000}.raw", safeMutatorName, seedFileName, attempt));
+        }
+
+        static void TryWriteMutatedFile(BitwiseStream data, string filePath)
+        {
+            if (data == null)
+                return;
+            var position = data.PositionBits;
+            try
+            {
+                data.SeekBits(0, SeekOrigin.Begin);
+                using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read))
+                {
+                    data.CopyTo(fs);
+                }
+            }
+            finally
+            {
+                data.SeekBits(position, SeekOrigin.Begin);
+            }
+        }
+
+        static void FillCrackDetails(ReplayResult result, string originalFilePath, string mutatedFilePath)
+        {
+            var original = RunPittoolCrack(originalFilePath);
+            result.PittoolCommandOriginal = original.Command;
+            result.OriginalCrackOutput = original.Output;
+
+            if (!string.IsNullOrEmpty(mutatedFilePath) && File.Exists(mutatedFilePath))
+            {
+                var mutated = RunPittoolCrack(mutatedFilePath);
+                result.PittoolCommandMutated = mutated.Command;
+                result.MutatedCrackOutput = mutated.Output;
+            }
+        }
+
+        static CrackCommandResult RunPittoolCrack(string sampleFilePath)
+        {
+            var commandText = string.Format("./pittool crack -v \"{0}\" \"{1}\" \"{2}\"", pitFilePath, dataModelName, sampleFilePath);
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = "./pittool",
+                Arguments = string.Format("crack -v \"{0}\" \"{1}\" \"{2}\"", pitFilePath, dataModelName, sampleFilePath),
+                WorkingDirectory = Environment.CurrentDirectory,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            try
+            {
+                using (var process = System.Diagnostics.Process.Start(psi))
+                {
+                    var stdout = process.StandardOutput.ReadToEnd();
+                    var stderr = process.StandardError.ReadToEnd();
+                    process.WaitForExit();
+
+                    var output = new StringBuilder();
+                    output.AppendLine(string.Format("ExitCode: {0}", process.ExitCode));
+                    if (!string.IsNullOrEmpty(stdout))
+                    if (!string.IsNullOrEmpty(stderr))
+                    {
+                        output.AppendLine(stderr);
+                    }
+                    return new CrackCommandResult
+                    {
+                        Command = commandText,
+                        Output = output.ToString()
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new CrackCommandResult
+                {
+                    Command = commandText,
+                    Output = string.Format("Failed to run pittool crack: {0}", ex)
+                };
+            }
         }
 
         static string SanitizeFileName(string name)
@@ -495,20 +803,5 @@ namespace Peach.LLM.Validations.Mutator
 
             return crackedModel;
         }
-
-        // static string GetType(DataElement obj)
-        // {
-        //     var ans = new List<string>();
-        //     if (obj is Peach.Core.Dom.Blob) ans.Add("Blob");
-        //     if (obj is Peach.Core.Dom.String) ans.Add("String");
-        //     if (obj is Peach.Core.Dom.Number) ans.Add("Number");
-        //     if (obj is Peach.Core.Dom.Block) ans.Add("Block");
-        //     if (obj is Peach.Core.Dom.Choice) ans.Add("Choice");
-        //     if (obj is Peach.Core.Dom.Flags) ans.Add("Flags");
-        //     if (obj is Peach.Core.Dom.Padding) ans.Add("Padding");
-        //     if (obj is Peach.Core.Dom.Array) ans.Add("Array");
-        //     if (ans.Count == 0) ans.Add("Unknown (" + obj.GetType().Name + ")");
-        //     return string.Join("&", ans);
-        // }
     }
 }
