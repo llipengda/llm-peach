@@ -22,7 +22,7 @@ frameworks = [
 ]
 
 bld(
-	name = 'Peach.LLM.Validation.Fixer.dll',
+	name = 'Peach.LLM.Validations.Fixer.dll',
 	features = 'cs paket',
 	unsafe = True,
 	use = deps,
@@ -33,4 +33,4 @@ bld(
 	source = bld.path.ant_glob('**/*.cs')
 )
 
-bld.install_files('${BINDIR}/Plugins', 'Peach.LLM.Validation.Fixer.dll')
+bld.install_files('${BINDIR}/Plugins', 'Peach.LLM.Validations.Fixer.dll')
