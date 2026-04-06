@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peach.LLM.Validations.Mutat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peach.LLM.Validations.DataModel", "projects\Peach.LLM.Validations.DataModel\Peach.LLM.Validations.DataModel.csproj", "{59D8D078-9757-4D78-BBAC-EFDEED04B21F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Peach.LLM.Validations.Fixer", "projects\Peach.LLM.Validations.Fixer\Peach.LLM.Validations.Fixer.csproj", "{0E8C7D3C-4B6B-4E1F-8AF2-9A0A7F6D5C31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{59D8D078-9757-4D78-BBAC-EFDEED04B21F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59D8D078-9757-4D78-BBAC-EFDEED04B21F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59D8D078-9757-4D78-BBAC-EFDEED04B21F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E8C7D3C-4B6B-4E1F-8AF2-9A0A7F6D5C31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E8C7D3C-4B6B-4E1F-8AF2-9A0A7F6D5C31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E8C7D3C-4B6B-4E1F-8AF2-9A0A7F6D5C31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E8C7D3C-4B6B-4E1F-8AF2-9A0A7F6D5C31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{93FEFF25-B0CB-4394-9DA0-D382F27A7A75} = {20692498-BC9D-4AF9-AB12-9698B47FB122}
@@ -121,5 +127,6 @@ Global
 		{44717DDD-9EC2-4B58-9600-F0912CA9C5A1} = {20692498-BC9D-4AF9-AB12-9698B47FB122}
 		{7D8795F0-00C8-4B08-9F57-3BB4E3F7306D} = {20692498-BC9D-4AF9-AB12-9698B47FB122}
 		{59D8D078-9757-4D78-BBAC-EFDEED04B21F} = {20692498-BC9D-4AF9-AB12-9698B47FB122}
+		{0E8C7D3C-4B6B-4E1F-8AF2-9A0A7F6D5C31} = {20692498-BC9D-4AF9-AB12-9698B47FB122}
 	EndGlobalSection
 EndGlobal
