@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 subdirs = [
+    'Common',
 	'Mutator',
     'DataModel',
     "Fixer"

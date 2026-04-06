@@ -8,7 +8,6 @@ deps = [
 	'System.Xml.dll',
 	'System.Core.dll',
 	'System.Data.dll',
-    'Peach.LLM.Validations.Common.dll',
 ]
 
 pkgs = [
@@ -24,13 +23,15 @@ frameworks = [
 ]
 
 bld(
-	name='Peach.LLM.Validations.Fixer.exe',
-	features = 'cs',
+	name = 'Peach.LLM.Validations.Common.dll',
+	features = 'cs paket',
+	unsafe = True,
 	use = deps,
 	use_packages = pkgs,
 	paket_settings = dict(
-		frameworks = ['net45'],
+		frameworks = frameworks,
 	),
-	source = bld.path.ant_glob('**/*.cs'),
-	install_644 = 'NLog.Peach.LLM.Validations.Fixer.config'
+	source = bld.path.ant_glob('**/*.cs')
 )
+
+bld.install_files('${BINDIR}/Plugins', 'Peach.LLM.Validations.Common.dll')

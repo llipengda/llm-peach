@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Peach.LLM.Validations.Common</AssemblyName>
+    <RootNamespace>Peach.LLM.Validations.Common</RootNamespace>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="../../../llm/Validations/Common/**/*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
+    <ProjectReference Include="../Peach.Pro/Peach.Pro.csproj" />
+  </ItemGroup>
+</Project>

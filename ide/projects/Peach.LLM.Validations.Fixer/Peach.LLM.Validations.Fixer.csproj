@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <AssemblyName>Peach.LLM.Validation.Fixer</AssemblyName>
-    <RootNamespace>Peach.LLM.Validation.Fixer</RootNamespace>
-    <OutputType>Library</OutputType>
+    <AssemblyName>Peach.LLM.Validations.Fixer</AssemblyName>
+    <RootNamespace>Peach.LLM.Validations.Fixer</RootNamespace>
+    <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
@@ -11,8 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="../../../llm/Validations/Fixer/app.config" Link="app.config" />
+    <None Include="../../../llm/Validations/Fixer/NLog.Peach.LLM.Validations.Fixer.config" Link="NLog.Peach.LLM.Validations.Fixer.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../Peach.Core/Peach.Core.csproj" />
     <ProjectReference Include="../Peach.Pro/Peach.Pro.csproj" />
     <ProjectReference Include="../Peach.LLM/Peach.LLM.csproj" />
+    <ProjectReference Include="../Peach.LLM.Validations.Common/Peach.LLM.Validations.Common.csproj" />
   </ItemGroup>
 </Project>
