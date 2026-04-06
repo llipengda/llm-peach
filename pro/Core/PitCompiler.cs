@@ -146,7 +146,7 @@ namespace Peach.Pro.Core
 
 			var parser = new CustomParser();
 			var dom = parser.asParser(args, _pitPath);
-			dom.context = new RunContext { test = dom.tests.First() };
+			dom.context = new RunContext { test = dom.tests.FirstOrDefault() };
 
 			if (verifyConfig)
 				VerifyConfig(defs, args);
