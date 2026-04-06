@@ -93,7 +93,7 @@ namespace Peach.LLM.Validations.Fixer
 			}
 
 			var methods = allTypes.SelectMany(t =>
-					t.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+					t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
 					.Where(m => m.GetCustomAttribute<FixerTestAttribute>() != null)
 					.OrderBy(m => m.Name)
 				).ToArray();
