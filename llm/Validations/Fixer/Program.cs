@@ -4,8 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using NLog;
+using Peach.Core;
 using Peach.LLM.Validations.Common;
+using NLog;
 
 namespace Peach.LLM.Validations.Fixer
 {
@@ -35,10 +36,12 @@ namespace Peach.LLM.Validations.Fixer
 
 	public class Program
 	{
-		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+		private static readonly NLog.Logger Logger = LogManager.GetCurrentClassLogger();
 
 		public static void Main(string[] args)
 		{
+            ClassLoader.Initialize("./Plugins");
+
 			InitializeLogging("fixer.log");
 			Logger.Info("Starting fixer tests.");
 
