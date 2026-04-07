@@ -63,48 +63,6 @@ namespace Peach.LLM.Core
             return new byte[0];
         }
 
-        static public byte[] Bytes(this Variant v)
-        {
-            if (v.GetVariantType() == Variant.VariantType.Int ||
-                v.GetVariantType() == Variant.VariantType.Long ||
-                v.GetVariantType() == Variant.VariantType.ULong)
-            {
-                var num = v;
-                var size = (num.GetVariantType() == Variant.VariantType.Int) ? 4 : 8;
-                var val = (ulong)num;
-                var bytes = new byte[size];
-                for (int i = 0; i < size; i++)
-                {
-                    bytes[size - i - 1] = (byte)(val & 0xFF);
-                    val >>= 8;
-                }
-                return bytes;
-            }
-            if (v.GetVariantType() == Variant.VariantType.String)
-            {
-                return System.Text.Encoding.ASCII.GetBytes((string)v);
-            }
-            try
-            {
-                var bs = (BitwiseStream)v;
-                if (bs != null)
-                {
-                    long pos = bs.PositionBits;
-                    bs.SeekBits(0, SeekOrigin.Begin);
-                    var ms = new MemoryStream();
-                    bs.CopyTo(ms);
-                    bs.SeekBits(pos, SeekOrigin.Begin);
-                    return ms.ToArray();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine("Exception in Bytes(Variant): " + e.ToString());
-                Console.Error.WriteLine(e.StackTrace);
-            }
-            return new byte[0];
-        }
-
         static public bool IsIn(this DataElement obj, string name)
         {
             var o = obj;
