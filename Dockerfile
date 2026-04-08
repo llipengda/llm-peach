@@ -29,8 +29,7 @@ RUN apt-get install -y \
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF && \
     echo "deb https://download.mono-project.com/repo/debian stable-stretch main" | tee /etc/apt/sources.list.d/mono-official-stable.list && \
     apt-get update -y && \
-    apt-get install -y mono-devel && \
-    mozroots --import --sync
+    apt-get install -y mono-devel
 
 WORKDIR /peach/3rdParty/pin
 
@@ -45,7 +44,7 @@ COPY . .
 
 RUN sed -i '1i #define STATIC_ASSERT(cond)' core/BasicBlocks/bblocks.cpp
 
-RUN ./waf configure
+RUN ./waf configure -v
 
 RUN ./waf build --variant=linux_x86_64_release
 

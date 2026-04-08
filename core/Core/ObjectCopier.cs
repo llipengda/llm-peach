@@ -710,13 +710,15 @@ namespace Peach.Core
 
 			var expr = Expression.Call(
 				Expression.Call(
-					Expression.Call(clone, getType),
+					Expression.Call(
+						Expression.Convert(clone, typeof(object)), getType
+					),
 					getField,
 					Expression.Constant(fieldInfo.Name),
 					Expression.Constant(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
 				),
 				setValue,
-				clone,
+				Expression.Convert(clone, typeof(object)),
 				Expression.Convert(value, typeof(object))
 			);
 
