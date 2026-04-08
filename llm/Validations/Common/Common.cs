@@ -58,13 +58,11 @@ namespace Peach.LLM.Validations.Common
                 throw new ArgumentNullException("data");
 
             var dataStream = new BitStream(data);
-            var crackedModel = ObjectCopier.Clone(_dataModel);
-            crackedModel.dom = _dom;
 
             var cracker = new DataCracker();
-            cracker.CrackData(crackedModel, dataStream);
+            cracker.CrackData(_dataModel, dataStream);
 
-            return crackedModel;
+            return _dataModel;
         }
     }
 }
