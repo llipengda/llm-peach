@@ -38,14 +38,53 @@ namespace Peach.LLM.Validations.Fixer
 	{
 		private static readonly NLog.Logger Logger = LogManager.GetCurrentClassLogger();
 
+		static void RunDataTest(string pitFile, string dataModelName, byte[] data)
+		{
+			var parser = new DataParser(pitFile, dataModelName);
+			try
+			{
+				parser.Parse(data);
+			} 
+			catch (Exception ex)
+			{
+				Console.Error.WriteLine($"[FAIL] Data test failed: {ex.Message}");
+				Environment.Exit(1);
+			}
+			Console.Error.WriteLine("[PASS] Data test passed.");
+			Environment.Exit(0);
+		}
+
 		public static void Main(string[] args)
 		{
             ClassLoader.Initialize("./Plugins");
+
+			if (args.Length == 4 && args[0] == "-d")
+			{
+				var pitFile = args[1];
+				var dataModelName = args[2];
+				var hexData = args[3];
+				byte[] data = new byte[hexData.Length / 2];
+				for (int i = 0; i < data.Length; i++)
+				{
+					data[i] = Convert.ToByte(hexData.Substring(i * 2, 2), 16);
+				}
+				RunDataTest(pitFile, dataModelName, data);
+				return;
+			} 
+			else if (args.Length != 0)
+			{
+				Console.WriteLine("Usage:");
+				Console.WriteLine("  Fixer.exe                                         - Run all fixer tests");
+				Console.WriteLine("  Fixer.exe -d <pitFile> <dataModelName> <hexData>  - Run a single data test");
+				Environment.Exit(1);
+			}
 
 			InitializeLogging("fixer.log");
 			Logger.Info("Starting fixer tests.");
 
 			var results = RunTests();
+
+			SetLogFileName("fixer.log");
 
 			if (results.Count == 0)
 			{

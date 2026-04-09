@@ -22,14 +22,14 @@ namespace Peach.LLM.Validations.Common
 		}
 	}
     
-    public class FixerValidator
+    public class DataParser
     {
         private readonly string _pitFile;
         private readonly string _dataModelName;
         private readonly Dom _dom;
         private readonly Peach.Core.Dom.DataModel _dataModel;
 
-        public FixerValidator(string pitFile, string dataModelName)
+        public DataParser(string pitFile, string dataModelName)
         {
             if (string.IsNullOrWhiteSpace(pitFile))
                 throw new ArgumentException("PIT file path is required.", "pitFile");
