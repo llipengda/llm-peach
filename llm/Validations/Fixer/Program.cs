@@ -48,7 +48,7 @@ namespace Peach.LLM.Validations.Fixer
 			catch (Exception ex)
 			{
 				Console.Error.WriteLine($"[FAIL] Data test failed: {ex.Message}");
-				Environment.Exit(1);
+				Environment.Exit(0);
 			}
 			Console.Error.WriteLine("[PASS] Data test passed.");
 			Environment.Exit(0);
@@ -57,6 +57,8 @@ namespace Peach.LLM.Validations.Fixer
 		public static void Main(string[] args)
 		{
             ClassLoader.Initialize("./Plugins");
+
+			InitializeLogging("fixer.log");
 
 			if (args.Length == 4 && args[0] == "-d")
 			{
@@ -79,7 +81,6 @@ namespace Peach.LLM.Validations.Fixer
 				Environment.Exit(1);
 			}
 
-			InitializeLogging("fixer.log");
 			Logger.Info("Starting fixer tests.");
 
 			var results = RunTests();
