@@ -48,7 +48,7 @@ namespace Peach.LLM.Validations.Fixer
 			catch (Exception ex)
 			{
 				Console.Error.WriteLine($"[FAIL] Data test failed: {ex.Message}");
-				Environment.Exit(0);
+				Environment.Exit(1);
 			}
 			Console.Error.WriteLine("[PASS] Data test passed.");
 			Environment.Exit(0);
