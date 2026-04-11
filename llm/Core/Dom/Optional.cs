@@ -53,8 +53,15 @@ namespace Peach.LLM.Core.Dom
 			{
 				if (_exists.HasValue)
 					return _exists.Value;
-
-				return EvaluateCondition();
+				try
+				{
+					return EvaluateCondition();
+				} 
+				catch (Exception ex)
+				{
+					logger.Error(ex, "Error evaluating condition for Optional '{0}': {1}", debugName, ex.Message);
+					return false; // On error, treat as not existing
+				}
 			}
 			set => _exists = value;
 		}
