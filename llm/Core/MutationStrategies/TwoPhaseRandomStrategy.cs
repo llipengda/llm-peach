@@ -325,6 +325,16 @@ namespace Peach.LLM.Core.MutationStrategies
 							phase2HasMutations = true;
 					}
 
+					try
+					{
+						var _ = action.outputData.FirstOrDefault()?.dataModel?.Value;
+					}
+					catch (Exception ex)
+					{
+						logger.Error(ex, "MutateDataModel: Phase 2 (Non-LLM) - Failed to process data model for action {0}", action.Name);
+						throw new SoftException(ex);
+					}
+
 
 					// If Phase 2 made changes, send Phase 2 message (similar to Phase 1)
 					if (phase2HasMutations)
