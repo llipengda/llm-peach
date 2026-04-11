@@ -624,7 +624,10 @@ namespace Peach.LLM.Core.MutationStrategies
 
 				// Send the mutated data
 				logger.Info("SendOutputMessage: Sending output message after {0} mutations", phaseName);
-				publisher.output(data.dataModel);
+				foreach (var packet in data.dataModel.find("packets")?.Children() ?? Enumerable.Empty<DataElement>())
+				{
+					publisher.output(packet.Value);
+				}
 				logger.Info("SendOutputMessage: Successfully sent output message after {0} mutations", phaseName);
 
 				// Mark that we've sent messages via two-phase strategy
