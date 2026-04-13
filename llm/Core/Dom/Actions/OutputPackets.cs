@@ -19,7 +19,7 @@ namespace Peach.LLM.Core.Dom.Actions
             var packets = data.dataModel.find("packets")?.Children() ?? Enumerable.Empty<DataElement>();
 
             var packetCount = (context.stateStore.ContainsKey("packetCount") ? (int)context.stateStore["packetCount"] : 0) + packets.Count();
-            var packetSequenceCount = (context.stateStore.ContainsKey("packetsCount") ? (int)context.stateStore["packetsCount"] : 0) + 1;
+            var packetSequenceCount = (context.stateStore.ContainsKey("packetSequenceCount") ? (int)context.stateStore["packetSequenceCount"] : 0) + 1;
 
             context.stateStore["packetCount"] = packetCount;
             context.stateStore["packetSequenceCount"] = packetSequenceCount;
