@@ -634,7 +634,16 @@ namespace Peach.LLM.Core.MutationStrategies
 
 				// Send the mutated data
 				logger.Info("SendOutputMessage: Sending output message after {0} mutations", phaseName);
-				foreach (var packet in data.dataModel.find("packets")?.Children() ?? Enumerable.Empty<DataElement>())
+				var packets = data.dataModel.find("packets")?.Children() ?? Enumerable.Empty<DataElement>();
+				var context = this.Context;
+				var packetCount = (context.stateStore.ContainsKey("packetCount") ? (int)context.stateStore["packetCount"] : 0) + packets.Count();
+				var packetSequenceCount = (context.stateStore.ContainsKey("packetSequenceCount") ? (int)context.stateStore["packetSequenceCount"] : 0) + 1;
+
+				context.stateStore["packetCount"] = packetCount;
+				context.stateStore["packetSequenceCount"] = packetSequenceCount;
+
+				logger.Debug("Outputting {0} packets (Total: {1}, Sequences: {2})", packets.Count(), packetCount, packetSequenceCount);
+				foreach (var packet in packets)
 				{
 					publisher.output(packet.Value);
 				}
