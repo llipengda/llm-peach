@@ -65,4 +65,49 @@ namespace Peach.LLM.Validations.Common
             return _dataModel;
         }
     }
+
+#nullable enable
+    public static class DataElementMaker
+    {
+        public static T? Make<T>(string name, object value) 
+            where T : DataElement
+        {
+            var elem = Activator.CreateInstance(typeof(T), name) as T;
+            if (elem == null)
+                throw new InvalidOperationException(string.Format("Failed to create instance of type '{0}'.", typeof(T).FullName));
+            if (value != null)
+            {
+                elem.DefaultValue = Activator.CreateInstance(typeof(Variant), value) as Variant;
+            }
+            return elem;
+        }
+
+        public static T? Make<T>(string name, params DataElement[] children) 
+            where T : DataElementContainer
+        {
+            var elem = Activator.CreateInstance(typeof(T), name) as T;
+            if (elem == null)
+                throw new InvalidOperationException(string.Format("Failed to create instance of type '{0}'.", typeof(T).FullName));
+
+            foreach (var child in children)
+            {
+                elem.Add(child);
+            }
+
+            if (elem is Choice c)
+            {
+                foreach (var child in children)
+                {
+                    c.choiceElements.Add(child);
+                }
+            }
+
+            if (elem is Peach.Core.Dom.Array a)
+            {
+                a.ExpandTo(0);
+            }
+
+            return elem;
+        }
+    }
 }
