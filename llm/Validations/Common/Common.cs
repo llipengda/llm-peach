@@ -66,10 +66,9 @@ namespace Peach.LLM.Validations.Common
         }
     }
 
-#nullable enable
     public static class DataElementMaker
     {
-        public static T? Make<T>(string name, object value) 
+        public static T Make<T>(string name, object value) 
             where T : DataElement
         {
             var elem = Activator.CreateInstance(typeof(T), name) as T;
@@ -82,7 +81,7 @@ namespace Peach.LLM.Validations.Common
             return elem;
         }
 
-        public static T? Make<T>(string name, params DataElement[] children) 
+        public static T Make<T>(string name, params DataElement[] children) 
             where T : DataElementContainer
         {
             var elem = Activator.CreateInstance(typeof(T), name) as T;
