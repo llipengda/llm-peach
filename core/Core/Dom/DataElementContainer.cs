@@ -240,7 +240,7 @@ namespace Peach.Core.Dom
 				if (child is DataElementContainer)
 					((DataElementContainer)child).prettyPrint(sb, indent + 1);
 				else
-					stringPrintLineWithIndent(sb, child.Name + ": " + child.GetType().Name, indent);
+					stringPrintLineWithIndent(sb, child.Name + ": " + child.GetType().Name, indent + 1);
 			}
 
 			return sb.ToString();
