@@ -2,6 +2,10 @@
 
 = GitLab Protocol Fuzzer Community Edition
 
+NOTE: A native .NET 8 build is available in the original source layout. See
+link:docs/modern-dotnet.adoc[Modern .NET build] for supported projects, commands,
+and remaining compatibility boundaries.
+
 This project is based on Peach Fuzzer Professional v4 which was https://about.gitlab.com/press/releases/2020-06-11-gitlab-acquires-peach-tech-and-fuzzit-to-expand-devsecops-offering.html[aquired by GitLab] in 2020. Some features of Peach Fuzzer Profession were removed and will be made available as part of GitLab in the future. This project replaces the Peach Fuzzer Community projects hosted on GitLab and also Source Forge.
 
 As this code was originally developed by Peach Tech, there may be references throughout the repo to personnel, email addresses, 

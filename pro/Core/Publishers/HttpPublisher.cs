@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Sockets;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using NLog;
@@ -262,7 +264,7 @@ namespace Peach.Pro.Core.Publishers
 					}
 					catch (WebException ex)
 					{
-						if (ex.Status == WebExceptionStatus.Timeout || ex.Status == WebExceptionStatus.ConnectFailure)
+						if (IsRetryableConnectionFailure(ex))
 							throw new TimeoutException(ex.Message, ex);
 
 						caught = new SoftException(ex);
@@ -283,6 +285,26 @@ namespace Peach.Pro.Core.Publishers
 			_clientName = SafeUrlString(url);
 
 			StartClient();
+		}
+
+		private static bool IsRetryableConnectionFailure(WebException exception)
+		{
+			if (exception.Status == WebExceptionStatus.Timeout ||
+				exception.Status == WebExceptionStatus.ConnectFailure)
+				return true;
+
+			// On modern .NET, HttpWebRequest is implemented on top of HttpClient.
+			// Connection failures can therefore arrive as UnknownError with one of
+			// these exceptions nested below the compatibility WebException.
+			for (Exception inner = exception.InnerException; inner != null; inner = inner.InnerException)
+			{
+				if (inner is HttpRequestException ||
+					inner is SocketException ||
+					inner is TimeoutException)
+					return true;
+			}
+
+			return false;
 		}
 
 		private static string SafeUrlString(Uri url)
@@ -390,6 +412,7 @@ namespace Peach.Pro.Core.Publishers
 				if (Logger.IsDebugEnabled)
 					Logger.Debug("\n\n" + Utilities.HexDump(data));
 
+				data.Seek(0, SeekOrigin.Begin);
 				using (var sout = request.GetRequestStream())
 				{
 					data.CopyTo(sout);

@@ -270,6 +270,7 @@ namespace Peach.Core
 				}
 				catch (Exception ex)
 				{
+					#if NETFRAMEWORK
 					if (ex.GetBaseException() is ThreadAbortException)
 					{
 						logger.Debug("Kill command received, stopping engine.");
@@ -277,6 +278,7 @@ namespace Peach.Core
 						Thread.ResetAbort();
 					}
 					else
+					#endif
 					{
 						logger.Debug("Stopping engine due to {0}.", ex.GetType().Name);
 						logger.Debug(ex.StackTrace);
@@ -312,6 +314,7 @@ namespace Peach.Core
 		{
 			logger.Trace(">>> Abort");
 
+			#if NETFRAMEWORK
 			lock (_canAbortSync)
 			{
 				if (Monitor.TryEnter(_hasAbortedSync))
@@ -326,6 +329,11 @@ namespace Peach.Core
 				logger.Trace("Join");
 				_currentThread.Join();
 			}
+			#else
+			// Thread.Abort is unavailable on modern .NET. Request cooperative
+			// cancellation; publishers are closed by the normal engine teardown.
+			_context.continueFuzzing = false;
+			#endif
 
 			logger.Trace("<<< Abort");
 		}

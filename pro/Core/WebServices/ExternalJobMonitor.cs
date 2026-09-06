@@ -92,7 +92,8 @@ namespace Peach.Pro.Core.WebServices
 		{
 			Logger.Trace("StartProcess");
 
-			var fileName = Utilities.GetAppResourcePath("PeachWorker.exe");
+			var fileName = Utilities.GetAppResourcePath(
+				Platform.GetOS() == Platform.OS.Windows ? "PeachWorker.exe" : "PeachWorker");
 
 			var args = new List<string>
 			{
@@ -266,7 +267,7 @@ namespace Peach.Pro.Core.WebServices
 		{
 			Logger.Trace(">>> Dispose");
 
-			if (Kill())
+			if (Kill() && _taskMonitor != null)
 			{
 				Logger.Trace("Waiting for process to die");
 				_taskMonitor.Wait(TimeSpan.FromSeconds(5));

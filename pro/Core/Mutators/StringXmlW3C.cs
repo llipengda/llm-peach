@@ -4,8 +4,8 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
-using Ionic.Zip;
 using Peach.Core;
 using Peach.Core.Dom;
 using Peach.Core.IO;
@@ -20,12 +20,12 @@ namespace Peach.Pro.Core.Mutators
 	{
 		static string[] values;
 		static Stream stream;
-		static ZipFile zip;
+		static ZipArchive zip;
 
 		static StringXmlW3C()
 		{
 			stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Peach.Pro.Core.Resources.xmltests.zip");
-			zip = ZipFile.Read(stream);
+			zip = new ZipArchive(stream, ZipArchiveMode.Read);
 
 			var list = new List<string>();
 
@@ -39,10 +39,11 @@ namespace Peach.Pro.Core.Mutators
 
 		static IEnumerable<string> ReadLines(string fileName)
 		{
-			var rdr = new StreamReader(zip[fileName].OpenReader());
-
-			while (!rdr.EndOfStream)
-				yield return rdr.ReadLine();
+			using (var rdr = new StreamReader(zip.GetEntry(fileName).Open()))
+			{
+				while (!rdr.EndOfStream)
+					yield return rdr.ReadLine();
+			}
 		}
 
 		public StringXmlW3C(DataElement obj)
@@ -92,8 +93,8 @@ namespace Peach.Pro.Core.Mutators
 		void performMutation(DataElement obj, int index)
 		{
 			var path = "xmltests/" + values[index];
-			var entry = zip[path];
-			var data = entry.OpenReader();
+			var entry = zip.GetEntry(path);
+			var data = entry.Open();
 			var bs = new BitStream();
 
 			data.CopyTo(bs);

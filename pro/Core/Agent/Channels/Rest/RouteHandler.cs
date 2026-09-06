@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SocketHttpListener.Net;
+using System.Net;
 
 namespace Peach.Pro.Core.Agent.Channels.Rest
 {

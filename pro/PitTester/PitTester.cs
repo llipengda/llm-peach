@@ -18,8 +18,8 @@ using StateModel = Peach.Core.Dom.StateModel;
 using Peach.Core.Cracker;
 
 #if DEBUG
-using System.Reflection;
-using System.Reflection.Emit;
+using Mono.Cecil;
+using Mono.Cecil.Cil;
 using NUnit.Framework;
 #endif
 
@@ -51,97 +51,128 @@ namespace Peach.Pro.PitTester
 			string pitTestFile,
 			string pitAssemblyFile)
 		{
-			var dir = Path.GetDirectoryName(pitAssemblyFile);
 			var asmName = Path.GetFileNameWithoutExtension(pitAssemblyFile);
-			var fileName = Path.GetFileName(pitAssemblyFile);
-
-			var builder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-				new AssemblyName(asmName),
-				AssemblyBuilderAccess.Save,
-				dir
-			);
-
-			var module = builder.DefineDynamicModule(asmName, fileName);
+			using var builder = AssemblyDefinition.CreateAssembly(
+				new AssemblyNameDefinition(asmName, new Version(1, 0, 0, 0)),
+				asmName,
+				ModuleKind.Dll);
+			var module = builder.MainModule;
 
 			MakeTestBase(module);
 			MakeTestFixture(module, asmName, pitLibraryPath, pitTestFile);
 
-			builder.Save(fileName);
+			builder.Write(pitAssemblyFile);
 		}
 
-		static CustomAttributeBuilder MakeCustomAttribute(Type type)
+		static CustomAttribute MakeCustomAttribute(ModuleDefinition module, Type type)
 		{
 			var ctor = type.GetConstructor(new Type[0]);
-			return new CustomAttributeBuilder(ctor, new object[0]);
+			return new CustomAttribute(module.ImportReference(ctor));
 		}
 
-		static void MakeTestBase(ModuleBuilder module)
+		static void AddDefaultConstructor(ModuleDefinition module, TypeDefinition type, Type baseType)
 		{
-			var type = module.DefineType("TestBase");
-			type.SetParent(typeof(TestBase));
-			type.CreateType();
+			var ctor = new MethodDefinition(".ctor",
+				Mono.Cecil.MethodAttributes.Public |
+				Mono.Cecil.MethodAttributes.HideBySig |
+				Mono.Cecil.MethodAttributes.SpecialName |
+				Mono.Cecil.MethodAttributes.RTSpecialName,
+				module.TypeSystem.Void);
+			var il = ctor.Body.GetILProcessor();
+			il.Emit(OpCodes.Ldarg_0);
+			var baseCtor = baseType.GetConstructor(
+				System.Reflection.BindingFlags.Instance |
+				System.Reflection.BindingFlags.Public |
+				System.Reflection.BindingFlags.NonPublic,
+				null, Type.EmptyTypes, null);
+			il.Emit(OpCodes.Call, module.ImportReference(baseCtor));
+			il.Emit(OpCodes.Ret);
+			type.Methods.Add(ctor);
 		}
 
-		static void MakeTestFixture(ModuleBuilder module, string asmName, string pitLibraryPath, string pitTestFile)
+		static void MakeTestBase(ModuleDefinition module)
 		{
-			var type = module.DefineType(asmName);
-			type.SetCustomAttribute(MakeCustomAttribute(typeof(TestFixtureAttribute)));
+			var type = new TypeDefinition(string.Empty, "TestBase",
+				Mono.Cecil.TypeAttributes.Public |
+				Mono.Cecil.TypeAttributes.Class,
+				module.ImportReference(typeof(TestBase)));
+			AddDefaultConstructor(module, type, typeof(TestBase));
+			module.Types.Add(type);
+		}
 
-			var testAttr = MakeCustomAttribute(typeof(TestAttribute));
-			MakeTestPit("TestSingleIteration", type, testAttr, pitLibraryPath, pitTestFile, 1);
-			MakeTestPit("TestManyIterations", type, testAttr, pitLibraryPath, pitTestFile, 500);
-			MakeTestDatasets(type, testAttr, pitLibraryPath, pitTestFile);
+		static void MakeTestFixture(ModuleDefinition module, string asmName, string pitLibraryPath, string pitTestFile)
+		{
+			var type = new TypeDefinition(string.Empty, asmName,
+				Mono.Cecil.TypeAttributes.Public |
+				Mono.Cecil.TypeAttributes.Class,
+				module.TypeSystem.Object);
+			AddDefaultConstructor(module, type, typeof(object));
+			type.CustomAttributes.Add(MakeCustomAttribute(module, typeof(TestFixtureAttribute)));
 
-			type.CreateType();
+			MakeTestPit(module, "TestSingleIteration", type, pitLibraryPath, pitTestFile, 1);
+			MakeTestPit(module, "TestManyIterations", type, pitLibraryPath, pitTestFile, 500);
+			MakeTestDatasets(module, type, pitLibraryPath, pitTestFile);
+
+			module.Types.Add(type);
 		}
 
 		static void MakeTestPit(
+			ModuleDefinition module,
 			string name,
-			TypeBuilder type,
-			CustomAttributeBuilder testAttr,
+			TypeDefinition type,
 			string pitLibraryPath,
 			string pitTestFile,
 			int iterations)
 		{
-			var method = type.DefineMethod(name, MethodAttributes.Public);
-			method.SetCustomAttribute(testAttr);
+			var method = new MethodDefinition(name,
+				Mono.Cecil.MethodAttributes.Public |
+				Mono.Cecil.MethodAttributes.HideBySig,
+				module.TypeSystem.Void);
+			method.CustomAttributes.Add(MakeCustomAttribute(module, typeof(TestAttribute)));
 			if (iterations == 1)
-				method.SetCustomAttribute(MakeCustomAttribute(typeof(QuickAttribute)));
+				method.CustomAttributes.Add(MakeCustomAttribute(module, typeof(QuickAttribute)));
 			else
-				method.SetCustomAttribute(MakeCustomAttribute(typeof(SlowAttribute)));
+				method.CustomAttributes.Add(MakeCustomAttribute(module, typeof(SlowAttribute)));
 			
 			var testPitMethod = typeof(ThePitTester).GetMethod("TestPit");
 
-			var il = method.GetILGenerator();
-			var local = il.DeclareLocal(typeof(uint?));
+			method.Body.InitLocals = true;
+			var local = new VariableDefinition(module.ImportReference(typeof(uint?)));
+			method.Body.Variables.Add(local);
+			var il = method.Body.GetILProcessor();
 			il.Emit(OpCodes.Ldstr, pitLibraryPath);
 			il.Emit(OpCodes.Ldstr, pitTestFile);
 			il.Emit(OpCodes.Ldloca, local);
-			il.Emit(OpCodes.Initobj, typeof(uint?));
-			il.Emit(OpCodes.Ldloc_0);
+			il.Emit(OpCodes.Initobj, module.ImportReference(typeof(uint?)));
+			il.Emit(OpCodes.Ldloc, local);
 			il.Emit(OpCodes.Ldc_I4_1); // true
 			il.Emit(OpCodes.Ldc_I4, iterations);
-			il.Emit(OpCodes.Call, testPitMethod);
+			il.Emit(OpCodes.Call, module.ImportReference(testPitMethod));
 			il.Emit(OpCodes.Ret);
+			type.Methods.Add(method);
 		}
 
 		static void MakeTestDatasets(
-			TypeBuilder type,
-			CustomAttributeBuilder testAttr,
+			ModuleDefinition module,
+			TypeDefinition type,
 			string pitLibraryPath,
 			string pitTestFile)
 		{
-			var method = type.DefineMethod("TestDatasets", MethodAttributes.Public);
-			method.SetCustomAttribute(testAttr);
-			method.SetCustomAttribute(MakeCustomAttribute(typeof(SlowAttribute)));
+			var method = new MethodDefinition("TestDatasets",
+				Mono.Cecil.MethodAttributes.Public |
+				Mono.Cecil.MethodAttributes.HideBySig,
+				module.TypeSystem.Void);
+			method.CustomAttributes.Add(MakeCustomAttribute(module, typeof(TestAttribute)));
+			method.CustomAttributes.Add(MakeCustomAttribute(module, typeof(SlowAttribute)));
 
 			var testPitMethod = typeof(ThePitTester).GetMethod("VerifyDataSets");
 
-			var il = method.GetILGenerator();
+			var il = method.Body.GetILProcessor();
 			il.Emit(OpCodes.Ldstr, pitLibraryPath);
 			il.Emit(OpCodes.Ldstr, pitTestFile);
-			il.Emit(OpCodes.Call, testPitMethod);
+			il.Emit(OpCodes.Call, module.ImportReference(testPitMethod));
 			il.Emit(OpCodes.Ret);
+			type.Methods.Add(method);
 		}
 #endif
 

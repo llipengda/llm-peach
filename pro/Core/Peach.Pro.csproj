@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Peach.Pro</AssemblyName>
+    <RootNamespace>Peach.Pro.Core</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latestMajor</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>$(NoWarn);1701;1702;SYSLIB0011</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Platform-specific implementations are migrated as separate projects. -->
+    <Compile Remove="OS/Windows/**/*.cs" />
+    <!-- .NET Remoting has no .NET 8 runtime. The REST agent below replaces it. -->
+    <Compile Remove="Agent/Channels/AgentTcpRemoting.cs" />
+    <!-- Remote log forwarding still depends on the retired WebSocketSharp API. -->
+    <Compile Remove="Agent/Channels/Rest/LogHandler.cs" />
+    <Compile Remove="Agent/Channels/Rest/LogSink.cs" />
+    <Compile Include="OS/Windows/Pal.cs" />
+    <Compile Include="OS/Windows/WinSerialStream.cs" />
+    <Compile Include="OS/Windows/SingleInstance.cs" />
+    <Compile Include="OS/Windows/Publishers/**/*.cs" />
+    <Compile Remove="OS/Windows/Publishers/ComPublisher.cs" />
+    <EmbeddedResource Include="Resources/**/*" />
+    <EmbeddedResource Include="WebServices/Views/**/*" />
+    <Content Include="Scripts/**/*">
+      <Link>Scripts/%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../core/Core/Peach.Core.csproj" />
+    <ProjectReference Include="../../3rdParty/BouncyCastle/crypto/BouncyCastle.Crypto.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.42" />
+    <PackageReference Include="DotNetZip" Version="1.9.8" Aliases="DotNetZip" />
+    <PackageReference Include="IronPython" Version="2.7.12" />
+    <PackageReference Include="Mono.Cecil" Version="0.11.5" />
+    <PackageReference Include="NLog" Version="4.7.15" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Nustache" Version="1.16.0.1" />
+    <PackageReference Include="PacketDotNet" Version="0.16.0" />
+    <PackageReference Include="SharpPcap" Version="4.4.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
+    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.1" />
+  </ItemGroup>
+</Project>

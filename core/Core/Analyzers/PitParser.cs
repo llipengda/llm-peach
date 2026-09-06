@@ -1595,12 +1595,19 @@ namespace Peach.Core.Analyzers
 					{
 						dir = Path.GetFullPath(dir);
 						var files = Directory.GetFiles(dir, pattern, SearchOption.TopDirectoryOnly);
+						System.Array.Sort(files, StringComparer.Ordinal);
 						foreach (var item in files)
 							dataSet.Add(new DataFile(dataSet, item));
 					}
 					catch (ArgumentException ex)
 					{
 						// Directory is not legal
+						throw new PeachException("Error parsing Data element, fileName contains invalid characters: " + dataFileName, ex);
+					}
+					catch (IOException ex)
+					{
+						// Modern .NET accepts wildcard characters in Path.GetFullPath and
+						// reports the invalid directory only when enumerating it.
 						throw new PeachException("Error parsing Data element, fileName contains invalid characters: " + dataFileName, ex);
 					}
 
@@ -1615,7 +1622,7 @@ namespace Peach.Core.Analyzers
 
 						if (Directory.Exists(normalized))
 						{
-							foreach (string fileName in Directory.GetFiles(normalized))
+							foreach (string fileName in Directory.GetFiles(normalized).OrderBy(x => x, StringComparer.Ordinal))
 								dataSet.Add(new DataFile(dataSet, fileName));
 
 							if (dataSet.Count == 0)

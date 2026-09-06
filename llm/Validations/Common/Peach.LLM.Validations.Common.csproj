@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Peach.LLM.Validations.Common</AssemblyName>
+    <RootNamespace>Peach.LLM.Validations.Common</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../core/Core/Peach.Core.csproj" />
+    <ProjectReference Include="../../../pro/Core/Peach.Pro.csproj" />
+  </ItemGroup>
+</Project>

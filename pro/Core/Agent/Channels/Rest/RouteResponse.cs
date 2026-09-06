@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using Newtonsoft.Json;
 using Peach.Core;
-using SocketHttpListener.Net;
+using System.Net;
 
 namespace Peach.Pro.Core.Agent.Channels.Rest
 {

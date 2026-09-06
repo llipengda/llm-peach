@@ -43,6 +43,7 @@ namespace Peach.Core.Test
 			Assert.AreEqual(8, Enc.UTF32.GetMaxByteCount(1), "UTF32");
 
 			// Why???
+			#if NETFRAMEWORK
 			if (Platform.GetOS() == Platform.OS.Windows)
 			{
 				Assert.AreEqual(2, latin1.GetMaxByteCount(1), "latin1");
@@ -51,6 +52,9 @@ namespace Peach.Core.Test
 			{
 				Assert.AreEqual(1, latin1.GetMaxByteCount(1), "latin1");
 			}
+			#else
+			Assert.AreEqual(2, latin1.GetMaxByteCount(1), "latin1");
+			#endif
 		}
 
 		[Test]

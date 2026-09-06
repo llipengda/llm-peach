@@ -1,0 +1,64 @@
+= Modern .NET build
+
+The actively migrated projects target .NET 8 and stay beside their original
+source trees. The migration does not maintain a duplicate source tree.
+
+== Requirements
+
+Install a .NET 8 SDK. The repository `global.json` accepts the newest installed
+8.0 patch.
+
+== Build
+
+From the repository root:
+
+[source,shell]
+----
+dotnet build Peach.Build.csproj --configuration Release
+----
+
+The aggregate project builds the portable core, Pro runtime and command-line
+tools, tests, Bouncy Castle sources, Unix trampoline, and LLM validation
+assemblies. On Windows it also includes PeachValidator and PeachXmlGenerator.
+
+Individual projects can be built or run from their original directories:
+
+[source,shell]
+----
+dotnet run --project pro/Peach/Peach.csproj -- --help
+dotnet run --project core/Minset/PeachMinset.csproj -- --help
+dotnet test core/Test/Peach.Core.Test.csproj --configuration Release
+dotnet test pro/Test/Core/Peach.Pro.Test.csproj --configuration Release
+----
+
+== Migrated scope
+
+* Core PIT parsing, cracking, data models, relations, fixups, scripting, state
+  models, fuzzing engine, mutation strategies, publishers, and agents
+* Pro analyzers, fixups, mutators, strategies, publishers, storage, monitors,
+  licensing/job runtime, and command-line executables
+* Linux and macOS implementations plus portable Windows implementations
+* LLM core and all four validation assemblies
+* The bundled Bouncy Castle source tree
+* .NET 8 test apphosts for CrashTest and CrashableServer, plus direct Unix
+  process launching without Mono's debugger agent
+* Cross-platform code-page registration, .NET 8-compatible deep cloning, and
+  cooperative cancellation in place of unsupported thread termination
+
+== Remaining compatibility boundaries
+
+The following features are intentionally excluded from the .NET 8 build until
+they can be redesigned around supported APIs:
+
+* `pro/WebApi2`: classic ASP.NET/System.Web, OWIN, and Nancy hosting
+* `AgentTcpRemoting` and the Unix trampoline IPC mode: .NET Remoting
+* Windows COM publisher/container
+* The legacy REST channel implemented on SocketHttpListener
+
+Peach and PeachService run without the old embedded Web UI. Several legacy
+packages are still restored through .NET Framework compatibility assets; their
+replacement is follow-up dependency work rather than a directory migration.
+
+Linux monitor integration tests additionally require host privileges, GDB, and
+the Peach `exploitable` extension. They compile on .NET 8 but cannot all pass in
+an unprivileged container or sandbox.

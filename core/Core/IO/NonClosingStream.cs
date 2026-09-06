@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+#if NETFRAMEWORK
 using System.Runtime.Remoting;
+#endif
 
 namespace Peach.Core.IO
 {
@@ -147,10 +149,12 @@ namespace Peach.Core.IO
 		/// </summary>
 		/// <param name="requestedType">The Type of the object that the new ObjRef will reference.</param>
 		/// <returns>n/a</returns>
+		#if NETFRAMEWORK
 		public override ObjRef CreateObjRef(Type requestedType)
 		{
 			throw new NotSupportedException();
 		}
+		#endif
 
 		/// <summary>
 		/// Waits for the pending asynchronous read to complete.

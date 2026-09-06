@@ -218,8 +218,6 @@ namespace Peach.Pro.Core.Loggers
 			if (!Directory.Exists(job.LogPath))
 				Directory.CreateDirectory(job.LogPath);
 
-			ConfigureDebugLogging(job.DebugLogPath, context.config);
-
 			_cache = new AsyncDbCache(job);
 
 			using (var db = new NodeDatabase())
@@ -235,6 +233,8 @@ namespace Peach.Pro.Core.Loggers
 
 				db.UpdateJob(_cache.Job);
 			}
+
+			ConfigureDebugLogging(job.DebugLogPath, context.config);
 
 			_log = File.CreateText(Path.Combine(_cache.Job.LogPath, "status.txt"));
 
@@ -336,9 +336,8 @@ namespace Peach.Pro.Core.Loggers
 		{
 			if (!context.controlIteration && !context.controlRecordingIteration)
 			{
-				if (_counter >= 100)
+				if (_counter >= 100 && _jobLicense != null)
 				{
-					Debug.Assert(_jobLicense != null);
 					if (!_jobLicense.CanExecuteTestCase())
 					{
 						throw new PeachException(

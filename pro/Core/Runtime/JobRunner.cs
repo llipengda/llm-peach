@@ -32,7 +32,6 @@ namespace Peach.Pro.Core.Runtime
 		readonly PitConfig _pitConfig;
 		bool _shouldStop;
 		Engine _engine;
-		Thread _currentThread;
 		ILicense _license;
 
 		public JobRunner(ILicense license, Job job, string pitLibraryPath, string pitFile)
@@ -79,8 +78,6 @@ namespace Peach.Pro.Core.Runtime
 		{
 			try
 			{
-				_currentThread = Thread.CurrentThread;
-
 				var jobLicense = _license.NewJob(_config.pitFile, _pitConfig.Name, _config.id.ToString());
 				_jobLogger.Initialize(_config, _license, jobLicense);
 
@@ -122,18 +119,9 @@ namespace Peach.Pro.Core.Runtime
 			}
 			catch (Exception ex)
 			{
-				if (ex.GetBaseException() is ThreadAbortException)
-				{
-					Thread.ResetAbort();
-					Logger.Trace("Thread aborted");
-					_jobLogger.JobFail(_config.id, "Job killed.");
-				}
-				else
-				{
-					Logger.Error("Unhandled Exception: {0}".Fmt(ex));
-					_jobLogger.JobFail(_config.id, ex.Message);
-					throw;
-				}
+				Logger.Error("Unhandled Exception: {0}".Fmt(ex));
+				_jobLogger.JobFail(_config.id, ex.Message);
+				throw;
 			}
 			finally
 			{
@@ -177,15 +165,18 @@ namespace Peach.Pro.Core.Runtime
 		public void Abort()
 		{
 			Logger.Trace(">>> Abort");
+			_shouldStop = true;
+			_pausedEvt.Set();
+
 			if (_engine != null)
 			{
 				_engine.Abort();
 			}
 			else
 			{
-				// this happens if pit parsing hangs...
-				_currentThread.Abort();
-				_currentThread.Join();
+				// Modern .NET cannot safely terminate a thread while a PIT is parsing.
+				// Record the stop request so execution stops as soon as parsing returns.
+				Logger.Warn("Abort requested while parsing the PIT; waiting for parsing to return.");
 			}
 			Logger.Trace("<<< Abort");
 		}

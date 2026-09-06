@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting;
-using System.Runtime.Remoting.Channels;
-using System.Runtime.Remoting.Channels.Ipc;
-using System.Runtime.Serialization.Formatters;
-using System.Threading;
 using Mono.Unix;
 using Mono.Unix.Native;
 
@@ -56,50 +50,8 @@ Exec Usage:
 
 		static int DoRemote(string channelName, string typeName)
 		{
-			var provider = new BinaryServerFormatterSinkProvider
-			{
-				TypeFilterLevel = TypeFilterLevel.Full
-			};
-
-			var props = new Hashtable();
-			props["name"] = "ipc";
-			props["portName"] = channelName;
-
-			var channel = new IpcChannel(props, null, provider);
-
-			ChannelServices.RegisterChannel(channel, false);
-
-			try
-			{
-				var type = Type.GetType(typeName, true);
-
-				var baseType = type.BaseType;
-				while (baseType != null && baseType != typeof(MarshalByRefObject))
-					baseType = baseType.BaseType;
-				if (baseType == null)
-					throw new NotSupportedException(string.Format("Error, {0} is not a MarshalByRefObject.", type.Name));
-
-				RemotingConfiguration.RegisterWellKnownServiceType(
-					type, type.Name, WellKnownObjectMode.Singleton);
-
-				using (var evt = new EventWaitHandle(false, EventResetMode.AutoReset, "Local\\" + channelName))
-				{
-					// Signal we are started
-					evt.Set();
-				}
-
-				Thread.Sleep(Timeout.Infinite);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex.Message);
-			}
-			finally
-			{
-				ChannelServices.UnregisterChannel(channel);
-			}
-
-			return 0;
+			Console.Error.WriteLine("The --ipc mode depended on .NET Remoting and is not available on .NET 8.");
+			return 2;
 		}
 	}
 }

@@ -8,8 +8,7 @@ using System.Linq;
 using Peach.Core;
 using Peach.Core.Agent.Channels;
 using Peach.Core.IO;
-using HttpListenerRequest = SocketHttpListener.Net.HttpListenerRequest;
-using SocketHttpListener.Net;
+using System.Net;
 
 namespace Peach.Pro.Core.Agent.Channels.Rest
 {

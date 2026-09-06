@@ -21,12 +21,8 @@ namespace Peach.Pro.Test.Core
 		public void TestBasic()
 		{
 			var argsList = new List<string>();
-			var path = Path.Combine(Utilities.ExecutionDirectory, "CrashTestDummy.exe");
-			if (Platform.GetOS() != Platform.OS.Windows)
-			{
-				argsList.Add(path);
-				path = "mono";
-			}
+			var path = Utilities.GetAppResourcePath(
+				Platform.GetOS() == Platform.OS.Windows ? "CrashTestDummy.exe" : "CrashTestDummy");
 			var args = string.Join(" ", argsList);
 			var proc = new SysProcess
 			{
@@ -130,12 +126,8 @@ namespace Peach.Pro.Test.Core
 		{
 			var guid = Guid.NewGuid();
 			var argsList = new List<string>();
-			var path = Path.Combine(Utilities.ExecutionDirectory, "CrashTestDummy.exe");
-			if (Platform.GetOS() != Platform.OS.Windows)
-			{
-				argsList.Add(path);
-				path = "mono";
-			}
+			var path = Utilities.GetAppResourcePath(
+				Platform.GetOS() == Platform.OS.Windows ? "CrashTestDummy.exe" : "CrashTestDummy");
 
 			argsList.Add(guid.ToString());
 

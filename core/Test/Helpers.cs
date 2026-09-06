@@ -71,18 +71,30 @@ namespace Peach.Core.Test
 		{
 			var startEvent = new ManualResetEvent(false);
 			var process = new SysProcess();
-			var peach = Utilities.GetAppResourcePath("Peach.exe");
-			var args = new List<string>
+			List<string> args;
+			if (protocol == "tcp")
 			{
-				peach,
-				"-a", 
-				protocol,
-				"--plugins",
-				pluginsPath,
-			};
+				var executable = Platform.GetOS() == Platform.OS.Windows ? "PeachAgent.exe" : "PeachAgent";
+				args = new List<string>
+				{
+					Utilities.GetAppResourcePath(executable),
+				};
+			}
+			else
+			{
+				var peach = Utilities.GetAppResourcePath("Peach.exe");
+				args = new List<string>
+				{
+					peach,
+					"-a",
+					protocol,
+					"--plugins",
+					pluginsPath,
+				};
 
-			if (Platform.GetOS() != Platform.OS.Windows)
-				args.Insert(0, "mono");
+				if (Platform.GetOS() != Platform.OS.Windows)
+					args.Insert(0, "mono");
+			}
 
 			process.StartInfo.FileName = args.First();
 			process.StartInfo.Arguments = string.Join(" ", args.Skip(1));

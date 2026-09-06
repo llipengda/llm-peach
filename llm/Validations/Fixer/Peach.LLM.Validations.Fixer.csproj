@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Peach.LLM.Validations.Fixer</AssemblyName>
+    <RootNamespace>Peach.LLM.Validations.Fixer</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../core/Core/Peach.Core.csproj" />
+    <ProjectReference Include="../../../pro/Core/Peach.Pro.csproj" />
+    <ProjectReference Include="../Common/Peach.LLM.Validations.Common.csproj" />
+    <PackageReference Include="NLog" Version="4.7.15" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NLog.Peach.LLM.Validations.Fixer.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

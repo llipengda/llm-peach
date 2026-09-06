@@ -19,6 +19,14 @@ namespace Peach.Pro.Core.Loggers
 
 		protected override void Write(LogEventInfo logEvent)
 		{
+			// RandomStrategy emits startup debug messages before Engine_TestStarting
+			// has inserted the Job row.  The old provider silently tolerated that
+			// ordering; SQLite with foreign keys enabled does not.  Ignore only
+			// those orphan startup messages and keep the FK enforced for real logs.
+			Guid jobId;
+			if (!Guid.TryParse(_jobId, out jobId) || _db.GetJob(jobId) == null)
+				return;
+
 			_db.InsertJobLog(new JobLog
 			{
 				JobId = _jobId,

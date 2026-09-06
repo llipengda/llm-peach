@@ -1,9 +1,10 @@
-﻿
+﻿extern alias DotNetZip;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Ionic.BZip2;
+using BZip2InputStream = DotNetZip::Ionic.BZip2.BZip2InputStream;
+using BZip2OutputStream = DotNetZip::Ionic.BZip2.BZip2OutputStream;
 using Peach.Core;
 using Peach.Core.Dom;
 using Peach.Core.IO;

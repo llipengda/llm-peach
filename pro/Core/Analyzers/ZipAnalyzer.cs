@@ -1,9 +1,11 @@
+extern alias DotNetZip;
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text.RegularExpressions;
-using Ionic.Zip;
+using ZipFile = DotNetZip::Ionic.Zip.ZipFile;
 using Peach.Core;
 using Peach.Core.Cracker;
 using Peach.Core.Dom;

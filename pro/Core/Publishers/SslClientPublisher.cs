@@ -538,6 +538,7 @@ namespace Peach.Pro.Core.Publishers
 			public void Process()
 			{
 				m_thread = new Thread(new ThreadStart(Run));
+				m_thread.IsBackground = true;
 				m_thread.Start();
 			}
 
@@ -563,10 +564,6 @@ namespace Peach.Pro.Core.Publishers
 
 					//if (_callback != null)
 					//	_callback(this);
-				}
-				catch (ThreadAbortException)
-				{
-					m_read_count = 0;
 				}
 				catch (Exception)
 				{
@@ -603,7 +600,9 @@ namespace Peach.Pro.Core.Publishers
 
 			public void Cancel()
 			{
-				m_thread.Abort();
+				// Closing the underlying stream interrupts the blocking read. Keep the
+				// worker in the background in case a third-party stream ignores Close().
+				m_thread.Join(TimeSpan.FromSeconds(1));
 			}
 		}
 
@@ -763,10 +762,11 @@ namespace Peach.Pro.Core.Publishers
 
 			public override void Close()
 			{
+				_stream.Close();
+
 				if (m_asyncRead != null)
 					m_asyncRead.Cancel();
 
-				_stream.Close();
 				base.Close();
 			}
 		}

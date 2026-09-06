@@ -1,0 +1,29 @@
+{
+  "Name": "IMG",
+  "Description": "",
+  "OriginalPit": "Image/IMG.xml",
+  "Config": [],
+  "Agents": [
+    {
+      "Name": "TheAgent",
+      "AgentUrl": "local://",
+      "Monitors": [
+        {
+          "Name": "RunCommand",
+          "MonitorClass": "RunCommand",
+          "Map": [
+            {
+              "Key": "Command",
+              "Value": "true"
+            },
+            {
+              "Key": "UseNLog",
+              "Value": "true"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "Weights": []
+}

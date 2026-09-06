@@ -84,7 +84,7 @@ namespace Peach.Pro.Test.Core.Dom
 				"  \n" +
 				"  <StateModel name='TheStateModel' initialState='initial'>\n" +
 				"    <State name='initial'>\n" +
-				"      <Action type='outfrag'>\n" +
+				"      <Action type='output'>\n" +
 				"        <DataModel ref='Example1'/>\n" +
 				"      </Action>\n" +
 				"    </State>\n" +

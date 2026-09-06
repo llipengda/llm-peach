@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Peach xmlns="http://peachfuzzer.com/2012/Peach"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://peachfuzzer.com/2012/Peach ../peach.xsd">
+
+	<!--
+		A framed protocol used to validate the modern .NET TCP publisher.
+		Override the endpoint with -DTargetHost=... and -DTargetPort=...
+	-->
+	<DataModel name="FramedMessage">
+		<String name="Magic" value="PCHF" token="true" />
+		<Number name="Version" size="8" value="1" />
+		<Number name="Flags" size="8" value="3" />
+		<Number name="BodyLength" size="32" endian="big" signed="false">
+			<Relation type="size" of="Body" />
+		</Number>
+
+		<Block name="Body">
+			<String name="Command" value="PUBLISH" nullTerminated="true" />
+			<Number name="MessageId" size="32" endian="big" signed="false" value="305419896" />
+			<String name="Topic" value="telemetry/device-17" nullTerminated="true" />
+			<Blob name="Payload" valueType="hex" value="7b2274656d7065726174757265223a32332e352c226f6e6c696e65223a747275657d" />
+		</Block>
+
+		<Number name="BodyCrc32" size="32" endian="big" signed="false">
+			<Fixup class="checksums.Crc32Fixup">
+				<Param name="ref" value="Body" />
+			</Fixup>
+		</Number>
+	</DataModel>
+
+	<StateModel name="ProtocolState" initialState="SendFrame">
+		<State name="SendFrame">
+			<Action type="call" method="StartIterationEvent" publisher="Peach.Agent" />
+			<Action type="output">
+				<DataModel ref="FramedMessage" />
+			</Action>
+			<Action type="call" method="ExitIterationEvent" publisher="Peach.Agent" />
+		</State>
+	</StateModel>
+
+	<Test name="Default" maxOutputSize="512" targetLifetime="iteration">
+		<StateModel ref="ProtocolState" />
+		<Publisher class="Tcp">
+			<Param name="Host" value="##TargetHost##" />
+			<Param name="Port" value="##TargetPort##" />
+			<!-- PitLint: Allow_HardCodedParamValue -->
+			<Param name="RetryMode" value="FirstAndAfterFault" />
+			<!-- PitLint: Allow_HardCodedParamValue -->
+			<Param name="FaultOnConnectionFailure" value="true" />
+			<!-- PitLint: Allow_HardCodedParamValue -->
+			<Param name="Lifetime" value="Iteration" />
+			<!-- PitLint: Allow_HardCodedParamValue -->
+			<Param name="Timeout" value="3000" />
+			<!-- PitLint: Allow_HardCodedParamValue -->
+			<Param name="SendTimeout" value="-1" />
+			<!-- PitLint: Allow_HardCodedParamValue -->
+			<Param name="ConnectTimeout" value="10000" />
+			<!-- PitLint: Allow_HardCodedParamValue -->
+			<Param name="ReadAvailableMode" value="false" />
+			<!-- PitLint: Allow_HardCodedParamValue -->
+			<Param name="ReadAvailableTimeout" value="150" />
+		</Publisher>
+	</Test>
+</Peach>

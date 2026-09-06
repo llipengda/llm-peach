@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Peach</AssemblyName>
+    <RootNamespace>Peach</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <LangVersion>latestMajor</LangVersion>
+    <NoWarn>$(NoWarn);1701;1702;SYSLIB0011</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../core/Core/Peach.Core.csproj" />
+    <ProjectReference Include="../Core/Peach.Pro.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="app.config" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="peach" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="pits/**/*" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="samples/**/*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

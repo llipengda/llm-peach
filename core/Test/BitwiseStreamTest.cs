@@ -75,7 +75,8 @@ namespace Peach.Core.Test
 			}
 			catch (ArgumentOutOfRangeException ex)
 			{
-				Assert.AreEqual("Non-negative number required." + Environment.NewLine + "Parameter name: value", ex.Message);
+				Assert.AreEqual("value", ex.ParamName);
+				StringAssert.StartsWith("Non-negative number required.", ex.Message);
 			}
 
 			try
@@ -85,7 +86,8 @@ namespace Peach.Core.Test
 			}
 			catch (ArgumentOutOfRangeException ex)
 			{
-				Assert.AreEqual("Non-negative number required." + Environment.NewLine + "Parameter name: value", ex.Message);
+				Assert.AreEqual("value", ex.ParamName);
+				StringAssert.StartsWith("Non-negative number required.", ex.Message);
 			}
 		}
 

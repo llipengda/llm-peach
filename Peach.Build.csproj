@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>Peach.Build</AssemblyName>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="3rdParty/BouncyCastle/crypto/BouncyCastle.Crypto.csproj" />
+    <ProjectReference Include="core/Core/Peach.Core.csproj" />
+    <ProjectReference Include="core/Minset/PeachMinset.csproj" />
+    <ProjectReference Include="core/Test/Peach.Core.Test.csproj" />
+    <ProjectReference Include="pro/Core/Peach.Pro.csproj" />
+    <ProjectReference Include="pro/Peach/Peach.csproj" />
+    <ProjectReference Include="pro/PeachAgent/PeachAgent.csproj" />
+    <ProjectReference Include="pro/Worker/PeachWorker.csproj" />
+    <ProjectReference Include="pro/Service/PeachService.csproj" />
+    <ProjectReference Include="pro/PitTester/Peach.Pro.PitTester.csproj" />
+    <ProjectReference Include="pro/PitTool/PitTool.csproj" />
+    <ProjectReference Include="pro/OS/UnixTrampoline/PeachTrampoline.csproj" />
+    <ProjectReference Include="pro/MutatorsTest/Peach.Pro.MutatorsTest.csproj" />
+    <ProjectReference Include="pro/Test/Core/Peach.Pro.Test.csproj" />
+    <ProjectReference Include="pro/Test/Apps/CrashTest/CrashTest.csproj" />
+    <ProjectReference Include="pro/Test/Apps/CrashableServer/CrashableServer.csproj" />
+    <ProjectReference Include="pro/Test/Apps/CrashingFileConsumer/CrashingFileConsumer.csproj" />
+    <ProjectReference Include="pro/Test/Apps/UseAfterFree/UseAfterFree.csproj" />
+    <ProjectReference Include="pro/Test/Apps/CrashTestDummy/CrashTestDummy.csproj" />
+    <ProjectReference Include="pro/Test/OS/Linux/Peach.Pro.Test.OS.Linux.csproj" />
+    <ProjectReference Include="llm/Core/Peach.LLM.csproj" />
+    <ProjectReference Include="llm/Validations/Common/Peach.LLM.Validations.Common.csproj" />
+    <ProjectReference Include="llm/Validations/DataModel/Peach.LLM.Validations.DataModel.csproj" />
+    <ProjectReference Include="llm/Validations/Mutator/Peach.LLM.Validations.Mutator.csproj" />
+    <ProjectReference Include="llm/Validations/Fixer/Peach.LLM.Validations.Fixer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
+    <ProjectReference Include="pro/Validator/PeachValidator.csproj" />
+    <ProjectReference Include="pro/XmlGenerator/PeachXmlGenerator.csproj" />
+  </ItemGroup>
+</Project>

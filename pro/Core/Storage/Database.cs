@@ -128,6 +128,11 @@ namespace Peach.Pro.Core.Storage
 				ForeignKeys = true,
 				JournalMode = useWal ? SQLiteJournalModeEnum.Wal : SQLiteJournalModeEnum.Default,
 				SyncMode = SynchronizationModes.Normal,
+				// Opening a WAL connection can briefly contend with another writer while
+				// SQLite applies its journal/synchronous pragmas.  The legacy connection
+				// relied on provider defaults; make the retry window explicit on .NET 8.
+				BusyTimeout = 30000,
+				DefaultTimeout = 30,
 			};
 
 			var isInitialized = IsInitialized;

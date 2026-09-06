@@ -91,7 +91,7 @@ namespace Peach.Pro.Test.Core.Storage
 
 			using (var db = new NodeDatabase())
 			{
-				var dt = db.SelectDateTime("SELECT StartDate from Job where Id=\"" + Guid.Empty + "\"");
+				var dt = db.SelectDateTime("SELECT StartDate from Job where Id='" + Guid.Empty + "'");
 
 				Assert.AreEqual(DateTimeKind.Unspecified, dt.Kind);
 
@@ -124,7 +124,7 @@ namespace Peach.Pro.Test.Core.Storage
 
 			using (var db = new NodeDatabase())
 			{
-				var val = db.SelectLong("SELECT Runtime from Job where Id=\"" + j.Id + "\"");
+				var val = db.SelectLong("SELECT Runtime from Job where Id='" + j.Id + "'");
 
 				Assert.That(val, Is.TypeOf<long>());
 				Assert.AreEqual(36, val);

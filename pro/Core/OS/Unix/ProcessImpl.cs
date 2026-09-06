@@ -72,15 +72,8 @@ namespace Peach.Pro.Core.OS.Unix
 
 			public void Terminate()
 			{
-				if (Attached)
-				{
-					_process.CloseMainWindow();
-				}
-				else
-				{
-					var ret = killpg(_process.Id, SIGTERM);
-					UnixMarshal.ThrowExceptionForLastErrorIf(ret);
-				}
+				var ret = kill(_process.Id, SIGTERM);
+				UnixMarshal.ThrowExceptionForLastErrorIf(ret);
 			}
 
 			public void Kill()
@@ -91,8 +84,7 @@ namespace Peach.Pro.Core.OS.Unix
 				}
 				else
 				{
-					var ret = killpg(_process.Id, SIGKILL);
-					UnixMarshal.ThrowExceptionForLastErrorIf(ret);
+					_process.Kill(true);
 				}
 				_process.WaitForExit(-1);
 			}
@@ -198,55 +190,22 @@ namespace Peach.Pro.Core.OS.Unix
 			string workingDirectory,
 			Dictionary<string, string> environment)
 		{
-			var listener = new TcpListener(IPAddress.Loopback, 0);
-			listener.Start();
-
-			try
+			var si = new System.Diagnostics.ProcessStartInfo
 			{
-				var local = (IPEndPoint)listener.LocalEndpoint;
+				FileName = executable,
+				Arguments = arguments ?? string.Empty,
+				UseShellExecute = false,
+				RedirectStandardInput = true,
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+				WorkingDirectory = workingDirectory ?? string.Empty,
+			};
 
-				_logger.Trace("CreateProcess(): TcpListener bound to: {0}", local);
+			if (environment != null)
+				environment.ForEach(x => si.EnvironmentVariables[x.Key] = x.Value);
 
-				var args = string.Join(" ",
-					"--debugger-agent=transport=dt_socket,address=127.0.0.1:{0},setpgid=y".Fmt(local.Port),
-					Utilities.GetAppResourcePath("PeachTrampoline.exe"),
-					executable,
-					arguments
-				);
-
-				var si = new System.Diagnostics.ProcessStartInfo
-				{
-					FileName = "mono",
-					Arguments = args,
-					UseShellExecute = false,
-					RedirectStandardInput = true,
-					RedirectStandardOutput = true,
-					RedirectStandardError = true,
-					WorkingDirectory = workingDirectory ?? "",
-				};
-
-				if (environment != null)
-					environment.ForEach(x => si.EnvironmentVariables[x.Key] = x.Value);
-
-				_logger.Debug("CreateProcess(): \"{0} {1}\"", executable, arguments);
-				var process = SysProcess.Start(si);
-
-				var task = listener.AcceptTcpClientAsync();
-				while (!task.Wait(TimeSpan.FromMilliseconds(100)))
-				{
-					if (process.HasExited)
-						throw new PeachException("Failed to start with exit code: {0}".Fmt(process.ExitCode));
-				}
-
-				DebuggerServer(task.Result);
-
-				return MakeOwnedProcess(process);
-			}
-			finally
-			{
-				// Don't call listener.Stop() since after it closes the open socket a new one is opened
-				listener.Server.Close();
-			}
+			_logger.Debug("CreateProcess(): \"{0} {1}\"", executable, arguments);
+			return MakeOwnedProcess(SysProcess.Start(si));
 		}
 
 		private void DebuggerServer(TcpClient tcp)
@@ -523,6 +482,6 @@ namespace Peach.Pro.Core.OS.Unix
 		}
 
 		[DllImport("libc", SetLastError = true)]
-		private static extern int killpg(int pgrp, int sig);
+		private static extern int kill(int pid, int sig);
 	}
 }

@@ -4,57 +4,21 @@
 
 using System;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Numerics;
-using System.Reflection;
 using Newtonsoft.Json;
 using Peach.Core;
 using Peach.Core.IO;
-using HttpListenerRequest = SocketHttpListener.Net.HttpListenerRequest;
 
 namespace Peach.Pro.Core.Agent.Channels.Rest
 {
 	internal static class HttpExtensions
 	{
-		private delegate void ResetReusesFunc(HttpListenerContext ctx);
-		private static readonly ResetReusesFunc ResetReusesImpl;
-		private static readonly PropertyInfo ConnProperty;
-		private static readonly FieldInfo ReusesField;
-
-		static HttpExtensions()
-		{
-			const BindingFlags attrs = BindingFlags.NonPublic | BindingFlags.Instance;
-
-			ConnProperty = typeof(HttpListenerContext).GetProperty("Connection", attrs);
-			if (ConnProperty == null)
-			{
-				ResetReusesImpl = NullReuses;
-			}
-			else
-			{
-				ReusesField = ConnProperty.PropertyType.GetField("reuses", attrs);
-				ResetReusesImpl = ReflectReuses;
-			}
-		}
-
-		static void NullReuses(HttpListenerContext ctx)
-		{
-		}
-
-		static void ReflectReuses(HttpListenerContext ctx)
-		{
-			var conn = ConnProperty.GetValue(ctx, null);
-
-			Debug.Assert(conn != null);
-
-			ReusesField.SetValue(conn, 1);
-		}
-
 		public static void ResetReuses(this HttpListenerContext req)
 		{
-			ResetReusesImpl(req);
+			// SocketHttpListener needed a private connection-reuse workaround.
+			// System.Net.HttpListener owns connection lifetime on modern .NET.
 		}
 
 		public static T FromJson<T>(this HttpListenerRequest req)

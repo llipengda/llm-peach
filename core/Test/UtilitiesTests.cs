@@ -23,7 +23,7 @@ namespace Peach.Core.Test
 				}
 				catch (Exception ex)
 				{
-					Assert.True(ex.Message.Contains("Parameter name: begin"));
+					Assert.AreEqual("begin", ((ArgumentOutOfRangeException)ex).ParamName);
 					throw;
 				}
 			});
@@ -37,7 +37,7 @@ namespace Peach.Core.Test
 				}
 				catch (Exception ex)
 				{
-					Assert.True(ex.Message.Contains("Parameter name: curSlice"));
+					Assert.AreEqual("curSlice", ((ArgumentOutOfRangeException)ex).ParamName);
 					throw;
 				}
 			});
@@ -51,7 +51,7 @@ namespace Peach.Core.Test
 				}
 				catch (Exception ex)
 				{
-					Assert.True(ex.Message.Contains("Parameter name: curSlice"));
+					Assert.AreEqual("curSlice", ((ArgumentOutOfRangeException)ex).ParamName);
 					throw;
 				}
 			});
@@ -65,7 +65,7 @@ namespace Peach.Core.Test
 				}
 				catch (Exception ex)
 				{
-					Assert.True(ex.Message.Contains("Parameter name: numSlices"));
+					Assert.AreEqual("numSlices", ((ArgumentOutOfRangeException)ex).ParamName);
 					throw;
 				}
 			});

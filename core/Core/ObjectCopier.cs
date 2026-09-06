@@ -1,4 +1,7 @@
 using System;
+using System.IO;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.Serialization;
 using System.Reflection;
 using System.Collections.Generic;
@@ -6,6 +9,7 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 using CloneFunc = System.Func<System.Collections.Hashtable, object, object, object>;
 using ParamList = System.Collections.Generic.List<System.Linq.Expressions.ParameterExpression>;
@@ -30,6 +34,12 @@ namespace Peach.Core
 
 	public class ObjectCopier
 	{
+		sealed class ReferenceComparer : IEqualityComparer
+		{
+			public new bool Equals(object x, object y) { return ReferenceEquals(x, y); }
+			public int GetHashCode(object obj) { return RuntimeHelpers.GetHashCode(obj); }
+		}
+
 		#region Static Expression Tree Caching
 
 		static ConcurrentDictionary<Type, CloneFunc> cloners = new ConcurrentDictionary<Type, CloneFunc>();
@@ -61,7 +71,7 @@ namespace Peach.Core
 			if (obj == null)
 				return default(T);
 
-			var table = new Hashtable();
+			var table = new Hashtable(new ReferenceComparer());
 			var cloner = findOrCreateCloner(obj.GetType());
 
 			return (T)cloner(table, obj, ctx);
@@ -167,6 +177,55 @@ namespace Peach.Core
 			return fields.Values;
 		}
 
+		static bool IsEqualityComparer(Type type)
+		{
+			return typeof(IEqualityComparer).IsAssignableFrom(type) ||
+				type.GetInterfaces().Any(i => i.IsGenericType &&
+					i.GetGenericTypeDefinition() == typeof(IEqualityComparer<>));
+		}
+
+		static MemoryStream CloneMemoryStream(MemoryStream source)
+		{
+			var clone = new MemoryStream(source.ToArray());
+			clone.Position = source.Position;
+			return clone;
+		}
+
+		static IPAddress CloneIPAddress(IPAddress source)
+		{
+			return source.AddressFamily == AddressFamily.InterNetworkV6
+				? new IPAddress(source.GetAddressBytes(), source.ScopeId)
+				: new IPAddress(source.GetAddressBytes());
+		}
+
+		static T CloneMember<T>(Hashtable table, T value, object context)
+		{
+			if (ReferenceEquals(value, null))
+				return default(T);
+
+			return (T)findOrCreateCloner(value.GetType())(table, value, context);
+		}
+
+		static Dictionary<TKey, TValue> CloneDictionary<TKey, TValue>(
+			Hashtable table, Dictionary<TKey, TValue> source, object context)
+		{
+			var existing = table[source] as Dictionary<TKey, TValue>;
+			if (existing != null)
+				return existing;
+
+			var clone = new Dictionary<TKey, TValue>(source.Count, source.Comparer);
+			table[source] = clone;
+
+			foreach (var item in source)
+			{
+				clone.Add(
+					CloneMember(table, item.Key, context),
+					CloneMember(table, item.Value, context));
+			}
+
+			return clone;
+		}
+
 		#endregion
 
 		#region Constructor
@@ -186,6 +245,38 @@ namespace Peach.Core
 			if (type.IsPrimitive || type == typeof(string))
 			{
 				clone = obj;
+			}
+			else if (typeof(System.Text.Encoding).IsAssignableFrom(type))
+			{
+				// Encoding implementations are cloneable but are no longer marked
+				// Serializable on modern .NET.
+				clone = Expression.Call(
+					Expression.Convert(obj, typeof(System.Text.Encoding)),
+					typeof(System.Text.Encoding).GetMethod("Clone", Type.EmptyTypes));
+			}
+			else if (IsEqualityComparer(type))
+			{
+				// Runtime-provided comparers are immutable implementation details.
+				clone = obj;
+			}
+			else if (type == typeof(MemoryStream))
+			{
+				clone = Expression.Call(
+					typeof(ObjectCopier).GetMethod("CloneMemoryStream", BindingFlags.NonPublic | BindingFlags.Static),
+					Expression.Convert(obj, typeof(MemoryStream)));
+			}
+			else if (type == typeof(IPAddress))
+			{
+				clone = Expression.Call(
+					typeof(ObjectCopier).GetMethod("CloneIPAddress", BindingFlags.NonPublic | BindingFlags.Static),
+					Expression.Convert(obj, typeof(IPAddress)));
+			}
+			else if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+			{
+				var method = typeof(ObjectCopier).GetMethod(
+					"CloneDictionary", BindingFlags.NonPublic | BindingFlags.Static);
+				method = method.MakeGenericMethod(type.GetGenericArguments());
+				clone = Expression.Call(method, tbl, Expression.Convert(obj, type), ctx);
 			}
 			else if (type.IsArray)
 			{
@@ -222,7 +313,18 @@ namespace Peach.Core
 			// Compile the final expression
 			var lamba = Expression.Lambda<CloneFunc>(final, tbl, obj, ctx);
 
-			result = lamba.Compile();
+			var compiled = lamba.Compile();
+			result = (table, value, context) =>
+			{
+				try
+				{
+					return compiled(table, value, context);
+				}
+				catch (Exception ex)
+				{
+					throw new InvalidOperationException("Failed to clone '" + type.FullName + "'.", ex);
+				}
+			};
 		}
 
 		#endregion
@@ -475,13 +577,20 @@ namespace Peach.Core
 					}
 					else if (elementType.IsValueType)
 					{
-						// Value types are cloned by assigning the fields
-						CopyComplexType(
-							elementType,
-							Expression.ArrayAccess(original, indexes),
-							Expression.ArrayAccess(clone, indexes),
-							loopExpr
-						);
+						if (Nullable.GetUnderlyingType(elementType) != null)
+						{
+							loopExpr.Add(Expression.Assign(
+								Expression.ArrayAccess(clone, indexes),
+								Expression.ArrayAccess(original, indexes)));
+						}
+						else
+						{
+							CopyComplexType(
+								elementType,
+								Expression.ArrayAccess(original, indexes),
+								Expression.ArrayAccess(clone, indexes),
+								loopExpr);
+						}
 					}
 					else
 					{
@@ -598,14 +707,19 @@ namespace Peach.Core
 				}
 				else if (fieldType.IsValueType)
 				{
-					// Directly assign all members inside value types
-					// Don't need to worry about IsInitOnly because of IsValueType
-					CopyComplexType(
-						fieldType, 
-						Expression.Field(original, fieldInfo),
-						Expression.Field(clone, fieldInfo),
-						exprs
-					);
+					if (Nullable.GetUnderlyingType(fieldType) != null)
+					{
+						// Boxing an empty Nullable<T> produces null, so copy it directly.
+						exprs.Add(AssignField(fieldInfo, clone, Expression.Field(original, fieldInfo)));
+					}
+					else
+					{
+						CopyComplexType(
+							fieldType,
+							Expression.Field(original, fieldInfo),
+							Expression.Field(clone, fieldInfo),
+							exprs);
+					}
 				}
 				else
 				{
@@ -699,30 +813,16 @@ namespace Peach.Core
 			if (!fieldInfo.IsInitOnly)
 				return Expression.Assign(Expression.Field(clone, fieldInfo), value);
 
-			// For IsInitOnly fields, we need to use reflection to set the value
-			var getType = typeof(object).GetMethod("GetType");
-			var getField = typeof(Type).GetMethod("GetField", new [] { typeof(string) , typeof(BindingFlags) });
+			// Use the FieldInfo we already resolved. Looking the field up again on
+			// the runtime type misses private readonly fields declared by a base type.
 			var setValue = typeof(FieldInfo).GetMethod("SetValue", new [] { typeof(object), typeof(object) });
 
-			/*
-			 * clone.GetType().GetField(fieldInfo.Name).SetValue((object)value)
-			 */
-
-			var expr = Expression.Call(
-				Expression.Call(
-					Expression.Call(
-						Expression.Convert(clone, typeof(object)), getType
-					),
-					getField,
-					Expression.Constant(fieldInfo.Name),
-					Expression.Constant(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-				),
+			return Expression.Call(
+				Expression.Constant(fieldInfo),
 				setValue,
 				Expression.Convert(clone, typeof(object)),
 				Expression.Convert(value, typeof(object))
 			);
-
-			return expr;
 		}
 
 		#endregion

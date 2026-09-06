@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
+using Mono.Cecil;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
@@ -210,16 +210,12 @@ namespace Peach.Pro.Core
 			string output,
 			string masterSalt)
 		{
-			var dir = Path.GetDirectoryName(output);
 			var asmName = Path.GetFileNameWithoutExtension(output);
-			var fileName = Path.GetFileName(output);
-
-			var builder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-				new AssemblyName(asmName),
-				AssemblyBuilderAccess.Save,
-				dir
-			);
-			var module = builder.DefineDynamicModule(asmName, fileName);
+			var builder = AssemblyDefinition.CreateAssembly(
+				new AssemblyNameDefinition(asmName, new Version(1, 0, 0, 0)),
+				asmName,
+				ModuleKind.Dll);
+			var module = builder.MainModule;
 
 			var master = new PitManifest
 			{
@@ -246,9 +242,13 @@ namespace Peach.Pro.Core
 				SaveManifest(wrapper, manifest);
 			}
 			var manifestName = MakeFullName(root.Prefix, ManifestName);
-			module.DefineManifestResource(manifestName, ms, ResourceAttributes.Public);
+			module.Resources.Add(new EmbeddedResource(
+				manifestName,
+				Mono.Cecil.ManifestResourceAttributes.Public,
+				ms.ToArray()));
 
-			builder.Save(fileName);
+			builder.Write(output);
+			builder.Dispose();
 
 			return master;
 		}
@@ -256,7 +256,7 @@ namespace Peach.Pro.Core
 		static void EncryptFeature(
 			ResourceRoot root,
 			KeyValuePair<string, PitManifestFeature> feature,
-			ModuleBuilder module,
+			ModuleDefinition module,
 			byte[] key)
 		{
 			foreach (var asset in feature.Value.Assets)
@@ -276,7 +276,10 @@ namespace Peach.Pro.Core
 				}
 
 				output.Seek(0, SeekOrigin.Begin);
-				module.DefineManifestResource(outputResourceName, output, ResourceAttributes.Public);
+				module.Resources.Add(new EmbeddedResource(
+					outputResourceName,
+					Mono.Cecil.ManifestResourceAttributes.Public,
+					output.ToArray()));
 			}
 		}
 #endif

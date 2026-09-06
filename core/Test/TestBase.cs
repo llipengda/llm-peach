@@ -70,6 +70,14 @@ namespace Peach.Core.Test
 
 			public override void WriteLine(string message)
 			{
+				// SQLite 3.8+ reports creation of a transient automatic index as
+				// warning 284.  This is a query-planner optimization, not a failed
+				// assertion; older providers did not emit it.
+				if (message != null &&
+					(message.StartsWith("SQLite warning (284):") ||
+					 message.StartsWith("SQLite notice (283):")))
+					return;
+
 				var sb = new StringBuilder();
 
 				sb.AppendLine("Assertion " + message);
@@ -81,7 +89,11 @@ namespace Peach.Core.Test
 
 		protected void DoSetUp()
 		{
+			#if NETFRAMEWORK
 			Debug.Listeners.Insert(0, new AssertTestFail());
+			#else
+			Trace.Listeners.Insert(0, new AssertTestFail());
+			#endif
 
 			var logLevel = 0;
 

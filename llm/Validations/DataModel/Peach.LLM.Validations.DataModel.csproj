@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>Peach.LLM.Validations.DataModel</AssemblyName>
+    <RootNamespace>Peach.LLM.Validations.DataModel</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../core/Core/Peach.Core.csproj" />
+    <ProjectReference Include="../../../pro/Core/Peach.Pro.csproj" />
+    <ProjectReference Include="../../Core/Peach.LLM.csproj" />
+    <PackageReference Include="NLog" Version="4.7.15" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NLog.Peach.LLM.Validations.DataModel.config" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

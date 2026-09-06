@@ -1,8 +1,10 @@
+extern alias DotNetZip;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using Ionic.Zip;
+using ZipFile = DotNetZip::Ionic.Zip.ZipFile;
 using NLog;
 using Peach.Core;
 using Peach.Core.Dom;

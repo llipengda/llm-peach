@@ -42,7 +42,11 @@ namespace Peach.Core
 
 		public static void Register<T>() where T : AssertWriter, new()
 		{
+			#if NETFRAMEWORK
 			Debug.Listeners.Insert(0, new T());
+			#else
+			Trace.Listeners.Insert(0, new T());
+			#endif
 		}
 
 		protected virtual void OnAssert(string message)
