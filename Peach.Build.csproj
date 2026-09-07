@@ -22,7 +22,6 @@
     <ProjectReference Include="pro/PitTester/Peach.Pro.PitTester.csproj" />
     <ProjectReference Include="pro/PitTool/PitTool.csproj" />
     <ProjectReference Include="pro/OS/UnixTrampoline/PeachTrampoline.csproj" />
-    <ProjectReference Include="pro/MutatorsTest/Peach.Pro.MutatorsTest.csproj" />
     <ProjectReference Include="pro/Test/Core/Peach.Pro.Test.csproj" />
     <ProjectReference Include="pro/Test/Apps/CrashTest/CrashTest.csproj" />
     <ProjectReference Include="pro/Test/Apps/CrashableServer/CrashableServer.csproj" />
