@@ -62,6 +62,34 @@ dotnet build Peach.Build.csproj --configuration Release --no-restore
 build or run one component, pass its project file directly to `dotnet build` or
 `dotnet run`.
 
+=== Install a runnable distribution
+
+The output under `bin/` is an aggregate compiler output and is not the
+installable distribution. To create one complete output directory containing
+Peach, its tools, bundled resources, and runtime dependencies, run:
+
+[source,shell]
+----
+./build/install.sh
+----
+
+The default output directory is `dist/Peach`. The install step also restores
+the legacy `Plugins/` layout, including the LLM extension assemblies. A
+different destination can be provided as the first argument:
+
+[source,shell]
+----
+./build/install.sh /path/to/peach-install
+----
+
+Run the installed application with:
+
+[source,shell]
+----
+./dist/Peach/Peach --help
+./dist/Peach/Peach --noweb /path/to/your.pit.xml
+----
+
 === Test Commands
 
 [source,shell]
