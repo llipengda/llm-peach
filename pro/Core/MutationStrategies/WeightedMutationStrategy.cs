@@ -267,7 +267,17 @@ namespace Peach.Pro.Core.MutationStrategies
 					Context.OnDataMutating(data, elem, mutator);
 					logger.Debug("Action_Starting: Fuzzing: {0}", item.ElementName);
 					logger.Debug("Action_Starting: Mutator: {0}", mutator.Name);
-					mutator.randomMutation(elem);
+
+					var succeeded = false;
+					try
+					{
+						mutator.randomMutation(elem);
+						succeeded = true;
+					}
+					finally
+					{
+						Context.OnDataMutationFinished(data, elem, mutator, succeeded);
+					}
 
 					RecordMutation(instanceName, item.ElementName, mutator.Name);
 

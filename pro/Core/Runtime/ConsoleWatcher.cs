@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Peach.Core;
 using Peach.Core.Dom;
@@ -9,7 +10,14 @@ namespace Peach.Pro.Core.Runtime
 {
 	public class ConsoleWatcher : Watcher
 	{
+		private sealed class MutationSnapshot
+		{
+			public string ElementName { get; set; }
+			public string BeforeValue { get; set; }
+		}
+
 		private readonly Stopwatch timer = new Stopwatch();
+		private readonly Dictionary<DataElement, MutationSnapshot> mutationSnapshots = new Dictionary<DataElement, MutationSnapshot>();
 		private uint startIteration;
 		private bool reproducing;
 
@@ -150,18 +158,50 @@ namespace Peach.Pro.Core.Runtime
 
 		protected override void DataMutating(RunContext context, ActionData actionData, DataElement element, Mutator mutator)
 		{
+			mutationSnapshots[element] = new MutationSnapshot
+			{
+				ElementName = element.fullName,
+				BeforeValue = GetMutationValue(element),
+			};
+
 			WriteInfoMark();
 			Console.WriteLine("Fuzzing: {0}", element.fullName);
 			WriteInfoMark();
 			Console.WriteLine("Mutator: {0}", mutator.Name);
+		}
 
-			var defaultValue = element.DefaultValue != null ? element.DefaultValue.ToString() : "-";
-			var mutatedValue = element.MutatedValue != null ? element.MutatedValue.ToString() : defaultValue;
+		protected override void DataMutationFinished(RunContext context, ActionData actionData, DataElement element, Mutator mutator, bool succeeded)
+		{
+			MutationSnapshot snapshot;
+			if (!mutationSnapshots.TryGetValue(element, out snapshot))
+			{
+				snapshot = new MutationSnapshot
+				{
+					ElementName = element.fullName,
+					BeforeValue = "-",
+				};
+			}
+
+			mutationSnapshots.Remove(element);
+
+			var currentElement = actionData.dataModel.find(snapshot.ElementName);
+			var afterValue = !succeeded ? "<mutation failed>" :
+				currentElement == null ? "<removed>" : GetMutationValue(currentElement);
+
 			Console.WriteLine("[*] ***,{0},{1},{2},{3}",
-				NormalizeMutationValue(element.fullName),
+				NormalizeMutationValue(snapshot.ElementName),
 				NormalizeMutationValue(mutator.Name),
-				NormalizeMutationValue(defaultValue),
-				NormalizeMutationValue(mutatedValue));
+				NormalizeMutationValue(snapshot.BeforeValue),
+				NormalizeMutationValue(afterValue));
+		}
+
+		private static string GetMutationValue(DataElement element)
+		{
+			if (element == null)
+				return "-";
+
+			var value = element.InternalValue;
+			return value != null ? value.ToString() : "-";
 		}
 
 		protected override void StateMutating(RunContext context, State state, Mutator mutator)
@@ -201,7 +241,7 @@ namespace Peach.Pro.Core.Runtime
 			if (string.IsNullOrEmpty(value))
 				return "-";
 
-			return value.Replace(",", " ").Replace("\r", " ").Replace("\n", " ").Trim();
+			return value.Replace(",", "<comma>").Replace("\r", "\\r").Replace("\n", "\\n");
 		}
 	}
 }

@@ -265,7 +265,17 @@ namespace Peach.Pro.Core.MutationStrategies
 				Context.OnDataMutating(data, dataElement, mutator);
 				logger.Debug("ApplyMutation: Fuzzing: {0}", fullName);
 				logger.Debug("ApplyMutation: Mutator: {0}", mutator.Name);
-				mutator.sequentialMutation(dataElement);
+
+				var succeeded = false;
+				try
+				{
+					mutator.sequentialMutation(dataElement);
+					succeeded = true;
+				}
+				finally
+				{
+					Context.OnDataMutationFinished(data, dataElement, mutator, succeeded);
+				}
 			}
 		}
 

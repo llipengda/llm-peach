@@ -35,6 +35,7 @@ namespace Peach.Core
 			engine.HaveParallel += Engine_HaveParallel;
 
 			context.DataMutating += DataMutating;
+			context.DataMutationFinished += DataMutationFinished;
 			context.StateMutating += StateMutating;
 			context.StateModelStarting += StateModelStarting;
 			context.StateModelFinished += StateModelFinished;
@@ -61,6 +62,7 @@ namespace Peach.Core
 		public void Finalize(Engine engine, RunContext context)
 		{
 			context.DataMutating -= DataMutating;
+			context.DataMutationFinished -= DataMutationFinished;
 			context.StateMutating -= StateMutating;
 			context.StateModelStarting -= StateModelStarting;
 			context.StateModelFinished -= StateModelFinished;
@@ -137,6 +139,10 @@ namespace Peach.Core
 		#endregion
 
 		protected virtual void DataMutating(RunContext context, ActionData actionData, DataElement element, Mutator mutator)
+		{
+		}
+
+		protected virtual void DataMutationFinished(RunContext context, ActionData actionData, DataElement element, Mutator mutator, bool succeeded)
 		{
 		}
 

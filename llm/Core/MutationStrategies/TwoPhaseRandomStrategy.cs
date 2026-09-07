@@ -450,9 +450,11 @@ namespace Peach.LLM.Core.MutationStrategies
 						logger.Debug("Action_Starting: Mutator: {0}", mutator.Name);
 
 						// Apply the mutation
+						var succeeded = false;
 						try
 						{
 							mutator.randomMutation(currentElem);
+							succeeded = true;
 							RecordMutation(instanceName, item.ElementName, mutator.Name);
 						}
 						catch (Exception ex)
@@ -464,6 +466,10 @@ namespace Peach.LLM.Core.MutationStrategies
 							logger.Trace(ex);
 							// Break out of loop since this element may no longer be compatible with mutators
 							break;
+						}
+						finally
+						{
+							Context.OnDataMutationFinished(data, currentElem, mutator, succeeded);
 						}
 
 						// For the last mutation, we keep the result
@@ -547,9 +553,11 @@ namespace Peach.LLM.Core.MutationStrategies
 						phaseName, item.ElementName, i + 1, mutationCount);
 					logger.Info("Action_Starting: {0} - Mutator: {1}", phaseName, mutator.Name);
 
+					var succeeded = false;
 					try
 					{
 						mutator.randomMutation(currentElem);
+						succeeded = true;
 						RecordMutation(instanceName, item.ElementName, mutator.Name);
 						hasMutations = true;
 					}
@@ -562,6 +570,10 @@ namespace Peach.LLM.Core.MutationStrategies
 						logger.Trace(ex);
 						// Break out of loop since this element may no longer be compatible with mutators
 						break;
+					}
+					finally
+					{
+						Context.OnDataMutationFinished(data, currentElem, mutator, succeeded);
 					}
 				}
 			}

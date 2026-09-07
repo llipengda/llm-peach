@@ -33,6 +33,16 @@ namespace Peach.Core
 				DataMutating(this, actionData, element, mutator);
 		}
 
+		public delegate void DataMutationFinishedEventHandler(RunContext context, ActionData actionData, DataElement element, Mutator mutator, bool succeeded);
+
+		public event DataMutationFinishedEventHandler DataMutationFinished;
+
+		public void OnDataMutationFinished(ActionData actionData, DataElement element, Mutator mutator, bool succeeded)
+		{
+			if (DataMutationFinished != null)
+				DataMutationFinished(this, actionData, element, mutator, succeeded);
+		}
+
 		public delegate void StateMutationEventHandler(RunContext context, State state, Mutator mutator);
 
 		public event StateMutationEventHandler StateMutating;

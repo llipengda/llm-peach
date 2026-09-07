@@ -172,10 +172,20 @@ namespace Peach.Pro.Core.MutationStrategies
 						throw new SoftException(ex);
 					}
 
-					context.OnDataMutating(ad, ad.dataModel, new DataFileMutator(data));
+					var mutator = new DataFileMutator(data);
+					context.OnDataMutating(ad, ad.dataModel, mutator);
 
-					ad.dataModel.mutationFlags = MutateOverride.TypeTransform;
-					ad.dataModel.MutatedValue = new Variant(bs);
+					var succeeded = false;
+					try
+					{
+						ad.dataModel.mutationFlags = MutateOverride.TypeTransform;
+						ad.dataModel.MutatedValue = new Variant(bs);
+						succeeded = true;
+					}
+					finally
+					{
+						context.OnDataMutationFinished(ad, ad.dataModel, mutator, succeeded);
+					}
 
 					return;
 				}
