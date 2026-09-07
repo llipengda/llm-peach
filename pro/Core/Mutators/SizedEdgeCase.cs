@@ -10,6 +10,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("SizedEdgeCase")]
+	[Alias("SizedNumericalEdgeCasesMutator")]
 	[Description("Change the size and length of sized data to numerical edge cases")]
 	public class SizedEdgeCase : SizedDataEdgeCase
 	{

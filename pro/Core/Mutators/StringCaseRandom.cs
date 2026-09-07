@@ -19,6 +19,7 @@ namespace Peach.Pro.Core.Mutators
 	/// At each selected index, toggle the case of the character.
 	/// </summary>
 	[Mutator("StringCaseRandom")]
+	[Alias("StringCaseMutator")]
 	[Description("Change the case of random characters in the string.")]
 	public class StringCaseRandom : Mutator
 	{

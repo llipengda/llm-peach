@@ -13,6 +13,7 @@ using Peach.Pro.Core.Mutators.Utility;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("StringUtf8Invalid")]
+	[Alias("UnicodeBadUtf8Mutator")]
 	[Description("Encode string as invalid UTF-8.")]
 	public class StringUtf8Invalid : Mutator
 	{

@@ -12,6 +12,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("SizedDataVariance")]
+	[Alias("SizedDataVarianceMutator")]
 	[Description("Change the length of sized data to count - N to count + N.")]
 	public class SizedDataVariance : Utility.IntegerVariance
 	{

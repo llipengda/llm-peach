@@ -10,6 +10,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("StringList")]
+	[Alias("WordListMutator")]
 	[Description("Mutates string using a lines from a user defined file.")]
 	[Hint("StringList", "Filename with one string per line to use as test cases")]
 	public class StringList : Mutator

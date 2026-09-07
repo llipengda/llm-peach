@@ -11,6 +11,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("ArrayVariance")]
+	[Alias("ArrayVarianceMutator")]
 	[Description("Change the length of arrays to count - N to count + N")]
 	public class ArrayVariance : Utility.IntegerVariance
 	{

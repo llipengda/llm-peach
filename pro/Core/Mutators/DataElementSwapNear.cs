@@ -12,6 +12,8 @@ namespace Peach.Pro.Core.Mutators
 	/// Swap current element with neighbor.
 	/// </summary>
 	[Mutator("DataElementSwapNear")]
+	[Alias("DataElementSwapNearNodesMutator")]
+	[Alias("DataElementSwapNearNodes")]
 	[Description("Swap a data element with its next sibling")]
 	public class DataElementSwapNear : Mutator
 	{

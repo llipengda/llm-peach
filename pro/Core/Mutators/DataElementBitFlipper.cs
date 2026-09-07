@@ -18,6 +18,7 @@ namespace Peach.Pro.Core.Mutators
 	/// The number of bits flipped is a gaussian distribution from [1,6]
 	/// </summary>
 	[Mutator("DataElementBitFlipper")]
+	[Alias("BlobBitFlipperMutator")]
 	[Description("Flip bits in a data element.")]
 	public class DataElementBitFlipper : Mutator
 	{

@@ -154,6 +154,14 @@ namespace Peach.Pro.Core.Runtime
 			Console.WriteLine("Fuzzing: {0}", element.fullName);
 			WriteInfoMark();
 			Console.WriteLine("Mutator: {0}", mutator.Name);
+
+			var defaultValue = element.DefaultValue != null ? element.DefaultValue.ToString() : "-";
+			var mutatedValue = element.MutatedValue != null ? element.MutatedValue.ToString() : defaultValue;
+			Console.WriteLine("[*] ***,{0},{1},{2},{3}",
+				NormalizeMutationValue(element.fullName),
+				NormalizeMutationValue(mutator.Name),
+				NormalizeMutationValue(defaultValue),
+				NormalizeMutationValue(mutatedValue));
 		}
 
 		protected override void StateMutating(RunContext context, State state, Mutator mutator)
@@ -186,6 +194,14 @@ namespace Peach.Pro.Core.Runtime
 			Console.ForegroundColor = ConsoleColor.DarkGray;
 			Console.Write("] ");
 			Console.ForegroundColor = foregroundColor;
+		}
+
+		private static string NormalizeMutationValue(string value)
+		{
+			if (string.IsNullOrEmpty(value))
+				return "-";
+
+			return value.Replace(",", " ").Replace("\r", " ").Replace("\n", " ").Trim();
 		}
 	}
 }

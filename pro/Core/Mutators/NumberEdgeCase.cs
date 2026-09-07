@@ -10,6 +10,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("NumberEdgeCase")]
+	[Alias("NumericalEdgeCaseMutator")]
 	[Description("Produce Gaussian distributed numbers around numerical edge cases.")]
 	public class NumberEdgeCase : Utility.IntegerEdgeCases
 	{

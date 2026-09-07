@@ -12,6 +12,7 @@ namespace Peach.Pro.Core.Mutators
 	/// Generate string with random unicode characters in them from plane 0 (0 - 0xffff).
 	/// </summary>
 	[Mutator("StringUnicodePlane0")]
+	[Alias("UnicodeUtf8ThreeCharMutator")]
 	[Description("Produce a random string from the Unicode Plane 0 character set.")]
 	public class StringUnicodePlane0 : Utility.StringMutator
 	{

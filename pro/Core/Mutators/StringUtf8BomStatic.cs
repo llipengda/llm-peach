@@ -12,6 +12,7 @@ namespace Peach.Pro.Core.Mutators
 	/// Uses StringStatic and injects UTF-8 BOM characters randomly into the strings.
 	/// </summary>
 	[Mutator("StringUtf8BomStatic")]
+	[Alias("UnicodeBomMutator")]
 	[Description("Uses StringStatic and injects UTF-8 BOM characters randomly into the strings.")]
 	public class StringUtf8BomStatic : Utility.StringBomStatic
 	{

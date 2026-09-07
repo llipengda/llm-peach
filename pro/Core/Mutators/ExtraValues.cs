@@ -11,6 +11,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("ExtraValues")]
+	[Alias("ValidValuesMutator")]
 	[Description("Mutates using a user defined list of extra values.")]
 	[Hint("ExtraValues", "Semicolon seperated list of values to use for mutations.")]
 	public class ExtraValues : Mutator

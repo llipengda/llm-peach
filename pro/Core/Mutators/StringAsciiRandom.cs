@@ -9,6 +9,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("StringAsciiRandom")]
+	[Alias("StringMutator")]
 	[Description("Produce random strings using the ascii character set.")]
 	public class StringAsciiRandom : Utility.StringMutator
 	{

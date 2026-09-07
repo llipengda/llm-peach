@@ -17,6 +17,8 @@ namespace Peach.Pro.Core.Mutators
 	/// changed to different randomly selected value.
 	/// </summary>
 	[Mutator("BlobChangeRandom")]
+	[Alias("BlobDWORDSliderMutator")]
+	[Alias("BlobMutator")]
 	[Description("Change the blob by replacing bytes with random bytes")]
 	[Hint("BlobChangeRandom-N", "Standard deviation of number of bytes to change")]
 	[Hint("BlobMutator-N", "Standard deviation of number of bytes to change")]

@@ -10,6 +10,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("ArrayRandomizeOrder")]
+	[Alias("ArrayRandomizeOrderMutator")]
 	[Description("Randomize the order of the array")]
 	public class ArrayRandomizeOrder : Mutator
 	{

@@ -11,6 +11,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("ArrayEdgeCase")]
+	[Alias("ArrayNumericalEdgeCasesMutator")]
 	[Description("Change the length of arrays to integer edge cases")]
 	public class ArrayEdgeCase : Utility.IntegerEdgeCases
 	{

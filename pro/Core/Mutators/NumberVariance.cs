@@ -12,6 +12,7 @@ using String = Peach.Core.Dom.String;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("NumberVariance")]
+	[Alias("NumericalVarianceMutator")]
 	[Description("Produce Gaussian distributed numbers around a numerical value.")]
 	public class NumberVariance : Utility.IntegerVariance
 	{

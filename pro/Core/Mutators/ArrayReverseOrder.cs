@@ -9,6 +9,7 @@ using Peach.Core.Dom;
 namespace Peach.Pro.Core.Mutators
 {
 	[Mutator("ArrayReverseOrder")]
+	[Alias("ArrayReverseOrderMutator")]
 	[Description("Reverse the order of the array")]
 	public class ArrayReverseOrder : Mutator
 	{

@@ -12,6 +12,7 @@ namespace Peach.Pro.Core.Mutators
 	/// Generates a single test cases by removing a data element.
 	/// </summary>
 	[Mutator("DataElementRemove")]
+	[Alias("DataElementRemoveMutator")]
 	[Description("Removes an element from the data model")]
 	public class DataElementRemove : Mutator
 	{
