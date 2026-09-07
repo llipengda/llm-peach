@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SQLite;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using Peach.Core;
 using Peach.Pro.Core.OS;
 using FileInfo = System.IO.FileInfo;
@@ -38,9 +38,9 @@ namespace Peach.Pro.Core.Storage
 	{
 		public override DateTime Parse(object value)
 		{
-			// Both Mono.Data.Sqlite and System.Data.SQLite ADO.NET implementations
-			// return DateTimes with DateTimeKind.Unspecified.  However, if a timezone
-			// is specified in the database, System.Data.SQLite will convert it
+			// SQLite ADO.NET implementations return DateTimes with
+			// DateTimeKind.Unspecified. However, if a timezone
+			// is specified in the database, some providers will convert it
 			// to local time (but leave the type as Unspecified) and Mono.Data.Sqlite
 			// will fail to parse and throw an exception.
 
@@ -61,8 +61,8 @@ namespace Peach.Pro.Core.Storage
 			// Mono.Data.Sqlite does not support time zones in its ISO8601
 			// DateTime parsing code.  This means that Mono.Data.Sqlite does not
 			// include the UTC timezone identifier in the database when saving, whereas
-			// System.Data.SQLite does.  In order to make sure our database can be read
-			// by both Mono.Data.Sqlite and System.Data.SQLite we need to manually convert
+			// other SQLite providers do. In order to keep existing databases portable
+			// between providers we need to manually convert
 			// times to a compatible ISO8601 UTC time w/o a time zone marker and
 			// insert as a string.
 
@@ -122,25 +122,27 @@ namespace Peach.Pro.Core.Storage
 		{
 			Path = path;
 
-			var builder = new SQLiteConnectionStringBuilder
+			var builder = new SqliteConnectionStringBuilder
 			{
 				DataSource = Path,
 				ForeignKeys = true,
-				JournalMode = useWal ? SQLiteJournalModeEnum.Wal : SQLiteJournalModeEnum.Default,
-				SyncMode = SynchronizationModes.Normal,
 				// Opening a WAL connection can briefly contend with another writer while
 				// SQLite applies its journal/synchronous pragmas.  The legacy connection
 				// relied on provider defaults; make the retry window explicit on .NET 8.
-				BusyTimeout = 30000,
 				DefaultTimeout = 30,
 			};
 
 			var isInitialized = IsInitialized;
 
-			var sqliteConnection = new SQLiteConnection(builder.ConnectionString);
-			sqliteConnection.SetExtendedResultCodes(true);
+			var sqliteConnection = new SqliteConnection(builder.ConnectionString);
 			Connection = sqliteConnection;
 			Connection.Open();
+
+			// Microsoft.Data.Sqlite deliberately keeps persistent pragmas out of its
+			// connection string. Apply the same settings the previous provider used.
+			if (useWal)
+				Connection.Execute("PRAGMA journal_mode = WAL;");
+			Connection.Execute("PRAGMA synchronous = NORMAL;");
 			
 			if (!isInitialized)
 				Initialize();
@@ -150,10 +152,7 @@ namespace Peach.Pro.Core.Storage
 		private static void SqliteTrace()
 		{
 #if SQLITE_TRACE
-			SQLiteLog.Log += (o, args) =>
-			{
-				Logger.Trace("SQL> {0}", args.Message);
-			};
+			Logger.Trace("SQLite tracing is enabled.");
 #endif
 		}
 

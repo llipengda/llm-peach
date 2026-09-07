@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.Data.Sqlite;
 using NUnit.Framework;
 using Peach.Core;
 using Peach.Core.Test;
@@ -117,14 +117,14 @@ namespace Peach.Pro.Test.Core.Storage
 		public void Migration()
 		{
 			var path = Path.Combine(_tmp.Path, "test.db");
-			var builder = new SQLiteConnectionStringBuilder
+			var builder = new SqliteConnectionStringBuilder
 			{
 				DataSource = path,
 				ForeignKeys = true,
 			};
 
 			// Create Version 0
-			using (var cnn = new SQLiteConnection(builder.ConnectionString))
+			using (var cnn = new SqliteConnection(builder.ConnectionString))
 			{
 				cnn.Open();
 			}

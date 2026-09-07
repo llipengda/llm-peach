@@ -90,6 +90,22 @@ Run the installed application with:
 ./dist/Peach/Peach --noweb /path/to/your.pit.xml
 ----
 
+=== Docker
+
+Build the .NET 8 command-line distribution from the repository root:
+
+[source,shell]
+----
+docker build -t llm-peach .
+docker run --rm llm-peach
+docker run --rm -v "$PWD:/work" llm-peach --noweb /work/your.pit.xml
+----
+
+The image includes the tools and plugins produced by `build/install.sh` and
+defaults to `--help`. The working directory is `/work`; mount PIT files,
+inputs, and output directories there. Monitors that depend on external tools
+such as GDB require those tools to be installed in a derived image.
+
 === Test Commands
 
 [source,shell]

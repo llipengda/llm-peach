@@ -49,7 +49,7 @@
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.8" ExcludeAssets="all" />
     <PackageReference Include="SharpPcap" Version="4.4.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11" />
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />

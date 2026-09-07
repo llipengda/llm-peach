@@ -8,3 +8,7 @@ obj
 logs
 cov
 compose
+**/bin/
+**/obj/
+dist/
+**/.DS_Store
