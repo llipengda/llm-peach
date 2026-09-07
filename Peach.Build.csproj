@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <ProjectReference Include="3rdParty/BouncyCastle/crypto/BouncyCastle.Crypto.csproj" />
+    <ProjectReference Include="3rdParty/Google.CityHash/Google.CityHash.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="3rdParty/Managed.AndroidDebugBridge/Managed.AndroidDebugBridge/Managed.Adb.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="core/Core/Peach.Core.csproj" />
     <ProjectReference Include="core/Minset/PeachMinset.csproj" />
     <ProjectReference Include="core/Test/Peach.Core.Test.csproj" />

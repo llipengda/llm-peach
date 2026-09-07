@@ -6,6 +6,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>disable</Nullable>
+    <IsTestProject>false</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../core/Core/Peach.Core.csproj" />
@@ -13,6 +14,6 @@
     <PackageReference Include="DiffPlex" Version="1.4.1" />
     <PackageReference Include="Mono.Cecil" Version="0.11.5" />
     <PackageReference Include="NLog" Version="4.7.15" />
-    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit" Version="3.14.0" ExcludeAssets="build" />
   </ItemGroup>
 </Project>

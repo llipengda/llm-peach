@@ -1,12 +1,14 @@
 = Modern .NET build
 
-The actively migrated projects target .NET 8 and stay beside their original
-source trees. The migration does not maintain a duplicate source tree.
+All maintained .NET projects use SDK-style project files, target .NET 8, and
+stay beside their source trees. The migration does not maintain a duplicate
+source tree or the former Waf build system.
 
 == Requirements
 
-Install a .NET 8 SDK. The repository `global.json` accepts the newest installed
-8.0 patch.
+Install a .NET 8 SDK. The repository `global.json` selects the .NET 8 SDK line
+and permits compatible feature-band roll-forward instead of requiring one exact
+patch release.
 
 == Build
 
@@ -18,8 +20,9 @@ dotnet build Peach.Build.csproj --configuration Release
 ----
 
 The aggregate project builds the portable core, Pro runtime and command-line
-tools, tests, Bouncy Castle sources, Unix trampoline, and LLM validation
-assemblies. On Windows it also includes PeachValidator and PeachXmlGenerator.
+tools, tests, bundled third-party .NET sources, Unix trampoline, and LLM
+validation assemblies. On Windows it also includes PeachValidator and
+PeachXmlGenerator.
 
 Individual projects can be built or run from their original directories:
 
@@ -39,7 +42,7 @@ dotnet test pro/Test/Core/Peach.Pro.Test.csproj --configuration Release
   licensing/job runtime, and command-line executables
 * Linux and macOS implementations plus portable Windows implementations
 * LLM core and all four validation assemblies
-* The bundled Bouncy Castle source tree
+* The bundled Bouncy Castle, Google CityHash, and Managed ADB source trees
 * .NET 8 test apphosts for CrashTest and CrashableServer, plus direct Unix
   process launching without Mono's debugger agent
 * Cross-platform code-page registration, .NET 8-compatible deep cloning, and

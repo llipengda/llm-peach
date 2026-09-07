@@ -10,7 +10,6 @@ module.exports = (grunt) ->
 	variant = grunt.option('variant') || 'win_debug_x64'
 	repo = '../..'
 	e2e = '.e2e'
-	waf_bindir = path.join(repo, 'output', variant, 'bin')
 	vs_bindir = path.join(repo, '.depproj', 'bin', variant)
 	peach_args = [ '--nobrowser',  '--pits', path.resolve(e2e) ]
 	e2e_specs = [
@@ -110,12 +109,6 @@ module.exports = (grunt) ->
 		protractor:
 			options:
 				configFile: 'protractor.conf.js'
-			waf:
-				options:
-					keepAlive: false
-					args:
-						baseUrl: 'http://localhost:8888/'
-						specs: e2e_specs
 			vs:
 				options:
 					keepAlive: true
@@ -200,20 +193,11 @@ module.exports = (grunt) ->
 			eula_vs:
 				src: 'eula.config'
 				dest: path.join(vs_bindir, 'Peach.exe.user.config')
-			eula_waf:
-				src: 'eula.config'
-				dest: path.join(waf_bindir, 'Peach.exe.user.config')
-				
 		run:
 			options:
 				failOnError: true
 				wait: false
 				ready: /Web site running/
-			waf:
-				cmd: 'Peach.exe'
-				args: peach_args
-				options:
-					cwd: waf_bindir
 			vs:
 				cmd: 'Peach.exe'
 				args: peach_args
@@ -270,11 +254,4 @@ module.exports = (grunt) ->
 		'configureProxies'
 		'connect:test'
 		'watch:e2e'
-	]
-
-	grunt.registerTask 'e2e', [
-		'prepare-e2e'
-		'run:waf'
-		'protractor:waf'
-		'stop:waf'
 	]
