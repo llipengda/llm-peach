@@ -67,17 +67,17 @@ namespace Peach.Pro.Core.Fixups.Ntlm
 		#endif
 		static NtlmAuthLevel DefaultAuthLevel {
 			get {
-				var field = GetDefaultAuthLevelField ();
-				if (field != null)
-					return (NtlmAuthLevel)field.GetValue (null);
+				var authLevelField = GetDefaultAuthLevelField ();
+				if (authLevelField != null)
+					return (NtlmAuthLevel)authLevelField.GetValue (null);
 				else
 					return defaultAuthLevel;
 			}
 
 			set {
-				var field = GetDefaultAuthLevelField ();
-				if (field != null)
-					field.SetValue (null, value);
+				var authLevelField = GetDefaultAuthLevelField ();
+				if (authLevelField != null)
+					authLevelField.SetValue (null, value);
 				else
 					defaultAuthLevel = value;
 			}
