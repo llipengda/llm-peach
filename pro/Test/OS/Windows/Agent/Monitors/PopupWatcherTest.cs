@@ -77,13 +77,13 @@ namespace Peach.Pro.Test.OS.Windows.Agent.Monitors
 					// Window gets closed by posting a WM_CLOSE message
 
 					var th = new Thread(() => LameWindow.Run(windowName));
+					th.IsBackground = true;
 
 					th.Start();
 
 					if (th.Join(500))
 						return;
 
-					th.Abort();
 					Assert.Fail("Window did not get closed within 500ms");
 				},
 				DetectedFault = m =>
@@ -131,6 +131,7 @@ namespace Peach.Pro.Test.OS.Windows.Agent.Monitors
 					var th1 = new Thread(() =>
 					{
 						var th2 = new Thread(() => LameWindow.Run(windowName1));
+						th2.IsBackground = true;
 
 						th2.Start();
 
@@ -138,6 +139,7 @@ namespace Peach.Pro.Test.OS.Windows.Agent.Monitors
 
 						th2.Join();
 					});
+					th1.IsBackground = true;
 
 
 					th1.Start();
@@ -145,7 +147,6 @@ namespace Peach.Pro.Test.OS.Windows.Agent.Monitors
 					if (th1.Join(50000))
 						return;
 
-					th1.Abort();
 					Assert.Fail("Window did not get closed within 500ms");
 				},
 				DetectedFault = m =>
@@ -192,13 +193,13 @@ namespace Peach.Pro.Test.OS.Windows.Agent.Monitors
 					// Window gets closed by posting a WM_CLOSE message
 
 					var th = new Thread(() => LameWindow.Run(windowName));
+					th.IsBackground = true;
 
 					th.Start();
 
 					if (th.Join(500))
 						return;
 
-					th.Abort();
 					Assert.Fail("Window did not get closed within 500ms");
 				}
 			};

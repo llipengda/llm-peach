@@ -196,11 +196,10 @@ namespace Peach.Pro.Test.Core
 					}
 					catch (Exception ex)
 					{
-						if (ex.GetBaseException() is ThreadAbortException)
-							Thread.ResetAbort();
 						_caught = ex;
 					}
 				});
+				_thread.IsBackground = true;
 				_thread.Start();
 				if (!_evtReady.WaitOne(1000))
 					throw new PeachException("Timeout waiting for job to start");
@@ -266,8 +265,12 @@ namespace Peach.Pro.Test.Core
 
 			public void Dispose()
 			{
-				if (!_thread.Join(TimeSpan.FromSeconds(2)))
-					_thread.Abort();
+				if (_thread.Join(TimeSpan.FromSeconds(2)))
+					return;
+
+				JobRunner.Abort();
+				Assert.IsTrue(_thread.Join(TimeSpan.FromSeconds(2)),
+					"Job runner thread did not stop after abort was requested");
 			}
 		}
 

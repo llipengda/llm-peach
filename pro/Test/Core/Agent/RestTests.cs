@@ -67,6 +67,7 @@ namespace Peach.Pro.Test.Core.Agent
 					_event.Set();
 				}
 			});
+			_thread.IsBackground = true;
 
 			_thread.Start();
 			var didStart = _event.WaitOne(TimeSpan.FromSeconds(10));
@@ -110,8 +111,8 @@ namespace Peach.Pro.Test.Core.Agent
 
 			if (_thread != null)
 			{
-				if (!_thread.Join(TimeSpan.FromSeconds(10)))
-					_thread.Abort();
+				Assert.IsTrue(_thread.Join(TimeSpan.FromSeconds(10)),
+					"REST server thread did not stop within 10 seconds");
 				_thread = null;
 			}
 

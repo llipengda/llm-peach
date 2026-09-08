@@ -196,7 +196,7 @@ namespace Peach.Core
 			}
 			catch (Exception ex)
 			{
-				if (ex.GetBaseException() is ThreadAbortException)
+				if (ex.GetBaseException() is OperationCanceledException)
 					throw;
 
 				logger.Debug(ex, "Failed to execute expression [{0}], {1}.".Fmt(code, ex.Message));
@@ -253,7 +253,7 @@ namespace Peach.Core
 			}
 			catch (Exception ex)
 			{
-				if (ex.GetBaseException() is ThreadAbortException)
+				if (ex.GetBaseException() is OperationCanceledException)
 					throw;
 
 				logger.Debug(ex, "Failed to evaluate expression [{0}], {1}.".Fmt(code, ex.Message));

@@ -27,6 +27,7 @@ namespace Peach.Core.Publishers.Can
 
 		private int _openCount = 0;
 		private Thread _notifyThread;
+		private CancellationTokenSource _notifyCancellation;
 		private readonly Object _lock = new Object();
 
 		private bool _isCapturing = false;
@@ -85,45 +86,55 @@ namespace Peach.Core.Publishers.Can
 
 				if (_notifyThread == null)
 				{
+					_notifyCancellation = new CancellationTokenSource();
+					var cancellationToken = _notifyCancellation.Token;
 					_notifyThread = new Thread(() =>
 					{
 						HashSet<CanRxEventHandler> handlers;
 
-						while (true)
+						try
 						{
-							var msg = _notifyQueue.Take();
+							while (true)
+							{
+								var msg = _notifyQueue.Take(cancellationToken);
 
 							// Notify interested parties based on id filter
 
-							if (!_canFrameReceivedHandlers.TryGetValue(msg.Identifier, out handlers))
-								continue;
+								if (!_canFrameReceivedHandlers.TryGetValue(msg.Identifier, out handlers))
+									continue;
 
-							lock (handlers)
-							{
-								handlers.ForEach(x => x(this, msg));
-							}
+								lock (handlers)
+								{
+									handlers.ForEach(x => x(this, msg));
+								}
 
 							// If frame has error flag set, notify interested parties
 
-							if (msg.IsError)
-							{
-								lock (_canFrameErrorReceivedHandlers)
+								if (msg.IsError)
 								{
-									_canFrameErrorReceivedHandlers.ForEach(x => x(this, msg));
+									lock (_canFrameErrorReceivedHandlers)
+									{
+										_canFrameErrorReceivedHandlers.ForEach(x => x(this, msg));
+									}
 								}
-							}
 
 							// If we are capturing, add to captured frames
 
-							if (_isCapturing && msg.Channel.Capturing)
-							{
-								lock (_lockCapturing)
+								if (_isCapturing && msg.Channel.Capturing)
 								{
-									_capture.Add(msg);
+									lock (_lockCapturing)
+									{
+										_capture.Add(msg);
+									}
 								}
 							}
 						}
+						catch (OperationCanceledException)
+						{
+							// Normal shutdown.
+						}
 					});
+					_notifyThread.IsBackground = true;
 
 					_notifyThread.Start();
 				}
@@ -161,8 +172,12 @@ namespace Peach.Core.Publishers.Can
 					Logger.Trace("Closing can driver, open count reached zero");
 					CloseImpl();
 
-					_notifyThread.Abort();
+					_notifyCancellation.Cancel();
+					if (_notifyThread != Thread.CurrentThread)
+						_notifyThread.Join();
 					_notifyThread = null;
+					_notifyCancellation.Dispose();
+					_notifyCancellation = null;
 
 					_canFrameReceivedHandlers.Clear();
 

@@ -17,8 +17,6 @@ using Peach.Core.Agent;
 using Peach.Core.Dom;
 
 using NLog;
-using Monitor = System.Threading.Monitor;
-
 namespace Peach.Core
 {
 	/// <summary>
@@ -37,13 +35,11 @@ namespace Peach.Core
 
 		private readonly Watcher _watcher;
 		private readonly RunContext _context;
-		private readonly Thread _currentThread;
 		private readonly Timer _timer;
 		private int _timerCount;
+		private readonly CancellationTokenSource _abortCancellation = new CancellationTokenSource();
 
 		private object _timerSync = new object();
-		private object _canAbortSync = new object();
-		private object _hasAbortedSync = new object();
 
 		//public Dom.Dom dom { get { return runContext.dom; } }
 		//public Test test  { get { return runContext.test; } }
@@ -194,7 +190,6 @@ namespace Peach.Core
 
 		public Engine(Watcher watcher)
 		{
-			_currentThread = Thread.CurrentThread;
 			_watcher = watcher;
 			_context = new RunContext
 			{
@@ -263,22 +258,17 @@ namespace Peach.Core
 					}
 					finally
 					{
-						logger.Trace("finally Enter");
-						Monitor.Enter(_hasAbortedSync);
-						logger.Trace("finally Lock Acquired");
+						logger.Trace("Fuzzing loop exited");
 					}
 				}
 				catch (Exception ex)
 				{
-					#if NETFRAMEWORK
-					if (ex.GetBaseException() is ThreadAbortException)
+					if (ex.GetBaseException() is OperationCanceledException &&
+						_abortCancellation.IsCancellationRequested)
 					{
 						logger.Debug("Kill command received, stopping engine.");
-						logger.Trace("ResetAbort()");
-						Thread.ResetAbort();
 					}
 					else
-					#endif
 					{
 						logger.Debug("Stopping engine due to {0}.", ex.GetType().Name);
 						logger.Debug(ex.StackTrace);
@@ -302,38 +292,33 @@ namespace Peach.Core
 					_watcher.Finalize(this, _context);
 
 				using (var evt = new AutoResetEvent(false))
-					_timer.Dispose(evt);
+				{
+					if (_timer.Dispose(evt))
+						evt.WaitOne();
+				}
 
 				dom.context = null;
 				_context.test = null;
 				_context.config = null;
+				_abortCancellation.Dispose();
 			}
 		}
+
+		public CancellationToken CancellationToken { get { return _abortCancellation.Token; } }
 
 		public void Abort()
 		{
 			logger.Trace(">>> Abort");
 
-			#if NETFRAMEWORK
-			lock (_canAbortSync)
-			{
-				if (Monitor.TryEnter(_hasAbortedSync))
-				{
-					logger.Trace("Abort> Acquired Lock");
-					_currentThread.Abort();
-
-					logger.Trace("Abort> Release Lock");
-					Monitor.Exit(_hasAbortedSync);
-				}
-
-				logger.Trace("Join");
-				_currentThread.Join();
-			}
-			#else
-			// Thread.Abort is unavailable on modern .NET. Request cooperative
-			// cancellation; publishers are closed by the normal engine teardown.
 			_context.continueFuzzing = false;
-			#endif
+			try
+			{
+				_abortCancellation.Cancel();
+			}
+			catch (ObjectDisposedException)
+			{
+				// The engine already completed.
+			}
 
 			logger.Trace("<<< Abort");
 		}
@@ -484,10 +469,7 @@ namespace Peach.Core
 			// Initialize the current iteration prior to the TestStarting event
 			context.currentIteration = iterationStart;
 
-			lock (_canAbortSync)
-			{
-				OnTestStarting();
-			}
+			OnTestStarting();
 
 			StartAgents();
 
@@ -1015,7 +997,7 @@ namespace Peach.Core
 					}
 					catch (Exception ex)
 					{
-						if (ex.GetBaseException() is ThreadAbortException)
+						if (ex.GetBaseException() is OperationCanceledException)
 							throw;
 
 						throw new PeachException("General Agent Failure: " + ex.Message, ex);

@@ -47,6 +47,7 @@ namespace Peach.Pro.Core.Storage
 		}
 
 		const int HeartBeatInterval = 1000;
+		static readonly TimeSpan WaitTimeout = TimeSpan.FromSeconds(60);
 
 		static readonly NLog.Logger Logger = LogManager.GetCurrentClassLogger();
 		readonly NameCache _nameCache;
@@ -110,20 +111,25 @@ namespace Peach.Pro.Core.Storage
 
 		private Func<Stopwatch, Job> GetNext(Stopwatch sw, Job job)
 		{
+			var heartbeat = false;
+
 			lock (_queue)
 			{
 				if (_queue.Count == 0 && !Monitor.Wait(_queue, HeartBeatInterval))
-				{
-					// inject heartbeat record
-					DoUpdateRunningJob(sw, job);
-					return null;
-				}
+					heartbeat = true;
 
-				_queueSemaphore.Release();
-				var ret = _queue.First();
-				_queue.RemoveFirst();
-				return ret;
+				if (!heartbeat)
+				{
+					_queueSemaphore.Release();
+					var ret = _queue.First();
+					_queue.RemoveFirst();
+					return ret;
+				}
 			}
+
+			// Do not hold the queue lock while SQLite writes the heartbeat.
+			DoUpdateRunningJob(sw, job);
+			return null;
 		}
 
 		private void CheckTask()
@@ -137,11 +143,7 @@ namespace Peach.Pro.Core.Storage
 
 		private void EnqueueFront(Func<Stopwatch, Job> func)
 		{
-			do
-			{
-				CheckTask();
-			}
-			while (!_queueSemaphore.Wait(TimeSpan.FromSeconds(1)));
+			WaitForQueueSlot();
 
 			lock (_queue)
 			{
@@ -153,11 +155,7 @@ namespace Peach.Pro.Core.Storage
 
 		private void EnqueueBack(Func<Stopwatch, Job> func)
 		{
-			do
-			{
-				CheckTask();
-			}
-			while (!_queueSemaphore.Wait(TimeSpan.FromSeconds(1)));
+			WaitForQueueSlot();
 
 			lock (_queue)
 			{
@@ -165,6 +163,38 @@ namespace Peach.Pro.Core.Storage
 				_maxQueueDepth = Math.Max(_maxQueueDepth, _queue.Count);
 				Monitor.Pulse(_queue);
 			}
+		}
+
+		private void WaitForQueueSlot()
+		{
+			var sw = Stopwatch.StartNew();
+			do
+			{
+				CheckTask();
+				if (_queueSemaphore.Wait(TimeSpan.FromSeconds(1)))
+					return;
+			}
+			while (sw.Elapsed < WaitTimeout);
+
+			throw new TimeoutException("Timed out waiting for the asynchronous database queue.");
+		}
+
+		private void WaitForCompletion(object sync, string operation)
+		{
+			var sw = Stopwatch.StartNew();
+			do
+			{
+				if (Monitor.Wait(sync, HeartBeatInterval))
+				{
+					CheckTask();
+					return;
+				}
+
+				CheckTask();
+			}
+			while (sw.Elapsed < WaitTimeout);
+
+			throw new TimeoutException("Timed out waiting for the asynchronous database operation '{0}'.".Fmt(operation));
 		}
 
 		public void IterationStarting(JobMode newMode)
@@ -359,7 +389,7 @@ namespace Peach.Pro.Core.Storage
 					return copy;
 				});
 
-				Monitor.Wait(copy);
+				WaitForCompletion(copy, "record fault");
 			}
 		}
 
@@ -378,7 +408,7 @@ namespace Peach.Pro.Core.Storage
 					return copy;
 				});
 				// Wait until StopPending is received
-				Monitor.Wait(copy);
+				WaitForCompletion(copy, "begin shutdown");
 			}
 
 			lock (copy)
@@ -391,11 +421,12 @@ namespace Peach.Pro.Core.Storage
 					return copy;
 				});
 				// Wait for queue to drain
-				Monitor.Wait(copy);
+				WaitForCompletion(copy, "flush queue");
 			}
 
 			EnqueueBack(sw => null);
-			_task.Wait();
+			if (!_task.Wait(WaitTimeout))
+				throw new TimeoutException("Timed out stopping the asynchronous database task.");
 
 			Job = _task.Result;
 
@@ -447,7 +478,7 @@ namespace Peach.Pro.Core.Storage
 					DoUpdateRunningJob(sw, copy);
 					return copy;
 				});
-				Monitor.Wait(copy);
+				WaitForCompletion(copy, "pause");
 			}
 		}
 
@@ -463,7 +494,7 @@ namespace Peach.Pro.Core.Storage
 					DoUpdateRunningJob(sw, copy);
 					return copy;
 				});
-				Monitor.Wait(copy);
+				WaitForCompletion(copy, "continue");
 			}
 		}
 
@@ -479,7 +510,7 @@ namespace Peach.Pro.Core.Storage
 					DoUpdateRunningJob(sw, copy);
 					return copy;
 				});
-				Monitor.Wait(copy);
+				WaitForCompletion(copy, "stop");
 			}
 		}
 

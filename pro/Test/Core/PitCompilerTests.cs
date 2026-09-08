@@ -47,9 +47,9 @@ namespace Peach.Pro.Test.Core
 				<Choice name='Choice'>
 					<Blob name='BA' />
 					<Blob name='BB' />
-					<Asn1Type name='ASN' tag='0'>
+					<Block name='ASN'>
 						<Block name='V' />
-					</Asn1Type>
+					</Block>
 				</Choice>
 			</Block>
 		</Choice>
@@ -239,10 +239,10 @@ namespace Peach.Pro.Test.Core
 							<XmlAttribute fieldId='t2' attributeName='bar' />
 						</XmlElement>
 
-						<Asn1Type tag='1' fieldId='v' />
-						<Asn1Tag fieldId='w' />
-						<Asn1Length fieldId='x' />
-						<BACnetTag fieldId='y' />
+						<Blob fieldId='v' />
+						<Blob fieldId='w' />
+						<Blob fieldId='x' />
+						<Blob fieldId='y' />
 						<VarNumber fieldId='z' />
 
 						<Block>

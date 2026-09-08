@@ -41,18 +41,18 @@ namespace Peach.Pro.Test.Core.PitParserTests
 					<DataModel name='DM' fieldId='c'>
 						<Stream streamName='foo' fieldId='d' />
 
-						<Json fieldId='e'>
+						<Block fieldId='e'>
 							<Double size='64' fieldId='f' />
 							<Sequence fieldId='g'>
-								<Null fieldId='h' />
+								<Bool fieldId='h' />
 								<Bool fieldId='i' />
 							</Sequence>
-						</Json>
+						</Block>
 
-						<Frag fieldId='j'>
+						<Block fieldId='j'>
 							<Block name='Template' fieldId='k' />
 							<Block name='Payload' fieldId='l' />
-						</Frag>
+						</Block>
 
 						<Blob fieldId='m' />
 						<Choice fieldId='n' />
@@ -68,10 +68,10 @@ namespace Peach.Pro.Test.Core.PitParserTests
 							<XmlAttribute fieldId='u' attributeName='bar' />
 						</XmlElement>
 
-						<Asn1Type tag='1' fieldId='v' />
-						<Asn1Tag fieldId='w' />
-						<Asn1Length fieldId='x' />
-						<BACnetTag fieldId='y' />
+						<Blob fieldId='v' />
+						<Blob fieldId='w' />
+						<Blob fieldId='x' />
+						<Blob fieldId='y' />
 						<VarNumber fieldId='z' />
 					</DataModel>
 					<Data fieldId='Foo'>
@@ -117,13 +117,12 @@ namespace Peach.Pro.Test.Core.PitParserTests
 				null, // Stream.Name
 				null, // Stream.Attr
 				null, // Stream.Content
-				"e",  // Json
+				"e",  // Block
 				"f",  // Double
 				"g",  // Sequence
 				"h",  // Null
 				"i",  // Bool
 				"j",  // Frag
-				null, // Rendering
 				"k",  // Template
 				"l",  // Payload
 				"m",  // Blob
@@ -137,16 +136,9 @@ namespace Peach.Pro.Test.Core.PitParserTests
 				"t",  // XmlElement
 				"u",  // XmlAttribute
 				"v",  // Asn1Type
-				null, // Asn1Type.class
-				null, // Asn1Type.pc
-				null, // Asn1Type.tag
-				null, // Asn1Type.length
 				"w",  // Asn1Tag
 				"x",  // Asn1Length
 				"y",  // BacNetTag
-				null, // BacNetTag.Tag
-				null, // BacNetTag.Class
-				null, // BacNetTag.LenValueType
 				"z"   // VarNumber
 			};
 
@@ -330,9 +322,9 @@ namespace Peach.Pro.Test.Core.PitParserTests
 			</Block>
 		</Block>
 		<String name='post' />
-		<Asn1Type name='Asn1Type' tag='1'>
+		<Block name='Asn1Type'>
 			<String name='value' />
-		</Asn1Type>
+		</Block>
 	</DataModel>
 
 	<StateModel name='SM' initialState='S1'>
@@ -363,10 +355,6 @@ namespace Peach.Pro.Test.Core.PitParserTests
 				"DM.item.item.value.nested -> S1.Action.DM.item.value.nested",
 				"DM.post -> S1.Action.DM.post",
 				"DM.Asn1Type -> S1.Action.DM.Asn1Type",
-				"DM.Asn1Type.class -> S1.Action.DM.Asn1Type",
-				"DM.Asn1Type.pc -> S1.Action.DM.Asn1Type",
-				"DM.Asn1Type.tag -> S1.Action.DM.Asn1Type",
-				"DM.Asn1Type.length -> S1.Action.DM.Asn1Type",
 				"DM.Asn1Type.value -> S1.Action.DM.Asn1Type.value",
 			};
 
@@ -385,9 +373,9 @@ namespace Peach.Pro.Test.Core.PitParserTests
 			<String name='value' fieldId='value' />
 		</Block>
 		<String name='post' />
-		<Asn1Type name='Asn1Type' tag='1' fieldId='foo'>
+		<Block name='Asn1Type' fieldId='foo'>
 			<String name='value' fieldId='inner' />
-		</Asn1Type>
+		</Block>
 	</DataModel>
 
 	<StateModel name='SM' initialState='S1'>
@@ -417,10 +405,6 @@ namespace Peach.Pro.Test.Core.PitParserTests
 				"DM.item.item.value -> row.value",
 				"DM.post -> ",
 				"DM.Asn1Type -> foo",
-				"DM.Asn1Type.class -> foo",
-				"DM.Asn1Type.pc -> foo",
-				"DM.Asn1Type.tag -> foo",
-				"DM.Asn1Type.length -> foo",
 				"DM.Asn1Type.value -> foo.inner",
 			};
 

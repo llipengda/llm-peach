@@ -1002,7 +1002,7 @@ namespace Peach.Core.Dom
 				catch (TargetInvocationException ex)
 				{
 					var baseEx = ex.GetBaseException();
-					if (baseEx is ThreadAbortException)
+					if (baseEx is OperationCanceledException)
 						throw baseEx;
 
 					var inner = ex.InnerException;

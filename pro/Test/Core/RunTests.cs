@@ -511,6 +511,7 @@ namespace Peach.Pro.Test.Core
 		{
 			var totalIterations = 0;
 			Exception caught = null;
+			Engine engine = null;
 
 			const string xml = @"
 <Peach>
@@ -542,14 +543,14 @@ namespace Peach.Pro.Test.Core
 					Duration = TimeSpan.FromSeconds(2)
 				};
 
-				var e = new Engine(null);
+				engine = new Engine(null);
 
-				e.IterationFinished += (ctx, i) =>
+				engine.IterationFinished += (ctx, i) =>
 				{
 					++totalIterations;
 				};
 
-				e.startFuzzing(dom, cfg);
+				engine.startFuzzing(dom, cfg);
 					
 				}
 				catch (Exception ex)
@@ -558,11 +559,13 @@ namespace Peach.Pro.Test.Core
 				}
 			});
 
+			th.IsBackground = true;
 			th.Start();
 
 			if (!th.Join(TimeSpan.FromSeconds(10)))
 			{
-				th.Abort();
+				engine?.Abort();
+				th.Join(TimeSpan.FromSeconds(2));
 				Assert.Fail("Engine did not copmlete within 10 seconds");
 			}
 
@@ -576,6 +579,7 @@ namespace Peach.Pro.Test.Core
 		{
 			var totalIterations = 0;
 			Exception caught = null;
+			Engine engine = null;
 
 			const string xml = @"
 <Peach>
@@ -608,15 +612,15 @@ namespace Peach.Pro.Test.Core
 						AbortTimeout = TimeSpan.FromSeconds(1)
 					};
 
-					var e = new Engine(null);
+					engine = new Engine(null);
 
-					e.IterationStarting += (ctx, i, t) =>
+					engine.IterationStarting += (ctx, i, t) =>
 					{
-						Thread.Sleep(TimeSpan.FromSeconds(30));
-						++totalIterations;
+						if (!engine.CancellationToken.WaitHandle.WaitOne(TimeSpan.FromSeconds(30)))
+							++totalIterations;
 					};
 
-					e.startFuzzing(dom, cfg);
+					engine.startFuzzing(dom, cfg);
 
 				}
 				catch (Exception ex)
@@ -625,11 +629,13 @@ namespace Peach.Pro.Test.Core
 				}
 			});
 
+			th.IsBackground = true;
 			th.Start();
 
 			if (!th.Join(TimeSpan.FromSeconds(10)))
 			{
-				th.Abort();
+				engine?.Abort();
+				th.Join(TimeSpan.FromSeconds(2));
 				Assert.Fail("Engine did not copmlete within 10 seconds");
 			}
 

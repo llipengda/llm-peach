@@ -251,7 +251,7 @@ namespace Peach.Core.Agent.Channels
 			catch (TargetInvocationException ex)
 			{
 				var baseEx = ex.GetBaseException();
-				if (baseEx is ThreadAbortException)
+				if (baseEx is OperationCanceledException)
 					throw baseEx;
 
 				throw new PeachException("Could not start publisher \"" + cls + "\".  " + ex.InnerException.Message, ex);
@@ -286,7 +286,7 @@ namespace Peach.Core.Agent.Channels
 				catch (TargetInvocationException ex)
 				{
 					var baseEx = ex.GetBaseException();
-					if (baseEx is ThreadAbortException)
+					if (baseEx is OperationCanceledException)
 						throw baseEx;
 
 					throw new PeachException("Could not start monitor \"" + cls + "\".  " + ex.InnerException.Message, ex);
@@ -297,7 +297,7 @@ namespace Peach.Core.Agent.Channels
 			{
 				mon.StartMonitor(args);
 			}
-			catch (ThreadAbortException)
+			catch (OperationCanceledException)
 			{
 				throw;
 			}

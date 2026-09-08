@@ -89,14 +89,12 @@ namespace Peach.Pro.Core.Agent.Channels
 						remotingException = new AgentException(ex.Message, ex);
 					}
 				});
+				th.IsBackground = true;
 
 				th.Start();
 
 				if (!th.Join(RemotingWaitTime))
 				{
-					th.Abort();
-					th.Join();
-
 					Logger.Trace("Ignoring remoting timeout during {0}", what);
 				}
 
@@ -355,13 +353,12 @@ namespace Peach.Pro.Core.Agent.Channels
 					remotingException = new AgentException(ex.Message, ex);
 				}
 			});
+			th.IsBackground = true;
 
 			th.Start();
 
 			if (!th.Join(RemotingWaitTime))
 			{
-				th.Abort();
-				th.Join();
 				remotingException = new RemotingException("Remoting call timed out.");
 			}
 

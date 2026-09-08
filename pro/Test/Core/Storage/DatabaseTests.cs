@@ -201,7 +201,9 @@ namespace Peach.Pro.Test.Core.Storage
 				readTasks[i] = Task.Factory.StartNew(DoReads, TaskCreationOptions.LongRunning);
 			}
 
-			Task.WaitAll(writeTasks.Concat(readTasks).ToArray());
+			Assert.IsTrue(
+				Task.WaitAll(writeTasks.Concat(readTasks).ToArray(), TimeSpan.FromSeconds(60)),
+				"Concurrent WAL operations did not finish within 60 seconds.");
 		}
 
 		private void DoReads()

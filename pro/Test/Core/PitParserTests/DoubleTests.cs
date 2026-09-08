@@ -211,7 +211,7 @@ namespace Peach.Pro.Test.Core.PitParserTests
 			Assert.IsTrue(num != null);
 
 			var ex = Assert.Throws<PeachException>(() => num.DefaultValue = new Variant(double.MaxValue));
-			Assert.AreEqual("Error, Double 'TheDataModel.DataElement_0' value '1.79769313486232E+308' is greater than the maximum 32-bit double.", ex.Message);
+			Assert.AreEqual("Error, Double 'TheDataModel.DataElement_0' value '1.7976931348623157E+308' is greater than the maximum 32-bit double.", ex.Message);
 		}
 
 		[Test]
