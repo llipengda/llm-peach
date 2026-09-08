@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.Sqlite;
@@ -110,6 +111,30 @@ namespace Peach.Pro.Test.Core.Storage
 			public override void WriteLine(string message)
 			{
 				Console.WriteLine(message);
+			}
+		}
+
+		[Test]
+		public void TestConcurrentInitialization()
+		{
+			var path = Path.Combine(_tmp.Path, "concurrent.db");
+			const int count = 16;
+			using (var ready = new CountdownEvent(count))
+			using (var start = new ManualResetEventSlim(false))
+			{
+				var tasks = Enumerable.Range(0, count)
+					.Select(_ => Task.Factory.StartNew(() =>
+					{
+						ready.Signal();
+						start.Wait();
+						using (new TestDatabase(path, true)) { }
+					}, TaskCreationOptions.LongRunning))
+					.ToArray();
+
+				Assert.IsTrue(ready.Wait(TimeSpan.FromSeconds(10)), "Workers did not become ready.");
+				start.Set();
+				Assert.IsTrue(Task.WaitAll(tasks, TimeSpan.FromSeconds(30)),
+					"Concurrent database initialization did not finish.");
 			}
 		}
 

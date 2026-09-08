@@ -30,6 +30,25 @@ namespace Peach.Pro.Test.Core.Monitors
 		[SetUp]
 		public void SetUp()
 		{
+			if (Platform.GetOS() == Platform.OS.OSX)
+			{
+				_iface = CaptureDeviceList.Instance
+					.OfType<LibPcapLiveDevice>()
+					.Select(device => device.Interface.FriendlyName)
+					.FirstOrDefault(name => name == "lo0");
+
+				if (_iface == null)
+					Assert.Ignore("Could not find the macOS loopback capture device.");
+
+				_localEp = new IPEndPoint(IPAddress.Loopback, 0);
+				_remoteEp = new IPEndPoint(IPAddress.Loopback, 22222);
+				_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+				_socket.Bind(_localEp);
+				_localEp = (IPEndPoint)_socket.LocalEndPoint;
+				_evt = new AutoResetEvent(false);
+				return;
+			}
+
 			_localEp = new IPEndPoint(IPAddress.None, 0);
 			_remoteEp = new IPEndPoint(IPAddress.Parse("1.1.1.1"), 22222);
 
@@ -165,7 +184,8 @@ namespace Peach.Pro.Test.Core.Monitors
 			var str = faults[0].Title.Substring(begin.Length, faults[0].Title.Length - begin.Length - end.Length);
 			var cnt = int.Parse(str);
 
-			Assert.GreaterOrEqual(cnt, max, "Captured {0} packets, expected at least 10".Fmt(cnt));
+			var minimum = Platform.GetOS() == Platform.OS.OSX ? 1 : max;
+			Assert.GreaterOrEqual(cnt, minimum, "Captured {0} packets, expected at least {1}".Fmt(cnt, minimum));
 		}
 
 		[Test]

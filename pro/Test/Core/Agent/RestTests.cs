@@ -27,6 +27,31 @@ namespace Peach.Pro.Test.Core.Agent
 	[Peach]
 	class RestTests
 	{
+		[Monitor("RestNoopMonitor", Scope = PluginScope.Internal)]
+		public class RestNoopMonitor : Monitor2
+		{
+			public RestNoopMonitor(string name)
+				: base(name)
+			{
+			}
+		}
+
+		[Publisher("TestNoRemoteCall", Scope = PluginScope.Internal)]
+		public class TestNoRemoteCallPublisher : Publisher
+		{
+			static readonly NLog.Logger ClassLogger = LogManager.GetCurrentClassLogger();
+			protected override NLog.Logger Logger { get { return ClassLogger; } }
+
+			public TestNoRemoteCallPublisher(Dictionary<string, Variant> args)
+				: base(args)
+			{
+			}
+
+			protected override Variant OnCall(string method, List<BitwiseStream> args)
+			{
+				throw new NotSupportedException();
+			}
+		}
 
 		/*
 		 * 1) Ensure proper cleanup happens if StartMonitor & SessionStarting throw!
@@ -228,15 +253,7 @@ namespace Peach.Pro.Test.Core.Agent
 			var cli = new Client(null, _uri.ToString(), null);
 
 			cli.AgentConnect();
-			cli.StartMonitor("mon", "TcpPort", new Dictionary<string, string>
-			{
-				{"Host", "localhost" },
-				{"Port", "1" },
-				{"WaitOnCall", "MyWaitMessage" },
-				{"When", "OnCall" },
-				{"State", "Closed" },
-				{"Timeout", "1" },
-			});
+			cli.StartMonitor("mon", "RestNoopMonitor", new Dictionary<string, string>());
 			cli.SessionStarting();
 			cli.IterationStarting(new IterationStartingArgs());
 			cli.Message("MyWaitMessage");
@@ -696,7 +713,7 @@ namespace Peach.Pro.Test.Core.Agent
 
 			cli.AgentConnect();
 
-			var pub = cli.CreatePublisher("pub", "Rest", new Dictionary<string, string>());
+			var pub = cli.CreatePublisher("pub", "TestNoRemoteCall", new Dictionary<string, string>());
 
 			try
 			{
@@ -710,7 +727,7 @@ namespace Peach.Pro.Test.Core.Agent
 
 				var ex = Assert.Throws<PeachException>(() => pub.Call(method, args));
 
-				Assert.AreEqual("The Rest publisher does not support call actions when run on remote agents.", ex.Message);
+				Assert.AreEqual("The TestNoRemoteCall publisher does not support call actions when run on remote agents.", ex.Message);
 			}
 			finally
 			{

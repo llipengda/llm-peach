@@ -41,14 +41,14 @@ namespace Peach.Pro.Core.Agent.Monitors
 		{
 		}
 
-		private void _OnPacketArrival(object sender, CaptureEventArgs packet)
+		private void _OnPacketArrival(object sender, PacketCapture packet)
 		{
 			lock (_lock)
 			{
 				// _writer can be null if a packet arrives before the 1st iteration
 				if (_writer != null)
 				{
-					_writer.Write(packet.Packet);
+					_writer.Write(packet.GetPacket());
 					_numPackets += 1;
 
 					OnInternalEvent(EventArgs.Empty);
@@ -126,7 +126,7 @@ namespace Peach.Pro.Core.Agent.Monitors
 			}
 
 			_device.OnPacketArrival += _OnPacketArrival;
-			_device.Open(DeviceMode.Normal, ReadTimeout);
+			_device.Open(DeviceModes.None, ReadTimeout);
 
 			try
 			{
@@ -166,7 +166,8 @@ namespace Peach.Pro.Core.Agent.Monitors
 				if (_writer != null)
 					_writer.Close();
 
-				_writer = new CaptureFileWriterDevice(_device, _tempFileName);
+				_writer = new CaptureFileWriterDevice(_tempFileName, FileMode.Create);
+				_writer.Open();
 				_numPackets = 0;
 			}
 		}

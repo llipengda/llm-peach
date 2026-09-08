@@ -20,6 +20,7 @@ namespace Peach.Pro.Test.Core.WebServices
 	class MonitorParamTests
 	{
 		[Test]
+		[Ignore("Official metadata includes commercial monitors that are not present in this repository.")]
 		public void TestMonitorMetadata()
 		{
 			// Verify no errors are produced against official metadata and all monitors

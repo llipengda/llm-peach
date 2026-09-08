@@ -9,6 +9,7 @@ namespace Peach.Pro.Test.Core.Transformers.Crypto
 	[TestFixture]
 	[Quick]
 	[Peach]
+	[Ignore("UnixMd5Crypt was removed with the legacy crypt transformers.")]
     class UnixMd5CryptTests : DataModelCollector
     {
         [Test]

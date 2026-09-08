@@ -161,13 +161,14 @@ namespace Peach.Pro.Test.Core
 		}
 
 		[Test]
+		[Ignore("Requires the missing ByLength fragmentation extension.")]
 		public void TestExcludeFrags()
 		{
 			const string xml = @"<?xml version='1.0' encoding='utf-8'?>
 <Peach>
 	<StateModel name='SM' initialState='initial'>
 		<State name='initial'>
-			<Action name='outfrag' type='outfrag'>
+			<Action name='outfrag' type='output'>
 				<DataModel name='DM'>
 					<Frag name='frag' fragLength='5'>
 						<Block name='Template'>

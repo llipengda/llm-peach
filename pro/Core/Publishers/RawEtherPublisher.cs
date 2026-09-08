@@ -74,9 +74,9 @@ namespace Peach.Pro.Core.Publishers
 			}
 		}
 
-		private void OnPacketArrival(object sender, CaptureEventArgs e)
+		private void OnPacketArrival(object sender, PacketCapture e)
 		{
-			OnPacketArrival(e.Packet.Data);
+			OnPacketArrival(e.GetPacket().Data);
 		}
 
 		private void OnPacketArrival(byte[] buf)
@@ -119,7 +119,7 @@ namespace Peach.Pro.Core.Publishers
 			if (!PcapDevice.CheckFilter(Filter, out error))
 				throw new PeachException("The specified pcap filter string '{0}' is invalid.".Fmt(Filter));
 
-			_deviceRx.Open(DeviceMode.Promiscuous, PcapTimeout);
+			_deviceRx.Open(DeviceModes.Promiscuous, PcapTimeout);
 			_deviceRx.Filter = Filter;
 			_deviceRx.OnPacketArrival += OnPacketArrival;
 			_deviceName = _deviceRx.Interface.FriendlyName;

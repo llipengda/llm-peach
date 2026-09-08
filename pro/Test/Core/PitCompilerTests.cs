@@ -75,8 +75,6 @@ namespace Peach.Pro.Test.Core
 
 			<Action name='Slurp' type='slurp' valueXpath='//Request//messageId/Value' setXpath='//messageId/Value' />
 
-			<Action name='Message' type='message' status='foo' error='bar' />
-
 			<Action name='Close' type='close' publisher='tcp' />
 
 			<Action name='ExitIterationEvent' type='call' method='ExitIterationEvent' publisher='Peach.Agent' />
@@ -194,18 +192,18 @@ namespace Peach.Pro.Test.Core
 					<DataModel name='DM2' fieldId='c'>
 						<Stream streamName='foo' fieldId='d' />
 
-						<Json fieldId='e'>
+						<Block fieldId='e'>
 							<Double size='64' fieldId='f' />
 							<Sequence fieldId='g'>
-								<Null fieldId='h' />
+								<Blob fieldId='h' />
 								<Bool fieldId='i' />
 							</Sequence>
-						</Json>
+						</Block>
 
-						<Frag fieldId='j'>
+						<Block fieldId='j'>
 							<Block name='Template' fieldId='k' />
 							<Block name='Payload' fieldId='l' />
-						</Frag>
+						</Block>
 
 						<Blob fieldId='m' />
 						<Choice name='Choice' fieldId='n'>
@@ -259,8 +257,6 @@ namespace Peach.Pro.Test.Core
 			</Action>
 
 			<Action name='MessageId' type='slurp' valueXpath='//Request//messageId/Value' setXpath='//messageId/Value' />
-
-			<Action type='message' status='foo' error='bar' />
 
 			<Action name='Close' type='close' publisher='tcp' />
 
@@ -953,8 +949,6 @@ Field'/>
 			</Action>
 
 			<Action name='Slurp' type='slurp' valueXpath='//Request//messageId/Value' setXpath='//messageId/Value' />
-
-			<Action name='Message' type='message' status='foo' error='bar' />
 
 			<Action name='Close' type='close' publisher='tcp' />
 

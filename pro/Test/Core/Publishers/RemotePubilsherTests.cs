@@ -190,7 +190,6 @@ namespace Peach.Pro.Test.Core.Publishers
 		{
 			if (Platform.GetOS() != Platform.OS.Windows && protocol == "legacy")
 				Assert.Ignore(".NET remoting doesn't work inside nunit on mono");
-
 			var iface = Helpers.GetPrimaryIface(AddressFamily.InterNetwork).Item1;
 			RunRemote(protocol, raw_eth.Fmt(protocol, iface));
 		}

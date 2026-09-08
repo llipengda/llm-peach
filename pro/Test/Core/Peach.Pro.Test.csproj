@@ -48,7 +48,7 @@
     <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.8" ExcludeAssets="all" />
-    <PackageReference Include="SharpPcap" Version="4.4.0" />
+    <PackageReference Include="SharpPcap" Version="6.3.1" />
   </ItemGroup>
 
   <ItemGroup>

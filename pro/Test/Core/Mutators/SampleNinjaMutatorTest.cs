@@ -13,6 +13,7 @@ namespace Peach.Pro.Test.Core.Mutators
 	[TestFixture]
 	[Peach]
 	[Quick]
+	[Ignore("Requires the ASN.1 and JSON data model extensions, which are not present in this repository.")]
 	class SampleNinjaMutatorTest : DataModelCollector
 	{
 		// 1. Create Ninja DB and verify

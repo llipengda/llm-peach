@@ -45,9 +45,9 @@
     <PackageReference Include="NLog" Version="4.7.15" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Nustache" Version="1.16.0.1" />
-    <PackageReference Include="PacketDotNet" Version="0.16.0" />
+    <PackageReference Include="PacketDotNet" Version="1.4.8" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.8.8" ExcludeAssets="all" />
-    <PackageReference Include="SharpPcap" Version="4.4.0" />
+    <PackageReference Include="SharpPcap" Version="6.3.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11" />
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />

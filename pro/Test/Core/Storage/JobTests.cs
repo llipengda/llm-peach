@@ -32,10 +32,10 @@ namespace Peach.Pro.Test.Core.Storage
 			// Verify we can properly round trip StartDate and StopDate to the job database
 			const string dateFmt = "M/d/yyyy h:mm:ss tt";
 
-			var startDate = DateTime.Parse("5/2/2001 5:38:09 AM", CultureInfo.CurrentCulture, DateTimeStyles.AssumeLocal);
+			var startDate = DateTime.Parse("5/2/2001 5:38:09 AM", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
 
 			Assert.AreEqual(DateTimeKind.Local, startDate.Kind);
-			Assert.AreEqual("5/2/2001 5:38:09 AM", startDate.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", startDate.ToString(dateFmt, CultureInfo.InvariantCulture));
 
 			var j = new Job
 			{
@@ -44,14 +44,14 @@ namespace Peach.Pro.Test.Core.Storage
 			};
 
 			Assert.AreEqual(DateTimeKind.Local, j.StartDate.Kind);
-			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt, CultureInfo.InvariantCulture));
 			Assert.False(j.StopDate.HasValue);
 
 			using (var db = new NodeDatabase())
 				db.InsertJob(j);
 
 			Assert.AreEqual(DateTimeKind.Local, j.StartDate.Kind);
-			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt, CultureInfo.InvariantCulture));
 			Assert.False(j.StopDate.HasValue, "StopDate has a value");
 
 			// Issue update w/o a stop date
@@ -60,7 +60,7 @@ namespace Peach.Pro.Test.Core.Storage
 				db.UpdateJob(j);
 
 			Assert.AreEqual(DateTimeKind.Local, j.StartDate.Kind);
-			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt, CultureInfo.InvariantCulture));
 			Assert.False(j.StopDate.HasValue, "StopDate has a value");
 
 			// Issue update with a stop date
@@ -68,24 +68,24 @@ namespace Peach.Pro.Test.Core.Storage
 			j.StopDate = startDate;
 
 			Assert.True(j.StopDate.HasValue, "StopDate should be set");
-			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StopDate.Value.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StopDate.Value.ToString(dateFmt, CultureInfo.InvariantCulture));
 
 			using (var db = new NodeDatabase())
 				db.UpdateJob(j);
 
 			Assert.AreEqual(DateTimeKind.Local, j.StartDate.Kind);
-			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt, CultureInfo.InvariantCulture));
 			Assert.True(j.StopDate.HasValue, "StopDate should be set");
-			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StopDate.Value.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StopDate.Value.ToString(dateFmt, CultureInfo.InvariantCulture));
 
 			using (var db = new NodeDatabase())
 				j = db.GetJob(j.Guid);
 
 			Assert.NotNull(j, "Job is null");
 			Assert.AreEqual(DateTimeKind.Local, j.StartDate.Kind);
-			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StartDate.ToString(dateFmt, CultureInfo.InvariantCulture));
 			Assert.True(j.StopDate.HasValue, "StopDate should be set");
-			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StopDate.Value.ToString(dateFmt));
+			Assert.AreEqual("5/2/2001 5:38:09 AM", j.StopDate.Value.ToString(dateFmt, CultureInfo.InvariantCulture));
 
 			// Ensure they are stored in the database as UTC
 

@@ -75,6 +75,8 @@ namespace Peach.Pro.Core.Storage
 
 	public abstract class Database : IDisposable
 	{
+		static readonly object InitializationLock = new object();
+
 #if SQLITE_TRACE
 		private static readonly NLog.Logger Logger = LogManager.GetCurrentClassLogger();
 #endif
@@ -120,7 +122,7 @@ namespace Peach.Pro.Core.Storage
 
 		protected Database(string path, bool useWal)
 		{
-			Path = path;
+			Path = System.IO.Path.GetFullPath(path);
 
 			var builder = new SqliteConnectionStringBuilder
 			{
@@ -132,20 +134,40 @@ namespace Peach.Pro.Core.Storage
 				DefaultTimeout = 30,
 			};
 
-			var isInitialized = IsInitialized;
+			// Several callers, including worker processes, can open the same database
+			// during startup. Checking the file and creating the schema must be one
+			// atomic operation across both threads and processes, otherwise multiple
+			// callers can observe an empty file and race to CREATE the same tables.
+			using (var instanceLock = Pal.SingleInstance("Database.Initialize." + Path))
+			{
+				instanceLock.Lock();
+				lock (InitializationLock)
+				{
+					var isInitialized = IsInitialized;
 
-			var sqliteConnection = new SqliteConnection(builder.ConnectionString);
-			Connection = sqliteConnection;
-			Connection.Open();
+					var sqliteConnection = new SqliteConnection(builder.ConnectionString);
+					Connection = sqliteConnection;
+					try
+					{
+						Connection.Open();
 
-			// Microsoft.Data.Sqlite deliberately keeps persistent pragmas out of its
-			// connection string. Apply the same settings the previous provider used.
-			if (useWal)
-				Connection.Execute("PRAGMA journal_mode = WAL;");
-			Connection.Execute("PRAGMA synchronous = NORMAL;");
-			
-			if (!isInitialized)
-				Initialize();
+						// Microsoft.Data.Sqlite deliberately keeps persistent pragmas out of its
+						// connection string. Apply the same settings the previous provider used.
+						if (useWal)
+							Connection.Execute("PRAGMA journal_mode = WAL;");
+						Connection.Execute("PRAGMA synchronous = NORMAL;");
+
+						if (!isInitialized)
+							Initialize();
+					}
+					catch
+					{
+						Connection.Dispose();
+						Connection = null;
+						throw;
+					}
+				}
+			}
 		}
 
 		[Conditional("SQLITE_TRACE")]

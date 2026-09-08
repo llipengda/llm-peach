@@ -14,6 +14,7 @@ namespace Peach.Pro.Test.Core.Monitors
 	[TestFixture]
 	[Quick]
 	[Peach]
+	[Ignore("Requires the commercial Memory monitor, which is not present in this repository.")]
 	class MemoryMonitorTests
 	{
 		string _file;

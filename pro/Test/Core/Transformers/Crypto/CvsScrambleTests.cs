@@ -11,6 +11,7 @@ namespace Peach.Pro.Test.Core.Transformers.Crypto
 	[TestFixture]
 	[Quick]
 	[Peach]
+	[Ignore("CvsScramble was removed with the legacy crypt transformers.")]
     class CvsScrambleTests : DataModelCollector
     {
         [Test]

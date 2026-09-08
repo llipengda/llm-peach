@@ -9,6 +9,10 @@ using Peach.Pro.Core.Runtime;
 
 // This assembly contains Peach plugins
 [assembly: PluginAssembly]
+// The Pro tests mutate process-wide Configuration values and share node.db.
+// Running fixtures in parallel causes unrelated tests to overwrite LogRoot
+// and to delete parent rows while another fixture is still writing children.
+[assembly: NonParallelizable]
 
 namespace Peach.Pro.Test.Core
 {

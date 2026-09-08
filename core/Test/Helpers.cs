@@ -67,7 +67,7 @@ namespace Peach.Core.Test
 			return new StreamReader(stream).ReadToEnd();
 		}
 
-		public static SysProcess StartAgent(string protocol, string pluginsPath)
+		public static SysProcess StartAgent(string protocol, string pluginsPath, bool loadPlugins = false)
 		{
 			var startEvent = new ManualResetEvent(false);
 			var process = new SysProcess();
@@ -79,6 +79,12 @@ namespace Peach.Core.Test
 				{
 					Utilities.GetAppResourcePath(executable),
 				};
+
+				if (loadPlugins)
+				{
+					args.Add("--plugins");
+					args.Add(pluginsPath);
+				}
 			}
 			else
 			{

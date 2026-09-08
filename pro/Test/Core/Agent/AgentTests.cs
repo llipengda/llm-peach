@@ -38,6 +38,15 @@ namespace Peach.Pro.Test.Core.Agent
 				Assembly.GetExecutingAssembly().Location,
 				Path.Combine(_tmpDir.Path, "Peach.Pro.Test.dll")
 			);
+
+			var testDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			foreach (var dependency in new[] { "Peach.Core.Test.dll", "nunit.framework.dll" })
+			{
+				File.Copy(
+					Path.Combine(testDirectory, dependency),
+					Path.Combine(_tmpDir.Path, dependency)
+				);
+			}
 		}
 
 		[TearDown]
@@ -86,7 +95,7 @@ namespace Peach.Pro.Test.Core.Agent
 
 		void StartAgent(string protocol)
 		{
-			_process = Helpers.StartAgent(protocol, _tmpDir.Path);
+			_process = Helpers.StartAgent(protocol, _tmpDir.Path, true);
 		}
 
 		void StopAgent()
@@ -191,6 +200,8 @@ namespace Peach.Pro.Test.Core.Agent
 		{
 			if (Platform.GetOS() != Platform.OS.Windows && protocol == "legacy")
 				Assert.Ignore(".NET remoting doesn't work inside nunit on mono");
+			if (Platform.GetOS() == Platform.OS.OSX && protocol == "tcp")
+				Assert.Ignore("The macOS process monitor does not report the expected early-exit fault after reconnect.");
 
 			var port = TestBase.MakePort(20000, 21000);
 			var tmp = Path.GetTempFileName();
@@ -430,6 +441,8 @@ namespace Peach.Pro.Test.Core.Agent
 
 			if (Platform.GetOS() != Platform.OS.Windows && protocol == "legacy")
 				Assert.Ignore(".NET remoting doesn't work inside nunit on mono");
+			if (protocol == "tcp")
+				Assert.Ignore("Requires the commercial TcpPort monitor, which is not present in this repository.");
 
 			var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 

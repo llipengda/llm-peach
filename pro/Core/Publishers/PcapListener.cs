@@ -23,7 +23,7 @@ namespace Peach.Pro.Core.Publishers
 		private static NLog.Logger logger = LogManager.GetCurrentClassLogger();
 		protected NLog.Logger Logger { get { return logger; } }
 
-		ICaptureDevice _device;
+		LibPcapLiveDevice _device;
 
 		/// <summary>
 		/// Queue of received packets. This is a thread safe queue.
@@ -122,7 +122,7 @@ namespace Peach.Pro.Core.Publishers
 			Logger.Debug("Starting capture (filter: {0}, timeout: {1})", filter, timeout);
 			PacketQueue = new BlockingCollection<RawCapture>();
 
-			_device.Open(DeviceMode.Promiscuous, timeout);
+			_device.Open(DeviceModes.Promiscuous, timeout);
 
 			_device.Filter = filter;
 
@@ -164,10 +164,10 @@ namespace Peach.Pro.Core.Publishers
 			Logger.Debug("Cleared {0} packets from queue", cnt);
 		}
 
-		void _device_OnPacketArrival(object sender, CaptureEventArgs e)
+		void _device_OnPacketArrival(object sender, PacketCapture e)
 		{
 			Logger.Debug("Queuing packet");
-			PacketQueue.Add(e.Packet);
+			PacketQueue.Add(e.GetPacket());
 		}
 
 		/// <summary>

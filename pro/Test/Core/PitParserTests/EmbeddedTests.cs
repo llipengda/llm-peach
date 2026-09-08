@@ -15,6 +15,7 @@ namespace Peach.Pro.Test.Core.PitParserTests
 	[TestFixture]
 	[Quick]
 	[Peach]
+	[Ignore("Requires the DNP3 PIT library resources, which are not present in this repository.")]
 	public class EmbeddedTests
 	{
 		static readonly ResourceRoot ResourceRoot = new ResourceRoot
