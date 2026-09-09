@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <AssemblyName>Peach.Pro</AssemblyName>
     <RootNamespace>Peach.Pro.Core</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -52,7 +52,6 @@
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
-    <PackageReference Include="System.Threading.Tasks.Dataflow" Version="8.0.1" />
     <PackageReference Include="Titanium.Web.Proxy" Version="3.1.1450" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <AssemblyName>Peach.Pro.Test.OS.Linux</AssemblyName>
     <RootNamespace>Peach.Pro.Test.OS.Linux</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

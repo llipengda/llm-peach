@@ -72,7 +72,7 @@ namespace Peach.Core.Analyzers
 		[Obsolete("This method is obsolete and should not be used.")]
 		public static List<KeyValuePair<string, string>> parseDefines(string definedValuesFile)
 		{
-			var ret = new OrderedDictionary<string, string>();
+			var ret = new Peach.Core.Dom.OrderedDictionary<string, string>();
 			var keys = new HashSet<string>();
 
 			string normalized = Path.GetFullPath(definedValuesFile);

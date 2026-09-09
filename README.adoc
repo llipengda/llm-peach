@@ -2,9 +2,10 @@
 
 = GitLab Protocol Fuzzer Community Edition
 
-NOTE: The maintained build uses SDK-style .NET 8 projects in the original source
-layout. See link:docs/modern-dotnet.adoc[Modern .NET build] for supported
-projects, commands, and remaining compatibility boundaries.
+NOTE: The maintained build uses SDK-style projects targeting both .NET 8 and
+.NET 10 in the original source layout. See link:docs/modern-dotnet.adoc[Modern
+.NET build] for supported projects, commands, and remaining compatibility
+boundaries.
 
 This project is based on Peach Fuzzer Professional v4 which was https://about.gitlab.com/press/releases/2020-06-11-gitlab-acquires-peach-tech-and-fuzzit-to-expand-devsecops-offering.html[aquired by GitLab] in 2020. Some features of Peach Fuzzer Profession were removed and will be made available as part of GitLab in the future. This project replaces the Peach Fuzzer Community projects hosted on GitLab and also Source Forge.
 
@@ -46,9 +47,11 @@ The other commits are catogorized as either new, changed or fixed.
 
 == Local Build Instructions
 
-Peach uses SDK-style projects targeting .NET 8 and supports builds on Windows,
-Linux, and macOS. Install a .NET 8 SDK; individual integration tests may also
-need platform tools such as GDB or Intel Pin.
+Peach uses SDK-style projects targeting .NET 8 and .NET 10 and supports builds
+on Windows, Linux, and macOS. Install a .NET 8 or .NET 10 SDK; `install.sh`
+prefers .NET 10 and otherwise falls back to .NET 8. Building every target at
+once requires the .NET 10 SDK. Individual integration tests may also need
+platform tools such as GDB or Intel Pin.
 
 === Build Commands
 
@@ -92,7 +95,8 @@ Run the installed application with:
 
 === Docker
 
-Build the .NET 8 command-line distribution from the repository root:
+Build the command-line distribution from the repository root with either
+supported SDK:
 
 [source,shell]
 ----

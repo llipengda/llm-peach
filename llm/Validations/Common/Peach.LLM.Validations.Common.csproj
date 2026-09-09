@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
     <AssemblyName>Peach.LLM.Validations.Common</AssemblyName>
     <RootNamespace>Peach.LLM.Validations.Common</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>

@@ -1,14 +1,16 @@
 = Modern .NET build
 
-All maintained .NET projects use SDK-style project files, target .NET 8, and
-stay beside their source trees. The migration does not maintain a duplicate
-source tree or the former Waf build system.
+All maintained .NET projects use SDK-style project files, target both .NET 8
+and .NET 10, and stay beside their source trees. The migration does not
+maintain a duplicate source tree or the former Waf build system.
 
 == Requirements
 
-Install a .NET 8 SDK. The repository `global.json` selects the .NET 8 SDK line
-and permits compatible feature-band roll-forward instead of requiring one exact
-patch release.
+Install a .NET 8 or .NET 10 SDK. Every maintained project multi-targets
+`net8.0` and `net10.0`; the Windows GUI projects use `net8.0-windows` and
+`net10.0-windows`. `build/install.sh` prefers the .NET 10 SDK and falls back to
+.NET 8, publishing the matching target. Building every target at once requires
+the .NET 10 SDK.
 
 == Build
 
@@ -58,15 +60,15 @@ dotnet build Peach.Build.csproj --configuration Release
 * Linux and macOS implementations plus portable Windows implementations
 * LLM core and all four validation assemblies
 * The bundled Bouncy Castle, Google CityHash, and Managed ADB source trees
-* .NET 8 test apphosts for CrashTest and CrashableServer, plus direct Unix
-  process launching without Mono's debugger agent
-* Cross-platform code-page registration, .NET 8-compatible deep cloning, and
+* .NET 8 and .NET 10 test apphosts for CrashTest and CrashableServer, plus
+  direct Unix process launching without Mono's debugger agent
+* Cross-platform code-page registration, modern .NET-compatible deep cloning, and
   cooperative cancellation in place of unsupported thread termination
 
 == Remaining compatibility boundaries
 
-The following features are intentionally excluded from the .NET 8 build until
-they can be redesigned around supported APIs:
+The following features are intentionally excluded from the modern .NET build
+until they can be redesigned around supported APIs:
 
 * `pro/WebApi2`: classic ASP.NET/System.Web, OWIN, and Nancy hosting
 * `AgentTcpRemoting` and the Unix trampoline IPC mode: .NET Remoting
@@ -78,5 +80,5 @@ packages are still restored through .NET Framework compatibility assets; their
 replacement is follow-up dependency work rather than a directory migration.
 
 Linux monitor integration tests additionally require host privileges, GDB, and
-the Peach `exploitable` extension. They compile on .NET 8 but cannot all pass in
-an unprivileged container or sandbox.
+the Peach `exploitable` extension. They compile on both target frameworks but
+cannot all pass in an unprivileged container or sandbox.
