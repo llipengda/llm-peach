@@ -8,9 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="3rdParty/BouncyCastle/crypto/BouncyCastle.Crypto.csproj" />
-    <ProjectReference Include="3rdParty/Google.CityHash/Google.CityHash.csproj" ReferenceOutputAssembly="false" />
-    <ProjectReference Include="3rdParty/Managed.AndroidDebugBridge/Managed.AndroidDebugBridge/Managed.Adb.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="core/Core/Peach.Core.csproj" />
     <ProjectReference Include="core/Minset/PeachMinset.csproj" />
     <ProjectReference Include="core/Test/Peach.Core.Test.csproj" />
@@ -40,4 +37,36 @@
     <ProjectReference Include="pro/Validator/PeachValidator.csproj" />
     <ProjectReference Include="pro/XmlGenerator/PeachXmlGenerator.csproj" />
   </ItemGroup>
+
+  <!-- Keep one command-line test entry point for all test assemblies. -->
+  <ItemGroup>
+    <PeachTestProject Include="core/Test/Peach.Core.Test.csproj" />
+    <PeachTestProject Include="pro/Test/Core/Peach.Pro.Test.csproj" />
+    <PeachTestProject Include="pro/Test/OS/Linux/Peach.Pro.Test.OS.Linux.csproj" />
+  </ItemGroup>
+
+  <Target Name="RunPeachTests" AfterTargets="VSTest">
+    <MSBuild Projects="@(PeachTestProject)"
+             Targets="VSTest"
+             BuildInParallel="false"
+             Properties="Configuration=$(Configuration);VSTestNoBuild=$(VSTestNoBuild);VSTestVerbosity=$(VSTestVerbosity);VSTestTestAdapterPath=$(VSTestTestAdapterPath)" />
+  </Target>
+
+  <Target Name="ResolveBundledPin">
+    <ItemGroup>
+      <BundledPinConfig Include="$(MSBuildProjectDirectory)/3rdParty/pin/*/source/tools/Config/makefile.config" />
+    </ItemGroup>
+    <CreateProperty Value="$([System.IO.Path]::GetFullPath('%(BundledPinConfig.Identity)/../../../..'))" Condition="'@(BundledPinConfig)' != ''">
+      <Output TaskParameter="Value" PropertyName="BundledPinRoot" />
+    </CreateProperty>
+  </Target>
+
+  <Target Name="BuildPinTools" BeforeTargets="Build" DependsOnTargets="ResolveBundledPin">
+    <MSBuild Condition="'$(BundledPinRoot)' != ''" Projects="core/BasicBlocks/BasicBlocks.proj"
+             Targets="Build"
+             Properties="PinRoot=$(BundledPinRoot);BasicBlocksOutputDir=$(BasicBlocksOutputDir)" />
+    <MSBuild Condition="'$(BundledPinRoot)' != ''" Projects="core/CoveredEdge/CoveredEdge.proj"
+             Targets="Build"
+             Properties="PinRoot=$(BundledPinRoot);CoveredEdgeOutputDir=$(BasicBlocksOutputDir)" />
+  </Target>
 </Project>

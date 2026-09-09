@@ -549,7 +549,7 @@ namespace PitTool
 
 		string ComputeVersionHash()
 		{
-			using (var algorithm = HashAlgorithm.Create("MD5"))
+				using (var algorithm = MD5.Create())
 			using (var cs = new CryptoStream(Stream.Null, algorithm, CryptoStreamMode.Write))
 			{
 				ComputeVersionHash(Assembly.GetEntryAssembly(), cs, new HashSet<string>());
@@ -560,7 +560,7 @@ namespace PitTool
 
 		void ComputeVersionHash(Assembly asm, CryptoStream cs, HashSet<string> seen)
 		{
-			if (seen.Contains(asm.Location) || asm.GlobalAssemblyCache)
+				if (seen.Contains(asm.Location))
 				return;
 			seen.Add(asm.Location);
 

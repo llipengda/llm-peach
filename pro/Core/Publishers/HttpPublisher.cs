@@ -365,7 +365,9 @@ namespace Peach.Pro.Core.Publishers
 
 		protected virtual HttpWebRequest GetRequest(Uri url, BitwiseStream data)
 		{
+#pragma warning disable SYSLIB0014 // The publisher relies on HttpWebRequest-specific options.
 			var request = (HttpWebRequest)WebRequest.Create(url);
+#pragma warning restore SYSLIB0014
 			request.Method = Method;
 			request.Proxy = _proxy;
 

@@ -12,6 +12,8 @@
     <Nullable>disable</Nullable>
     <LangVersion>latestMajor</LangVersion>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+    <!-- TreeViewAdv has no modern target framework asset; retain the known-compatible WinForms binary. -->
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +28,7 @@
 
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.7.15" />
+    <PackageReference Include="Be.Windows.Forms.HexBox.Net8" Version="2.1.0" />
     <PackageReference Include="PacketDotNet" Version="1.4.8" />
     <PackageReference Include="SharpPcap" Version="6.3.1" />
     <PackageReference Include="TreeViewAdv" Version="1.7.0" />
@@ -35,12 +38,6 @@
   <ItemGroup>
     <PackageReference Include="System.Management" Version="8.0.0" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="8.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Be.Windows.Forms.HexBox">
-      <HintPath>..\..\3rdParty\Be.HexEditor.150\bin\Be.Windows.Forms.HexBox.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

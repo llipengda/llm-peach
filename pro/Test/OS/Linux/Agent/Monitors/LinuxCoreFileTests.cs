@@ -15,7 +15,6 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 	[TestFixture]
 	[Quick]
 	[Peach]
-	[Platform("Linux")]
 	class LinuxCoreFileTests
 	{
 		ISingleInstance _si;
@@ -24,6 +23,9 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 		[SetUp]
 		public void SetUp()
 		{
+			if (!OperatingSystem.IsLinux())
+				Assert.Ignore("Only supported on Linux");
+
 			_tmp = new TempDirectory();
 
 			// Ensure only 1 instance of the test runs at a time

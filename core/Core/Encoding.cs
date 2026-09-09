@@ -635,12 +635,14 @@ namespace Peach.Core
 	#region UTF7Encoding
 
 	[Serializable]
-	public class UTF7Encoding : Encoding
-	{
-		public UTF7Encoding()
-			: base(new System.Text.UTF7Encoding(true), 1)
+		public class UTF7Encoding : Encoding
 		{
-		}
+#pragma warning disable SYSLIB0001 // UTF-7 is retained for compatibility with existing Peach models.
+			public UTF7Encoding()
+				: base(new System.Text.UTF7Encoding(true), 1)
+			{
+			}
+#pragma warning restore SYSLIB0001
 
 		public override int GetRawByteCount(char[] chars, int index, int count)
 		{

@@ -29,6 +29,7 @@ namespace Peach.Core
 		{
 		}
 
+		[Obsolete("Formatter-based serialization is obsolete.")]
 		protected PeachException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
@@ -59,6 +60,7 @@ namespace Peach.Core
 		{
 		}
 
+		[Obsolete("Formatter-based serialization is obsolete.")]
 		protected SoftException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
@@ -86,6 +88,7 @@ namespace Peach.Core
 		{
 		}
 
+		[Obsolete("Formatter-based serialization is obsolete.")]
 		protected AgentException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
@@ -118,6 +121,7 @@ namespace Peach.Core
 			Fault = fault;
 		}
 
+		[Obsolete("Formatter-based serialization is obsolete.")]
 		protected FaultException(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{

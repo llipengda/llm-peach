@@ -1,0 +1,45 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <RepositoryRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../..'))</RepositoryRoot>
+    <IsMacPin>$([System.String]::Copy('$(PinRoot)').Contains('clang-mac'))</IsMacPin>
+    <PinTarget Condition="'$(PinTarget)' == ''">intel64</PinTarget>
+    <CoveredEdgeOutputDir Condition="'$(CoveredEdgeOutputDir)' == ''">$(MSBuildProjectDirectory)/artifacts</CoveredEdgeOutputDir>
+    <CoveredEdgeExtension Condition="'$(OS)' == 'Windows_NT'">dll</CoveredEdgeExtension>
+    <CoveredEdgeExtension Condition="'$(IsMacPin)' == 'True'">dylib</CoveredEdgeExtension>
+    <CoveredEdgeExtension Condition="'$(OS)' != 'Windows_NT' and '$(IsMacPin)' != 'True'">so</CoveredEdgeExtension>
+    <CoveredEdgeOutputName Condition="'$(OS)' == 'Windows_NT' and '$(PinTarget)' == 'ia32'">cedge32.dll</CoveredEdgeOutputName>
+    <CoveredEdgeOutputName Condition="'$(OS)' == 'Windows_NT' and '$(PinTarget)' == 'intel64'">cedge64.dll</CoveredEdgeOutputName>
+    <CoveredEdgeOutputName Condition="'$(OS)' != 'Windows_NT' and '$(PinTarget)' == 'ia32'">cedge32.so</CoveredEdgeOutputName>
+    <CoveredEdgeOutputName Condition="'$(OS)' != 'Windows_NT' and '$(PinTarget)' == 'intel64'">cedge64.so</CoveredEdgeOutputName>
+    <CoveredEdgeOutputName Condition="'$(IsMacPin)' == 'True'">cedge.dylib</CoveredEdgeOutputName>
+    <CoveredEdgeBuiltTool>$(MSBuildProjectDirectory)/obj-$(PinTarget)/cedge.$(CoveredEdgeExtension)</CoveredEdgeBuiltTool>
+    <CoveredEdgeOutputFile>$(CoveredEdgeOutputDir)/$(CoveredEdgeOutputName)</CoveredEdgeOutputFile>
+  </PropertyGroup>
+
+  <Target Name="ResolvePinRoot" Condition="'$(PinRoot)' == ''">
+    <ItemGroup>
+      <BundledPinConfig Include="$(RepositoryRoot)/3rdParty/pin/*/source/tools/Config/makefile.config" />
+    </ItemGroup>
+    <CreateProperty Value="$([System.IO.Path]::GetFullPath('%(BundledPinConfig.Identity)/../../../..'))" Condition="'@(BundledPinConfig)' != ''">
+      <Output TaskParameter="Value" PropertyName="PinRoot" />
+    </CreateProperty>
+  </Target>
+
+  <Target Name="Validate" DependsOnTargets="ResolvePinRoot">
+    <Error Condition="'$(PinRoot)' == ''" Text="The bundled Intel Pin kit is missing. Extract the expected kit under 3rdParty/pin; see 3rdParty/pin/README.md." />
+    <Error Condition="!Exists('$(PinRoot)/source/tools/Config/makefile.config')" Text="Invalid Intel Pin installation: $(PinRoot)" />
+    <Error Condition="'$(PinTarget)' != 'ia32' and '$(PinTarget)' != 'intel64'" Text="PinTarget must be ia32 or intel64; got '$(PinTarget)'." />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="Validate">
+    <MakeDir Directories="$(CoveredEdgeOutputDir)" />
+    <Exec Command="make -C &quot;$(MSBuildProjectDirectory)&quot; PIN_ROOT=&quot;$(PinRoot)&quot; TARGET=$(PinTarget)" />
+    <Error Condition="!Exists('$(CoveredEdgeBuiltTool)')" Text="Intel Pin did not produce $(CoveredEdgeBuiltTool)." />
+    <Copy SourceFiles="$(CoveredEdgeBuiltTool)" DestinationFiles="$(CoveredEdgeOutputFile)" />
+    <Message Importance="high" Text="Installed CoveredEdge tool: $(CoveredEdgeOutputFile)" />
+  </Target>
+
+  <Target Name="Clean">
+    <RemoveDir Directories="$(CoveredEdgeOutputDir)" />
+  </Target>
+</Project>

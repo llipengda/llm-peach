@@ -536,7 +536,7 @@ namespace Peach.Core.Xsd
 				XPathDocument doc;
 				if (!Cache.TryGetValue(asm, out doc))
 				{
-					var file = Path.ChangeExtension(asm.CodeBase, ".xml");
+					var file = Path.ChangeExtension(asm.Location, ".xml");
 
 					try
 					{

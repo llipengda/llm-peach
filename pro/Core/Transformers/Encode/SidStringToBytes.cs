@@ -12,6 +12,7 @@ using Peach.Core;
 using Peach.Core.Dom;
 using Peach.Core.IO;
 using System.ComponentModel;
+using System.Runtime.Versioning;
 
 namespace Peach.Pro.Core.Transformers.Encode
 {
@@ -19,6 +20,7 @@ namespace Peach.Pro.Core.Transformers.Encode
     [Transformer("SidStringToBytes", true)]
     [Transformer("encode.SidStringToBytes")]
     [Serializable]
+    [SupportedOSPlatform("windows")]
     public class SidStringToBytes : Transformer
     {
         public SidStringToBytes(DataElement parent, Dictionary<string, Variant> args)

@@ -66,7 +66,7 @@ namespace Peach.Pro.Core
 				Converters = new JsonConverter[]
 				{
 					new TimeSpanJsonConverter(),
-					new StringEnumConverter { CamelCaseText = true }
+						new StringEnumConverter { NamingStrategy = new CamelCaseNamingStrategy() }
 				}
 			};
 		}

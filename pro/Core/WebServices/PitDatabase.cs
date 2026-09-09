@@ -281,7 +281,7 @@ namespace Peach.Pro.Core.WebServices
 
 		private static string MakeGuid(string value)
 		{
-			using (var md5 = new MD5CryptoServiceProvider())
+				using (var md5 = MD5.Create())
 			{
 				var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(value));
 				var sb = new StringBuilder();

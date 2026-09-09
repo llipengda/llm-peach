@@ -192,7 +192,7 @@ namespace Peach.Pro.OS.Linux.Agent.Monitors
 		private class UlimitUnlimited : IDisposable
 		{
 			[StructLayout(LayoutKind.Sequential)]
-			private struct rlimit
+			private struct RLimit
 			{
 				public IntPtr rlim_curr;
 				public IntPtr rlim_max;
@@ -201,17 +201,17 @@ namespace Peach.Pro.OS.Linux.Agent.Monitors
 			private const int RLIMIT_CORE = 4;
 
 			[DllImport("libc", SetLastError = true)]
-			private static extern int getrlimit(int resource, ref rlimit rlim);
+			private static extern int getrlimit(int resource, ref RLimit rlim);
 
 			[DllImport("libc", EntryPoint = "getrlimit", SetLastError = true)]
-			private static extern int setrlimit(int resource, ref rlimit rlim);
+			private static extern int setrlimit(int resource, ref RLimit rlim);
 
-			private readonly rlimit _initial;
+			private readonly RLimit _initial;
 			private readonly bool _reset;
 
 			public UlimitUnlimited()
 			{
-				_initial = new rlimit();
+				_initial = new RLimit();
 
 				if (0 != getrlimit(RLIMIT_CORE, ref _initial))
 				{
@@ -220,7 +220,7 @@ namespace Peach.Pro.OS.Linux.Agent.Monitors
 					throw new PeachException("Error, could not query the core size resource limit.  " + ex.Message, ex);
 				}
 
-				var rlim = new rlimit { rlim_curr = _initial.rlim_max, rlim_max = _initial.rlim_max };
+				var rlim = new RLimit { rlim_curr = _initial.rlim_max, rlim_max = _initial.rlim_max };
 
 				if (0 != setrlimit(RLIMIT_CORE, ref rlim))
 				{
@@ -237,7 +237,7 @@ namespace Peach.Pro.OS.Linux.Agent.Monitors
 				if (!_reset)
 					return;
 
-				var rlim = new rlimit { rlim_curr = _initial.rlim_curr, rlim_max = _initial.rlim_max };
+				var rlim = new RLimit { rlim_curr = _initial.rlim_curr, rlim_max = _initial.rlim_max };
 				if (0 != setrlimit(RLIMIT_CORE, ref rlim))
 					Logger.Trace("Failed to restore the rlimit to {0}", _initial.rlim_curr);
 			}

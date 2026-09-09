@@ -12,10 +12,16 @@ namespace Peach.Pro.Test.OS.Linux
 {
 	[TestFixture]
 	[Quick]
-	[Platform("Linux")]
 	public class PlatformTests
 	{
 		static NLog.Logger logger = LogManager.GetCurrentClassLogger();
+
+		[SetUp]
+		public void RequireLinux()
+		{
+			if (!OperatingSystem.IsLinux())
+				Assert.Ignore("Only supported on Linux");
+		}
 
 		[Test]
 		public void Test1()

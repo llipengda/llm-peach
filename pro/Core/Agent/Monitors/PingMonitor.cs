@@ -300,9 +300,8 @@ namespace Peach.Pro.Core.Agent.Monitors
 		public MonoPing()
 		{
 			// Generate a new random 16 bit identifier for every ping
-			RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
 			byte[] randomIdentifier = new byte[2];
-			rng.GetBytes(randomIdentifier);
+			RandomNumberGenerator.Fill(randomIdentifier);
 			identifier = (ushort)(randomIdentifier[0] + (randomIdentifier[1] << 8));
 		}
 

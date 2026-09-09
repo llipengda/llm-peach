@@ -28,8 +28,4 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-
 </Project>

@@ -37,19 +37,23 @@ namespace Peach.Pro.Core.OS
 
 		static Pal()
 		{
-			switch (Platform.GetOS())
+			if (OperatingSystem.IsWindows())
 			{
-				case Platform.OS.Windows:
-					Instance = new Windows.Pal();
-					break;
-				case Platform.OS.Linux:
-					Instance = new Linux.Pal();
-					break;
-				case Platform.OS.OSX:
-					Instance = new OSX.Pal();
-					break;
-				default:
-					throw new NotSupportedException();
+				Instance = new Windows.Pal();
+			}
+			else
+			{
+				switch (Platform.GetOS())
+				{
+					case Platform.OS.Linux:
+						Instance = new Linux.Pal();
+						break;
+					case Platform.OS.OSX:
+						Instance = new OSX.Pal();
+						break;
+					default:
+						throw new NotSupportedException();
+				}
 			}
 		}
 

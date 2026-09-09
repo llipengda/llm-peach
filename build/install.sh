@@ -15,10 +15,12 @@ mkdir -p "${INSTALL_DIR}"
 
 echo "Publishing Peach to ${INSTALL_DIR}"
 dotnet restore "${REPO_ROOT}/Peach.Build.csproj"
+
 dotnet publish "${REPO_ROOT}/Peach.Build.csproj" \
     --configuration Release \
     --no-restore \
-    --output "${INSTALL_DIR}"
+    --output "${INSTALL_DIR}" \
+    -p:BasicBlocksOutputDir="${INSTALL_DIR}"
 
 # These assemblies are loaded as Peach extensions by the legacy installation
 # layout. They must remain under Plugins rather than beside Peach itself.

@@ -2,12 +2,14 @@ using System;
 using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading;
 using System.ComponentModel;
 using System.IO.Ports;
 
 namespace Peach.Pro.Core.OS.Windows
 {
+	[SupportedOSPlatform("windows")]
 	class WinSerialStream : Stream, ISerialStream
 	{
 		// Windows API Constants

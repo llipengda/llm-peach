@@ -470,6 +470,7 @@ namespace Peach.Core.Runtime {
 			this.option = optionName;
 		}
 
+		[Obsolete("Formatter-based serialization is obsolete.")]
 		protected OptionException (SerializationInfo info, StreamingContext context)
 			: base (info, context)
 		{
@@ -480,7 +481,7 @@ namespace Peach.Core.Runtime {
 			get {return this.option;}
 		}
 
-		[SecurityPermission (SecurityAction.LinkDemand, SerializationFormatter = true)]
+		[Obsolete("Formatter-based serialization is obsolete.")]
 		public override void GetObjectData (SerializationInfo info, StreamingContext context)
 		{
 			base.GetObjectData (info, context);

@@ -1,9 +1,11 @@
 using System;
 using System.IO.Ports;
+using System.Runtime.Versioning;
 using System.Threading;
 
 namespace Peach.Pro.Core.OS.Windows
 {
+	[SupportedOSPlatform("windows")]
 	internal class Pal : IPal
 	{
 		public ISerialStream OpenSerial(

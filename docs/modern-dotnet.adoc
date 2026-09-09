@@ -34,6 +34,21 @@ dotnet test core/Test/Peach.Core.Test.csproj --configuration Release
 dotnet test pro/Test/Core/Peach.Pro.Test.csproj --configuration Release
 ----
 
+== Minset native coverage
+
+`PeachMinset` uses the native Intel Pin tool under `core/BasicBlocks` when it
+collects coverage traces. The migration preserves the former layout: extract a
+compatible Pin kit under any direct child directory of `3rdParty/pin/`.
+MSBuild discovers it automatically and copies its
+runtime and binaries to the published `pin/` directory. Both native Pin tools,
+`bblocks` and `cedge`, are built automatically.
+
+[source,shell]
+----
+dotnet build Peach.Build.csproj --configuration Release
+./build/install.sh
+----
+
 == Migrated scope
 
 * Core PIT parsing, cracking, data models, relations, fixups, scripting, state

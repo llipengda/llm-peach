@@ -27,7 +27,6 @@
     <ProjectReference Include="..\..\..\core\Test\Peach.Core.Test.csproj" />
     <ProjectReference Include="..\..\Core\Peach.Pro.csproj" />
     <ProjectReference Include="..\..\PitTester\Peach.Pro.PitTester.csproj" />
-    <ProjectReference Include="..\..\..\3rdParty\BouncyCastle\crypto\BouncyCastle.Crypto.csproj" />
     <ProjectReference Include="..\Apps\CrashTest\CrashTest.csproj" />
     <ProjectReference Include="..\Apps\CrashableServer\CrashableServer.csproj" />
     <ProjectReference Include="..\Apps\CrashingFileConsumer\CrashingFileConsumer.csproj" />
@@ -38,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="SSH.NET" Version="2016.1.0" />
     <PackageReference Include="Dapper" Version="2.1.79" />
     <PackageReference Include="ProDotNetZip" Version="1.20.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
@@ -47,15 +45,7 @@
     <PackageReference Include="NLog" Version="4.7.15" />
     <PackageReference Include="NUnit" Version="3.14.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.8" ExcludeAssets="all" />
     <PackageReference Include="SharpPcap" Version="6.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
 
 </Project>

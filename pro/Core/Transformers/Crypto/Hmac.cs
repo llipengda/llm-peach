@@ -23,7 +23,9 @@ namespace Peach.Pro.Core.Transformers.Crypto
 
 		protected override BitwiseStream internalEncode(BitwiseStream data)
 		{
+#pragma warning disable SYSLIB0007 // Preserve the historical default HMAC algorithm.
 			HMAC hmacTool = HMAC.Create();
+#pragma warning restore SYSLIB0007
 			return new BitStream(hmacTool.ComputeHash(data));
 		}
 

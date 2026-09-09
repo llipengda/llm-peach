@@ -1,12 +1,17 @@
 ### Please add Intel Pin here!
 
-To build the coverage tools used by MinSet a [copy of Intel Pin](https://software.intel.com/content/www/us/en/develop/articles/pin-a-binary-instrumentation-tool-downloads.html) is needed for the architecture your building for. The expected version is v3.2 81205.
+To build the coverage tools used by MinSet a [copy of Intel Pin](https://software.intel.com/content/www/us/en/develop/articles/pin-a-binary-instrumentation-tool-downloads.html) is needed for the architecture your building for. Any compatible Pin kit can be used.
 
-When extracted we expect the following folders:
+Extract the kit into any direct child folder of `3rdParty/pin/`. These are
+historical examples:
 
 - pin-3.19-98425-clang-mac
 - pin-3.19-98425-msvc-windows
 - pin-3.19-98425-gcc-linux
 
-Newer versions may also work. YMMV.
+MSBuild discovers the extracted kit automatically and includes the required Pin
+runtime files in the Peach installation. No build argument or environment
+variable is required.
 
+The kit must contain `source/tools/Config/makefile.config`; that file is used
+to identify a valid Pin installation.

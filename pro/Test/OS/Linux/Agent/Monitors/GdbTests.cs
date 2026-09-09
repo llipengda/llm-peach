@@ -15,9 +15,15 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 	[TestFixture]
 	[Quick]
 	[Peach]
-	[Platform("Linux")]
 	public class GdbTests
 	{
+		[SetUp]
+		public void RequireLinux()
+		{
+			if (!OperatingSystem.IsLinux())
+				Assert.Ignore("Only supported on Linux");
+		}
+
 		private static readonly string CrashableServer = Utilities.GetAppResourcePath("CrashableServer");
 		private static readonly string CrashingFileConsumer = Utilities.GetAppResourcePath("CrashingFileConsumer");
 		private static readonly string CrashTest = Utilities.GetAppResourcePath("CrashTest");

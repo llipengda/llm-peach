@@ -345,7 +345,9 @@ namespace Peach.Pro.Core
 			var iv = Digest(System.Text.Encoding.UTF8.GetBytes(asset));
 			var keyParam = new KeyParameter(key);
 			var cipherParams = new AeadParameters(keyParam, 16 * 8, iv);
+#pragma warning disable CS0618 // Existing encrypted resources use this BouncyCastle implementation.
 			var blockCipher = new AesFastEngine();
+#pragma warning restore CS0618
 			var aeadBlockCipher = new GcmBlockCipher(blockCipher);
 			var cipher = new BufferedAeadBlockCipher(aeadBlockCipher);
 			cipher.Init(forEncryption, cipherParams);

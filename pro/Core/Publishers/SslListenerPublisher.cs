@@ -123,7 +123,7 @@ namespace Peach.Pro.Core.Publishers
 			{
 				_sslStream = new SslStream(_tcp.GetStream(), false);
 
-				_sslStream.AuthenticateAsServer(_serverCertificate, ClientCertRequired, SslProtocols.Default, CheckCertRevocation);
+				_sslStream.AuthenticateAsServer(_serverCertificate, ClientCertRequired, SslProtocols.None, CheckCertRevocation);
 				_sslStream.ReadTimeout = Timeout;
 				_sslStream.WriteTimeout = Timeout;
 				_client = _sslStream;

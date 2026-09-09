@@ -24,12 +24,14 @@ namespace Peach.Pro.Core.Fixups
 	[Parameter("ref", typeof(DataElement), "Reference to data element")]
 	[Parameter("DefaultValue", typeof(HexString), "Default value to use when recursing (default is parent's DefaultValue)", "")]
 	[Serializable]
+	#pragma warning disable SYSLIB0021 // The concrete type is part of the legacy fixup contract.
 	public class MD5Fixup : HashFixup<MD5CryptoServiceProvider>
 	{
 		public MD5Fixup(DataElement parent, Dictionary<string, Variant> args)
 			: base(parent, args)
 		{
 		}
+
 	}
 }
 

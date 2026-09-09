@@ -95,7 +95,7 @@ namespace Peach.Pro.Core.OS.OSX
 			{
 				Id = p.Id,
 				ProcessName = GetName(p.Id),
-				Responding = kp.p_stat != (byte)pstat.SZOMB,
+				Responding = kp.p_stat != (byte)ProcessState.SZOMB,
 				UserProcessorTicks = ti.pti_total_user,
 				PrivilegedProcessorTicks = ti.pti_total_system,
 
@@ -196,7 +196,7 @@ namespace Peach.Pro.Core.OS.OSX
 		private const int KERN_PROCARGS2 = 49;
 
 		// <sys/proc.h>
-		private enum pstat : byte
+		private enum ProcessState : byte
 		{
 			SIDL = 1, // Process being created by fork.
 			SRUN = 2, // Currently runnable.

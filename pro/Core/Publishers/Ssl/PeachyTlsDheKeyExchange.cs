@@ -14,7 +14,7 @@ namespace Peach.Pro.Core.Publishers.Ssl
 	public class PeachyTlsDheKeyExchange : TlsDheKeyExchange
 	{
 		public PeachyTlsDheKeyExchange(int keyExchange, IList supportedSignatureAlgorithms, DHParameters dhParameters)
-			: base(keyExchange, supportedSignatureAlgorithms, dhParameters)
+			: base(keyExchange, supportedSignatureAlgorithms, new DefaultTlsDHVerifier(), dhParameters)
 		{
 		}
 
@@ -43,8 +43,10 @@ namespace Peach.Pro.Core.Publishers.Ssl
 			{
 				try
 				{
-					this.mDHAgreePublicKey = TlsDHUtilities.ValidateDHPublicKey((DHPublicKeyParameters)this.mServerPublicKey);
-					this.mDHParameters = ValidateDHParameters(mDHAgreePublicKey.Parameters);
+					this.mDHAgreePublicKey = (DHPublicKeyParameters)this.mServerPublicKey;
+					this.mDHParameters = mDHAgreePublicKey.Parameters;
+					if (!mDHVerifier.Accept(mDHParameters))
+						throw new TlsFatalAlert(AlertDescription.insufficient_security);
 				}
 				catch (InvalidCastException e)
 				{

@@ -14,9 +14,9 @@ namespace Peach.Pro.OS.Linux
 		const int SIOCSIFMTU = 0x8922;
 
 		[StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-		struct ifreq
+		struct IfReq
 		{
-			public ifreq(string ifr_name)
+			public IfReq(string ifr_name)
 			{
 				this.ifr_name = ifr_name;
 				this.ifru_mtu = 0;
@@ -28,18 +28,18 @@ namespace Peach.Pro.OS.Linux
 		}
 
 		[DllImport("libc", SetLastError = true)]
-		private static extern int ioctl(int fd, int request, ref ifreq mtu);
+		private static extern int ioctl(int fd, int request, ref IfReq mtu);
 
 		#endregion
 
 		Socket socket;
-		ifreq ifr;
+		IfReq ifr;
 
 		public NetworkAdapterImpl(string name)
 			: base(name)
 		{
 			socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-			ifr = new ifreq(name);
+			ifr = new IfReq(name);
 		}
 
 		public override void Dispose()

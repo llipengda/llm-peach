@@ -679,7 +679,9 @@ namespace Peach.Pro.Core.Agent.Channels.Rest
 
 				try
 				{
+#pragma warning disable SYSLIB0014 // The protocol requires HttpWebRequest-specific settings.
 					var req = (HttpWebRequest)WebRequest.Create(uri);
+#pragma warning restore SYSLIB0014
 
 					// This should enable connection reuse.
 					// The container doesn't need to actually have any cookies in it

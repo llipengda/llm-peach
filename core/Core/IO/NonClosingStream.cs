@@ -197,6 +197,7 @@ namespace Peach.Core.IO
 		/// Throws a NotSupportedException.
 		/// </summary>
 		/// <returns>n/a</returns>
+		[Obsolete("Remoting lifetime services are not supported.")]
 		public override object InitializeLifetimeService()
 		{
 			throw new NotSupportedException();

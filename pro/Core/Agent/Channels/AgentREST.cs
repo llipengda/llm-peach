@@ -308,7 +308,9 @@ namespace Peach.Pro.Core.Agent.Channels
 			{
 				try
 				{
+#pragma warning disable SYSLIB0014 // The protocol requires HttpWebRequest-specific settings.
 					var httpWebRequest = (HttpWebRequest)WebRequest.Create(Url + "/Publisher/" + query);
+#pragma warning restore SYSLIB0014
 					httpWebRequest.ContentType = "text/json";
 
 					if (string.IsNullOrEmpty(json))
@@ -718,7 +720,9 @@ namespace Peach.Pro.Core.Agent.Channels
 			try
 			{
 
-				var httpWebRequest = (HttpWebRequest)WebRequest.Create(_serviceUrl + "/" + query);
+#pragma warning disable SYSLIB0014 // The protocol requires HttpWebRequest-specific settings.
+					var httpWebRequest = (HttpWebRequest)WebRequest.Create(_serviceUrl + "/" + query);
+#pragma warning restore SYSLIB0014
 				httpWebRequest.ContentType = "text/json";
 				if (string.IsNullOrEmpty(json))
 				{

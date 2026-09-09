@@ -252,7 +252,7 @@ namespace Peach.Pro.Core.Storage
 
 		byte[] Hash(Stream stream)
 		{
-			using (var sha1 = new SHA1Managed())
+				using (var sha1 = SHA1.Create())
 			{
 				return sha1.ComputeHash(stream);
 			}

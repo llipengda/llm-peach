@@ -41,7 +41,7 @@ namespace Peach.Pro.OS.Linux.Publishers
 			}
 
 			[StructLayout(LayoutKind.Sequential)]
-			public struct msghdr
+			public struct MsgHdr
 			{
 				public IntPtr msg_name;
 				public int msg_namelen;
@@ -53,7 +53,7 @@ namespace Peach.Pro.OS.Linux.Publishers
 			}
 
 			[StructLayout(LayoutKind.Sequential)]
-			public struct iovec
+			public struct IOVec
 			{
 				[MarshalAs(UnmanagedType.ByValArray, SizeConst = 1024)]
 				public byte[] iov_base;
@@ -61,7 +61,7 @@ namespace Peach.Pro.OS.Linux.Publishers
 			}
 
 			[StructLayout(LayoutKind.Sequential)]
-			public struct cmsghdr
+			public struct CMsgHdr
 			{
 				public UIntPtr cmsg_len;
 				public int cmsg_level;
@@ -98,7 +98,7 @@ namespace Peach.Pro.OS.Linux.Publishers
 
 			[DllImport("libc", SetLastError = true)]
 			public static extern int recvmsg(SocketSafeHandle sockfd,
-				ref msghdr msg, int flags);
+				ref MsgHdr msg, int flags);
 
 			[DllImport("libc", SetLastError = true)]
 			public static extern int send(
@@ -296,9 +296,9 @@ namespace Peach.Pro.OS.Linux.Publishers
 					_recvBuffer.Write(buf, 0, ret);
 					_recvBuffer.Position = pos;
 
-					var msg = new NativeMethods.msghdr();
-					var cmsg = new NativeMethods.cmsghdr();
-					var iv = new NativeMethods.iovec();
+					var msg = new NativeMethods.MsgHdr();
+					var cmsg = new NativeMethods.CMsgHdr();
+					var iv = new NativeMethods.IOVec();
 
 					iv.iov_base = new byte[snap_len/2];
 					iv.iov_len = snap_len;

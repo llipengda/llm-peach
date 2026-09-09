@@ -27,6 +27,7 @@ namespace Peach.Core.Test
 		[Test]
 		public void TestBaseEncodings()
 		{
+#pragma warning disable SYSLIB0001 // UTF-7 behavior is explicitly under test for compatibility.
 			Assert.True(Enc.ASCII.IsSingleByte);
 			Assert.True(latin1.IsSingleByte);
 			Assert.False(Enc.BigEndianUnicode.IsSingleByte);
@@ -41,6 +42,7 @@ namespace Peach.Core.Test
 			Assert.AreEqual(5, Enc.UTF7.GetMaxByteCount(1), "UTF7");
 			Assert.AreEqual(6, Enc.UTF8.GetMaxByteCount(1), "UTF8");
 			Assert.AreEqual(8, Enc.UTF32.GetMaxByteCount(1), "UTF32");
+#pragma warning restore SYSLIB0001
 
 			// Why???
 			#if NETFRAMEWORK

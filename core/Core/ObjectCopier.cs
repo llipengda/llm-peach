@@ -162,7 +162,9 @@ namespace Peach.Core
 			{
 				foreach (var info in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
 				{
-					if (!info.Attributes.HasFlag(FieldAttributes.NotSerialized))
+#pragma warning disable SYSLIB0050 // This copier intentionally honors the legacy [NonSerialized] contract.
+						if (!info.Attributes.HasFlag(FieldAttributes.NotSerialized))
+#pragma warning restore SYSLIB0050
 					{
 						var fullName = info.DeclaringType + "." + info.Name;
 
@@ -376,7 +378,9 @@ namespace Peach.Core
 			var onCloned = GetMethodsWithAttribute(typeof(OnClonedAttribute), type);
 
 			// Get functions we need to call
+#pragma warning disable SYSLIB0050 // Cloning requires allocation without running constructors.
 			var getUninitializedObject = typeof(FormatterServices).GetMethod("GetUninitializedObject", BindingFlags.Static | BindingFlags.Public);
+#pragma warning restore SYSLIB0050
 			var getItem = typeof(Hashtable).GetMethod("get_Item");
 			var setItem = typeof(Hashtable).GetMethod("set_Item");
 

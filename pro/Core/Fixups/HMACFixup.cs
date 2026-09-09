@@ -41,9 +41,11 @@ namespace Peach.Pro.Core.Fixups
             : base(parent, args, "ref")
         {
             ParameterParser.Parse(this, args);
-            HMAC hashSizeTest = HMAC.Create(Hash.ToString());
-            if (Length > (hashSizeTest.HashSize / 8))
-                throw new PeachException("The truncate length is greater than the hash size for the specified algorithm.");
+#pragma warning disable SYSLIB0045 // Algorithm names are user-visible Pit configuration values.
+			HMAC hashSizeTest = HMAC.Create(Hash.ToString());
+#pragma warning restore SYSLIB0045
+			if (Length > (hashSizeTest.HashSize / 8))
+				throw new PeachException("The truncate length is greater than the hash size for the specified algorithm.");
             if (Length < 0)
                 throw new PeachException("The truncate length must be greater than or equal to 0.");
         }
@@ -52,7 +54,9 @@ namespace Peach.Pro.Core.Fixups
 		{
 			var from = elements["ref"];
 			var data = from.Value;
+#pragma warning disable SYSLIB0045 // Algorithm names are user-visible Pit configuration values.
 			HMAC hashTool = HMAC.Create(Hash.ToString());
+#pragma warning restore SYSLIB0045
 			hashTool.Key = Key.Value;
 			byte[] hash = hashTool.ComputeHash(data);
 

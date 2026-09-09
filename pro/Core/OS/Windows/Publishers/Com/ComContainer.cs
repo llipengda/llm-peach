@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Versioning;
 using Peach.Core;
 
 namespace Peach.Pro.Core.OS.Windows.Publishers.Com
 {
+	[SupportedOSPlatform("windows")]
 	public class ComContainer : MarshalByRefObject, IComContainer
 	{
 		private readonly object comObject;

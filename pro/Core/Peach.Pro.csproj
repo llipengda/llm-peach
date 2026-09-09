@@ -34,7 +34,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../../core/Core/Peach.Core.csproj" />
-    <ProjectReference Include="../../3rdParty/BouncyCastle/crypto/BouncyCastle.Crypto.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,7 +45,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Stubble.Core" Version="1.10.8" />
     <PackageReference Include="PacketDotNet" Version="1.4.8" />
-    <PackageReference Include="Portable.BouncyCastle" Version="1.8.8" ExcludeAssets="all" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.8" />
     <PackageReference Include="SharpPcap" Version="6.3.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.11" />

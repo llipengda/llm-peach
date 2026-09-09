@@ -62,7 +62,7 @@ namespace Peach.Core
 			return item.Name;
 		}
 
-		public bool TryGetValue(string key, out T value)
+		public new bool TryGetValue(string key, out T value)
 		{
 			if (Dictionary != null && Dictionary.TryGetValue(key, out value))
 				return true;

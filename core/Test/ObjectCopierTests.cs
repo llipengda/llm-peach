@@ -415,7 +415,9 @@ namespace Peach.Core.Test
 
 		bool VerifyField(FieldInfo field, Type type)
 		{
+#pragma warning disable SYSLIB0050 // This test verifies legacy formatter serialization semantics.
 			if (field.Attributes.HasFlag(FieldAttributes.NotSerialized))
+#pragma warning restore SYSLIB0050
 				return true;
 			
 			if (type.IsPrimitive || (type == typeof(string)))
@@ -427,7 +429,7 @@ namespace Peach.Core.Test
 			if (field.DeclaringType == typeof(Delegate))
 				return true;
 
-			if (!type.IsSerializable)
+			if (!type.GetCustomAttributes(typeof(SerializableAttribute), false).Any())
 				return false;
 
 			return !type.Namespace.StartsWith("System");
@@ -445,7 +447,7 @@ namespace Peach.Core.Test
 				from kv in ClassLoader.AssemblyCache.Keys
 				where kv.GetName().FullName.StartsWith("Peach")
 				from type in kv.GetTypes()
-				where type.IsSerializable
+				where type.GetCustomAttributes(typeof(SerializableAttribute), false).Any()
 				from field in type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
 				where !VerifyField(field, field.FieldType)
 				select "{0}.{1}".Fmt(type.FullName, field.Name)

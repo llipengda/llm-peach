@@ -1,5 +1,8 @@
-﻿namespace Peach.Pro.Core.OS.Windows.Publishers.Com
+﻿using System.Runtime.Versioning;
+
+namespace Peach.Pro.Core.OS.Windows.Publishers.Com
 {
+	[SupportedOSPlatform("windows")]
 	public interface IComContainer
 	{
 		/// <summary>

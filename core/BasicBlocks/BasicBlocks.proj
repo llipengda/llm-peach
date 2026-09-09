@@ -1,0 +1,73 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <RepositoryRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/../..'))</RepositoryRoot>
+    <IsMacPin>$([System.String]::Copy('$(PinRoot)').Contains('clang-mac'))</IsMacPin>
+    <PinTarget Condition="'$(PinTarget)' == ''">intel64</PinTarget>
+    <BasicBlocksOutputDir Condition="'$(BasicBlocksOutputDir)' == ''">$(MSBuildProjectDirectory)/artifacts</BasicBlocksOutputDir>
+    <BasicBlocksExtension Condition="'$(OS)' == 'Windows_NT'">dll</BasicBlocksExtension>
+    <BasicBlocksExtension Condition="'$(IsMacPin)' == 'True'">dylib</BasicBlocksExtension>
+    <BasicBlocksExtension Condition="'$(OS)' != 'Windows_NT' and '$(IsMacPin)' != 'True'">so</BasicBlocksExtension>
+    <BasicBlocksOutputName Condition="'$(OS)' == 'Windows_NT' and '$(PinTarget)' == 'ia32'">bblocks32.dll</BasicBlocksOutputName>
+    <BasicBlocksOutputName Condition="'$(OS)' == 'Windows_NT' and '$(PinTarget)' == 'intel64'">bblocks64.dll</BasicBlocksOutputName>
+    <BasicBlocksOutputName Condition="'$(OS)' != 'Windows_NT' and '$(PinTarget)' == 'ia32'">bblocks32.so</BasicBlocksOutputName>
+    <BasicBlocksOutputName Condition="'$(OS)' != 'Windows_NT' and '$(PinTarget)' == 'intel64'">bblocks64.so</BasicBlocksOutputName>
+    <BasicBlocksOutputName Condition="'$(IsMacPin)' == 'True'">bblocks.dylib</BasicBlocksOutputName>
+    <BasicBlocksBuiltTool>$(MSBuildProjectDirectory)/obj-$(PinTarget)/bblocks.$(BasicBlocksExtension)</BasicBlocksBuiltTool>
+    <BasicBlocksOutputFile>$(BasicBlocksOutputDir)/$(BasicBlocksOutputName)</BasicBlocksOutputFile>
+  </PropertyGroup>
+
+  <Target Name="ResolvePinRoot" Condition="'$(PinRoot)' == ''">
+    <ItemGroup>
+      <BundledPinConfig Include="$(RepositoryRoot)/3rdParty/pin/*/source/tools/Config/makefile.config" />
+    </ItemGroup>
+    <CreateProperty Value="$([System.IO.Path]::GetFullPath('%(BundledPinConfig.Identity)/../../../..'))" Condition="'@(BundledPinConfig)' != ''">
+      <Output TaskParameter="Value" PropertyName="PinRoot" />
+    </CreateProperty>
+  </Target>
+
+  <Target Name="Validate" DependsOnTargets="ResolvePinRoot">
+    <Error Condition="'$(PinRoot)' == ''" Text="The bundled Intel Pin kit is missing. Extract the expected kit under 3rdParty/pin; see 3rdParty/pin/README.md." />
+    <Error Condition="!Exists('$(PinRoot)/source/tools/Config/makefile.config')" Text="Invalid Intel Pin installation: $(PinRoot)" />
+    <Error Condition="'$(PinTarget)' != 'ia32' and '$(PinTarget)' != 'intel64'" Text="PinTarget must be ia32 or intel64; got '$(PinTarget)'." />
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="Validate;BuildUnix;BuildWindows" />
+
+  <Target Name="BuildUnix" Condition="'$(OS)' != 'Windows_NT'">
+    <MakeDir Directories="$(BasicBlocksOutputDir)" />
+    <Exec Command="make -C &quot;$(MSBuildProjectDirectory)&quot; PIN_ROOT=&quot;$(PinRoot)&quot; TARGET=$(PinTarget)" />
+    <Error Condition="!Exists('$(BasicBlocksBuiltTool)')" Text="Intel Pin did not produce $(BasicBlocksBuiltTool)." />
+    <Copy SourceFiles="$(BasicBlocksBuiltTool)" DestinationFiles="$(BasicBlocksOutputFile)" />
+    <Message Importance="high" Text="Installed BasicBlocks tool: $(BasicBlocksOutputFile)" />
+  </Target>
+
+  <Target Name="BuildWindows" Condition="'$(OS)' == 'Windows_NT'">
+    <MakeDir Directories="$(BasicBlocksOutputDir)" />
+    <Exec Command="make -C &quot;$(MSBuildProjectDirectory)&quot; PIN_ROOT=&quot;$(PinRoot)&quot; TARGET=$(PinTarget)" />
+    <Error Condition="!Exists('$(BasicBlocksBuiltTool)')" Text="Intel Pin did not produce $(BasicBlocksBuiltTool)." />
+    <Copy SourceFiles="$(BasicBlocksBuiltTool)" DestinationFiles="$(BasicBlocksOutputFile)" />
+    <Message Importance="high" Text="Installed BasicBlocks tool: $(BasicBlocksOutputFile)" />
+  </Target>
+
+  <Target Name="Clean">
+    <RemoveDir Directories="$(BasicBlocksOutputDir)" />
+  </Target>
+
+  <Target Name="CopyPinRuntime" AfterTargets="Build">
+    <ItemGroup>
+      <PinRootFiles Include="$(PinRoot)/pin" Condition="Exists('$(PinRoot)/pin')" />
+      <PinRootFiles Include="$(PinRoot)/pin.exe" Condition="Exists('$(PinRoot)/pin.exe')" />
+      <PinRootFiles Include="$(PinRoot)/LICENSE" Condition="Exists('$(PinRoot)/LICENSE')" />
+      <PinRootFiles Include="$(PinRoot)/README" Condition="Exists('$(PinRoot)/README')" />
+      <PinIa32Runtime Include="$(PinRoot)/ia32/runtime/**/*" />
+      <PinIa32Bin Include="$(PinRoot)/ia32/bin/**/*" />
+      <PinIntel64Runtime Include="$(PinRoot)/intel64/runtime/**/*" />
+      <PinIntel64Bin Include="$(PinRoot)/intel64/bin/**/*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PinRootFiles)" DestinationFolder="$(BasicBlocksOutputDir)/pin" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(PinIa32Runtime)" DestinationFiles="@(PinIa32Runtime->'$(BasicBlocksOutputDir)/pin/ia32/runtime/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(PinIa32Bin)" DestinationFiles="@(PinIa32Bin->'$(BasicBlocksOutputDir)/pin/ia32/bin/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(PinIntel64Runtime)" DestinationFiles="@(PinIntel64Runtime->'$(BasicBlocksOutputDir)/pin/intel64/runtime/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(PinIntel64Bin)" DestinationFiles="@(PinIntel64Bin->'$(BasicBlocksOutputDir)/pin/intel64/bin/%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+</Project>

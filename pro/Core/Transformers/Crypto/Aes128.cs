@@ -27,7 +27,9 @@ namespace Peach.Pro.Core.Transformers.Crypto
 
         protected override SymmetricAlgorithm GetEncryptionAlgorithm()
         {
-            Rijndael aes = Rijndael.Create();
+#pragma warning disable SYSLIB0022 // Preserve the legacy Rijndael implementation used by existing models.
+			Rijndael aes = Rijndael.Create();
+#pragma warning restore SYSLIB0022
             aes.Mode = CipherMode;
             aes.Padding = PaddingMode;
             aes.Key = Key.Value;
