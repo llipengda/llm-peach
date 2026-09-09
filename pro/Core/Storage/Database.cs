@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Peach.Core;
@@ -94,16 +93,10 @@ namespace Peach.Pro.Core.Storage
 			// https://github.com/StackExchange/dapper-dot-net/issues/206
 			// https://github.com/StackExchange/dapper-dot-net/pull/177
 
-			var fi = typeof(SqlMapper).GetField("typeMap", BindingFlags.Static | BindingFlags.NonPublic);
-			if (fi == null)
-				throw new InvalidOperationException("SqlMapper is missing typeMap member.");
-
-			var typeMap = (Dictionary<Type, DbType>)fi.GetValue(null);
-
-			typeMap.Remove(typeof(DateTime));
-			typeMap.Remove(typeof(DateTime?));
-			typeMap.Remove(typeof(TimeSpan));
-			typeMap.Remove(typeof(TimeSpan?));
+			SqlMapper.RemoveTypeMap(typeof(DateTime));
+			SqlMapper.RemoveTypeMap(typeof(DateTime?));
+			SqlMapper.RemoveTypeMap(typeof(TimeSpan));
+			SqlMapper.RemoveTypeMap(typeof(TimeSpan?));
 
 			SqliteTrace();
 		}

@@ -9,7 +9,8 @@ using Peach.Core;
 using Peach.Core.Agent;
 using Encoding = Peach.Core.Encoding;
 using Monitor = Peach.Core.Agent.Monitor2;
-using Nustache.Core;
+using Stubble.Core;
+using Stubble.Core.Builders;
 
 namespace Peach.Pro.OS.Linux.Agent.Monitors
 {
@@ -94,6 +95,7 @@ quit
 		protected string _gdbPid = null;
 		protected string _gdbLog = null;
 		protected string _template = null;
+		private static readonly StubbleVisitorRenderer templateRenderer = new StubbleBuilder().Build();
 
 		protected Regex reHash = new Regex(@"^Hash: (\w+)\.(\w+)$", RegexOptions.Multiline);
 		protected Regex reClassification = new Regex(@"^Exploitability Classification: (.*)$", RegexOptions.Multiline);
@@ -350,7 +352,7 @@ quit
 
 			PopulateTemplateParameters(locals);
 
-			var cmd = Render.StringToString(_template, locals);
+			var cmd = templateRenderer.Render(_template, locals);
 			cmd = cmd.Replace("\r", "");
 			File.WriteAllText(_gdbCmd, cmd);
 
