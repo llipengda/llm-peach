@@ -1,0 +1,11 @@
+<Project>
+  <!--
+    install.sh sets PeachInstallTargetFramework so an SDK that supports only
+    one of the project's target frameworks does not evaluate the other one.
+    Leave the normal multi-target build unchanged when the property is absent.
+  -->
+  <PropertyGroup Condition="'$(PeachInstallTargetFramework)' != ''">
+    <TargetFrameworks Condition="'$(UseWindowsForms)' != 'true'">$(PeachInstallTargetFramework)</TargetFrameworks>
+    <TargetFrameworks Condition="'$(UseWindowsForms)' == 'true'">$(PeachInstallTargetFramework)-windows</TargetFrameworks>
+  </PropertyGroup>
+</Project>
