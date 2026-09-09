@@ -255,10 +255,9 @@ namespace Peach.Core.Dom
 			context.handleCommonDataElementChildren(node, str);
 			context.handleCommonDataElementValue(node, str);
 
-			// Run sanatize() once attributes have been parsed
-
-			if (!node.hasAttr("value"))
-				str.DefaultValue = str._defaultValue;
+			// Run Sanitize() after every attribute, including an explicit value,
+			// so that its encoding and length constraints are validated together.
+			str.DefaultValue = str._defaultValue;
 
 			return str;
 		}

@@ -122,7 +122,7 @@ namespace Peach.Pro.Test.Core.Publishers
 				pe = ex;
 			}
 			Assert.NotNull(pe);
-			Assert.True(pe.Message.StartsWith("Publisher 'testA1.default' could not set parameter 'req1'.  Input string was not in"));
+			StringAssert.StartsWith("Publisher 'testA1.default' could not set parameter 'req1'.  The input string 'not a number' was not in a correct format.", pe.Message);
 		}
 
 		[Test]

@@ -508,6 +508,9 @@ namespace Peach.Pro.Test.Core.Publishers
 		[TestCase("RawIPv4", AddressFamily.InterNetwork, ProtocolType.Pup)]
 		public void RawEcho(string pub, AddressFamily family, int protocol)
 		{
+			if (Platform.GetOS() == Platform.OS.OSX)
+				Assert.Ignore("macOS does not support the PUP raw-socket protocol used by this test.");
+
 			// Ensure basic send/recv functionality
 			var self = GetSelf(family);
 
@@ -547,6 +550,9 @@ namespace Peach.Pro.Test.Core.Publishers
 		[TestCase("RawIPv4")]
 		public void RawTcp(string pub)
 		{
+			if (Platform.GetOS() == Platform.OS.OSX)
+				Assert.Ignore("macOS requires elevated privileges to create the raw TCP socket used by this test.");
+
 			var xml = @"
 <Peach>
 	<DataModel name='DM'>
@@ -730,6 +736,9 @@ namespace Peach.Pro.Test.Core.Publishers
 		[Test]
 		public void TestMtuInterface()
 		{
+			if (Platform.GetOS() == Platform.OS.OSX)
+				Assert.Ignore("The macOS UDP implementation does not expose or change interface MTU through this publisher.");
+
 			var self = GetSelf(AddressFamily.InterNetwork);
 
 			var pub = new UdpPublisher(new Dictionary<string, Variant>
@@ -774,6 +783,9 @@ namespace Peach.Pro.Test.Core.Publishers
 		[Test]
 		public void TestMtuLoopback()
 		{
+			if (Platform.GetOS() == Platform.OS.OSX)
+				Assert.Ignore("The macOS UDP implementation does not expose or change loopback MTU through this publisher.");
+
 			var pub = new UdpPublisher(new Dictionary<string, Variant>
 			{
 				{ "Interface", new Variant("127.0.0.1") },

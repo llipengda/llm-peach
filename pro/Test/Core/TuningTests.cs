@@ -7,6 +7,7 @@ using Moq;
 using NUnit.Framework;
 using Peach.Core;
 using Peach.Core.Test;
+using Peach.Pro.Core;
 using Peach.Pro.Core.License;
 using Peach.Pro.Core.Runtime;
 using Peach.Pro.Core.Storage;
@@ -21,16 +22,20 @@ namespace Peach.Pro.Test.Core
 	class TuningTests
 	{
 		TempDirectory _tmpDir;
+		string _oldLogRoot;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_tmpDir = new TempDirectory();
+			_oldLogRoot = Configuration.LogRoot;
+			Configuration.LogRoot = _tmpDir.Path;
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
+			Configuration.LogRoot = _oldLogRoot;
 			_tmpDir.Dispose();
 		}
 

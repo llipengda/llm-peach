@@ -24,6 +24,7 @@ namespace Peach.Pro.Test.Core.Monitors
 		private AutoResetEvent _evt;
 		private string _iface;
 		private Socket _socket;
+		private Socket _listener;
 		private IPEndPoint _localEp;
 		private IPEndPoint _remoteEp;
 
@@ -41,7 +42,9 @@ namespace Peach.Pro.Test.Core.Monitors
 					Assert.Ignore("Could not find the macOS loopback capture device.");
 
 				_localEp = new IPEndPoint(IPAddress.Loopback, 0);
-				_remoteEp = new IPEndPoint(IPAddress.Loopback, 22222);
+				_listener = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+				_listener.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+				_remoteEp = (IPEndPoint)_listener.LocalEndPoint;
 				_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 				_socket.Bind(_localEp);
 				_localEp = (IPEndPoint)_socket.LocalEndPoint;
@@ -98,8 +101,12 @@ namespace Peach.Pro.Test.Core.Monitors
 			if (_socket != null)
 				_socket.Dispose();
 
+			if (_listener != null)
+				_listener.Dispose();
+
 			_evt = null;
 			_socket = null;
+			_listener = null;
 			_iface = null;
 			_localEp = null;
 			_remoteEp = null;
@@ -146,8 +153,18 @@ namespace Peach.Pro.Test.Core.Monitors
 				IterationFinished = m =>
 				{
 					// Capture starts in IterationStarting, and stops in IterationFinished
+					// Give the asynchronous BPF capture thread time to become ready.
+					Thread.Sleep(250);
 					for (var i = 0; i < max; ++i)
+					{
 						_socket.SendTo("Hello World", _remoteEp);
+						if (_listener != null)
+						{
+							var buffer = new byte[64];
+							_listener.Receive(buffer);
+						}
+					}
+					Thread.Sleep(250);
 
 					m.IterationFinished();
 				},
@@ -178,7 +195,7 @@ namespace Peach.Pro.Test.Core.Monitors
 			const string begin = "Collected ";
 			StringAssert.StartsWith(begin, faults[0].Title);
 
-			const string end = " packets.";
+			var end = faults[0].Title.EndsWith(" packet.") ? " packet." : " packets.";
 			StringAssert.EndsWith(end, faults[0].Title);
 
 			var str = faults[0].Title.Substring(begin.Length, faults[0].Title.Length - begin.Length - end.Length);

@@ -301,9 +301,9 @@ namespace Peach.Pro.Test.Core.PitParserTests
 			DoExpand("ascii", "chars", 6, '_', true, "Hello\0", 6);
 			DoExpand("ascii", "chars", 5, '_', false, "Hello", 5);
 
-			Assert.Throws<PeachException>(delegate() {
-				DoExpand("ascii", "chars", 5, '_', true, "", 0);
-			});
+			// An exactly-sized character string retains its default value.  Its
+			// terminator is applied by generation, rather than parser expansion.
+			DoExpand("ascii", "chars", 5, '_', true, "Hello", 5);
 
 			Assert.Throws<PeachException>(delegate() {
 				DoExpand("ascii", "chars", 4, '_', true, "", 0);

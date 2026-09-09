@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
 using Peach.Core;
+using Peach.Pro.Core;
 using Peach.Pro.Core.Storage;
 using Peach.Pro.Core.WebServices.Models;
 using Peach.Core.Test;
@@ -16,6 +17,7 @@ namespace Peach.Pro.Test.Core.Storage
 	{
 		Job _job;
 		TempDirectory _tmp;
+		string _oldLogRoot;
 		DateTime _now;
 
 		public static void MakeSampleCache(DateTime now, Job job)
@@ -247,6 +249,8 @@ namespace Peach.Pro.Test.Core.Storage
 		public void SetUp()
 		{
 			_tmp = new TempDirectory();
+			_oldLogRoot = Configuration.LogRoot;
+			Configuration.LogRoot = _tmp.Path;
 
 			// The database doesn't store milliseconds/microseconds, so don't include them in the test
 			_now = DateTime.Parse(
@@ -263,6 +267,7 @@ namespace Peach.Pro.Test.Core.Storage
 		[TearDown]
 		public void TearDown()
 		{
+			Configuration.LogRoot = _oldLogRoot;
 			_tmp.Dispose();
 		}
 

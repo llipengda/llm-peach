@@ -14,6 +14,9 @@ namespace Peach.Pro.Test.Core.Transformers.Encode
         [Test]
         public void Test1()
         {
+			if (!System.OperatingSystem.IsWindows())
+				Assert.Ignore("SID conversion relies on Windows principal APIs.");
+
             // standard test
 
             string xml = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n" +

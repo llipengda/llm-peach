@@ -97,6 +97,7 @@ namespace Peach.Pro.Test.Core.Publishers
 		[Test]
 		public void FailingInputTest1()
 		{
+			var port = TestBase.MakePort(20000, 21000);
 			string xml = @"
 				<Peach>
 					<DataModel name='input'>
@@ -116,11 +117,11 @@ namespace Peach.Pro.Test.Core.Publishers
 
 						<Publisher class='TcpListener' name='Server'>
 							<Param name='Interface' value='127.0.0.1'/>
-							<Param name='Port' value='55555'/>
+							<Param name='Port' value='{0}'/>
 							<Param name='Timeout' value='1000'/>
 						</Publisher>
 					</Test>
-				</Peach>";
+				</Peach>".Fmt(port);
 
 			PitParser parser = new PitParser();
 			Peach.Core.Dom.Dom dom = parser.asParser(null, new MemoryStream(ASCIIEncoding.ASCII.GetBytes(xml)));

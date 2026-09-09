@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using Peach.Core;
 using Peach.Pro.Core.Storage;
+using Peach.Pro.Core;
 using Peach.Core.Test;
 using Peach.Pro.Core.WebServices.Models;
 
@@ -12,16 +13,20 @@ namespace Peach.Pro.Test.Core.Storage
 	class MetricsCacheTests
 	{
 		TempDirectory _tmp;
+		string _oldLogRoot;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_tmp = new TempDirectory();
+			_oldLogRoot = Configuration.LogRoot;
+			Configuration.LogRoot = _tmp.Path;
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
+			Configuration.LogRoot = _oldLogRoot;
 			_tmp.Dispose();
 		}
 

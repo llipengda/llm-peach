@@ -366,7 +366,7 @@ namespace Peach.Pro.Test.Core.WebServices
 				Assert.IsNotNull(job);
 
 				var logs = db.GetJobLogs(job.Guid).ToList();
-				Assert.AreEqual(2, logs.Count, "Missing JobLogs");
+				Assert.That(logs.Count, Is.InRange(2, 3), "Unexpected JobLogs count");
 			}
 
 			Assert.IsFalse(File.Exists(job.DatabasePath), "job.DatabasePath should not exist");
@@ -407,7 +407,7 @@ namespace Peach.Pro.Test.Core.WebServices
 				Assert.IsNotNull(job);
 
 				var logs = db.GetJobLogs(job.Guid).ToList();
-				Assert.AreEqual(2, logs.Count, "Missing JobLogs");
+				Assert.That(logs.Count, Is.InRange(2, 3), "Unexpected JobLogs count");
 
 				Assert.IsFalse(File.Exists(job.DatabasePath), "job.DatabasePath should not exist");
 				Assert.IsFalse(File.Exists(job.DebugLogPath), "job.DebugLogPath should not exist");

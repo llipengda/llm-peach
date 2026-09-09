@@ -3,6 +3,7 @@ using System.Globalization;
 using NUnit.Framework;
 using Peach.Core;
 using Peach.Core.Test;
+using Peach.Pro.Core;
 using Peach.Pro.Core.Storage;
 using Peach.Pro.Core.WebServices.Models;
 
@@ -13,16 +14,23 @@ namespace Peach.Pro.Test.Core.Storage
 	class JobTests
 	{
 		TempFile _tmp;
+		TempDirectory _nodeDbRoot;
+		string _oldLogRoot;
 
 		[SetUp]
 		public void SetUp()
 		{
 			_tmp = new TempFile();
+			_nodeDbRoot = new TempDirectory();
+			_oldLogRoot = Configuration.LogRoot;
+			Configuration.LogRoot = _nodeDbRoot.Path;
 		}
 
 		[TearDown]
 		public void TearDown()
 		{
+			Configuration.LogRoot = _oldLogRoot;
+			_nodeDbRoot.Dispose();
 			_tmp.Dispose();
 		}
 

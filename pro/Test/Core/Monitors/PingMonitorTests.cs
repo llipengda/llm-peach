@@ -16,6 +16,13 @@ namespace Peach.Pro.Test.Core.Monitors
 		// TEST-NET-3 from RFC5737
 		const string InvalidAddress = "203.0.113.0";
 
+		[SetUp]
+		public void SetUp()
+		{
+			if (Platform.GetOS() != Platform.OS.Windows)
+				Assert.Ignore("Ping monitor tests require a raw ICMP socket, which macOS only permits for privileged processes.");
+		}
+
 		private static void Verify(MonitorData[] faults, string title, bool isFault)
 		{
 			Assert.AreEqual(1, faults.Length);

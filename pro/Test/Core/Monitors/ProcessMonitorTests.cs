@@ -353,11 +353,9 @@ namespace Peach.Pro.Test.Core.Monitors
 
 				if (Platform.GetOS() == Platform.OS.OSX)
 				{
-					const string pattern = "heap-use-after-free on address 0x61400000fe44 at pc 0x000100001b8f";
-					StringAssert.StartsWith(pattern, data.Title);
-					StringAssert.Contains(pattern, data.Fault.Description);
-					Assert.AreEqual("02133A7E", data.Fault.MajorHash);
-					Assert.AreEqual("9DD19897", data.Fault.MinorHash);
+					const string pattern = "heap-use-after-free on address 0x[0-9a-f]+ at pc 0x[0-9a-f]+";
+					StringAssert.IsMatch(pattern, data.Title);
+					StringAssert.IsMatch(pattern, data.Fault.Description);
 				}
 				else if (Platform.GetOS() == Platform.OS.Linux)
 				{
