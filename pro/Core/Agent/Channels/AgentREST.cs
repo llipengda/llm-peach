@@ -463,7 +463,7 @@ namespace Peach.Pro.Core.Agent.Channels
 					request.args[cnt] = new OnCallArgument();
 					request.args[cnt].name = args[cnt].Name;
 					request.args[cnt].data = new byte[args[cnt].Length];
-					args[cnt].Read(request.args[cnt].data, 0, (int)args[cnt].Length);
+					args[cnt].ReadExactly(request.args[cnt].data, 0, (int)args[cnt].Length);
 				}
 
 				var json = Send("call", JsonConvert.SerializeObject(request));
@@ -496,7 +496,7 @@ namespace Peach.Pro.Core.Agent.Channels
 			{
 				var request = new OnOutputRequest();
 				request.data = new byte[data.Length];
-				data.Read(request.data, 0, (int)data.Length);
+				data.ReadExactly(request.data, 0, (int)data.Length);
 
 				data.Position = 0;
 

@@ -9,10 +9,12 @@ using System.Windows.Forms;
 
 using Peach.Core.Runtime;
 using System.Reflection;
+using System.Runtime.Versioning;
 using Peach.Pro.Core.Xml;
 
 namespace PeachXmlGenerator
 {
+	[SupportedOSPlatform("windows")]
 	class Program
 	{
 		static void DisplayTitle()

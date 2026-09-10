@@ -12,6 +12,7 @@ using Peach.Core.Cracker;
 using Peach.Core.IO;
 using Peach.Core.Analyzers;
 using System.Reflection;
+using System.Runtime.Versioning;
 using System.Text.RegularExpressions;
 using NLog;
 using Peach.Pro.Core;
@@ -19,6 +20,7 @@ using Peach.Pro.Core.License;
 
 namespace PeachValidator
 {
+	[SupportedOSPlatform("windows")]
 	public partial class MainForm : Form
 	{
 		static Version Version = Assembly.GetAssembly(typeof(Engine)).GetName().Version;

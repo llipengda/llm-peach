@@ -31,7 +31,10 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 		[Test]
 		public void TestFault()
 		{
-			var self = Path.Combine(Utilities.ExecutionDirectory, "Peach.exe");
+			// The original test used Peach.exe only as a sufficiently large input.
+			// The test assembly is always present beside the test runner and is large
+			// enough to trigger the native fixture's intentional stack overflow.
+			var self = typeof(GdbTests).Assembly.Location;
 
 			var args = new Dictionary<string, string>() {
 				{ "Executable", CrashingFileConsumer },
@@ -42,7 +45,7 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 			var m = new GdbDebugger(null);
 			m.StartMonitor(args);
 			m.SessionStarting();
-			m.IterationStarting(null);
+			m.IterationStarting(new Peach.Core.Agent.IterationStartingArgs());
 			Thread.Sleep(5000);
 			m.IterationFinished();
 			Assert.IsTrue(m.DetectedFault(), "Should have detected fault");
@@ -70,7 +73,7 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 			var m = new GdbDebugger(null);
 			m.StartMonitor(args);
 			m.SessionStarting();
-			m.IterationStarting(null);
+			m.IterationStarting(new Peach.Core.Agent.IterationStartingArgs());
 			Thread.Sleep(5000);
 			m.IterationFinished();
 			Assert.IsFalse(m.DetectedFault());
@@ -138,7 +141,7 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 			var m = new GdbDebugger(null);
 			m.StartMonitor(args);
 			m.SessionStarting();
-			m.IterationStarting(null);
+			m.IterationStarting(new Peach.Core.Agent.IterationStartingArgs());
 
 			m.Message("Foo");
 			Thread.Sleep(1000);
@@ -171,7 +174,7 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 			var m = new GdbDebugger(null);
 			m.StartMonitor(args);
 			m.SessionStarting();
-			m.IterationStarting(null);
+			m.IterationStarting(new Peach.Core.Agent.IterationStartingArgs());
 
 			m.Message("Foo");
 			Thread.Sleep(1000);
@@ -205,7 +208,7 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 			var m = new GdbDebugger(null);
 			m.StartMonitor(args);
 			m.SessionStarting();
-			m.IterationStarting(null);
+			m.IterationStarting(new Peach.Core.Agent.IterationStartingArgs());
 
 			m.Message("Foo");
 			Thread.Sleep(1000);
@@ -360,11 +363,6 @@ namespace Peach.Pro.Test.OS.Linux.Agent.Monitors
 				{
 					using (var cli = Connect(port, 1000))
 					{
-						var ar = cli.BeginConnect(IPAddress.Loopback, port, null, null);
-						if (!ar.AsyncWaitHandle.WaitOne(1000))
-							Assert.Fail("Should have connected to CrashableServer in 1sec");
-						cli.EndConnect(ar);
-
 						if (++iteration == 2)
 						{
 							// Crash!

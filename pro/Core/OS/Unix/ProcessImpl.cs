@@ -215,7 +215,7 @@ namespace Peach.Pro.Core.OS.Unix
 			{
 				var handshake = new byte[13]; // "DWP handshake"
 				_logger.Trace("DebuggerServer(): Reading handshake...");
-				stream.Read(handshake, 0, handshake.Length);
+				stream.ReadExactly(handshake, 0, handshake.Length);
 				_logger.Trace("DebuggerServer(): Echo: {0}", Encoding.UTF8.GetString(handshake));
 				stream.Write(handshake, 0, handshake.Length);
 

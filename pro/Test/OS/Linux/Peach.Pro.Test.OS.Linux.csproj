@@ -21,6 +21,24 @@
     <ProjectReference Include="..\..\..\Core\Peach.Pro.csproj" />
   </ItemGroup>
 
+  <Target Name="BuildNativeTestFixtures" AfterTargets="Build">
+    <MSBuild Projects="..\..\Apps\CrashTest\CrashTest.csproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+    <MSBuild Projects="..\..\Apps\CrashableServer\CrashableServer.csproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+    <MSBuild Projects="..\..\Apps\CrashingFileConsumer\CrashingFileConsumer.csproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+    <Copy SourceFiles="..\..\Apps\CrashTest\bin\$(Configuration)\$(TargetFramework)\CrashTest"
+          DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="..\..\Apps\CrashableServer\bin\$(Configuration)\$(TargetFramework)\CrashableServer"
+          DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="..\..\Apps\CrashingFileConsumer\bin\$(Configuration)\$(TargetFramework)\CrashingFileConsumer"
+          DestinationFolder="$(OutDir)" />
+  </Target>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="NLog" Version="4.7.15" />

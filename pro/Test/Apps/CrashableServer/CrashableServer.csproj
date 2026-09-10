@@ -1,11 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Keep this native: debugger tests use its intentional stack overflow. -->
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
-    <AssemblyName>CrashableServer</AssemblyName>
-    <RootNamespace>Peach.TestApps.CrashableServer</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>disable</Nullable>
-    <UseAppHost>true</UseAppHost>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <TargetFramework Condition="'$(TargetFramework)' == ''">net8.0</TargetFramework>
+    <NativeOutputDir>$(MSBuildProjectDirectory)/bin/$(Configuration)/$(TargetFramework)</NativeOutputDir>
+    <NativeOutputPath>$(NativeOutputDir)/CrashableServer</NativeOutputPath>
   </PropertyGroup>
+
+  <Target Name="Build" Inputs="$(MSBuildProjectFullPath);$(MSBuildProjectDirectory)/CrashableServer.cpp" Outputs="$(NativeOutputPath)">
+    <MakeDir Directories="$(NativeOutputDir)" />
+    <Exec Command="g++ -g -O0 -fno-stack-protector -fno-omit-frame-pointer &quot;$(MSBuildProjectDirectory)/CrashableServer.cpp&quot; -o &quot;$(NativeOutputPath)&quot;" />
+  </Target>
 </Project>

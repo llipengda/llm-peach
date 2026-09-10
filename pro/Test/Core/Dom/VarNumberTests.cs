@@ -232,7 +232,7 @@ namespace Peach.Pro.Test.Core.Dom
 			var buff = new byte[stream.Length];
 
 			stream.Position = 0;
-			stream.Read(buff, 0, buff.Length);
+			stream.ReadExactly(buff, 0, buff.Length);
 
 			return UTF8Encoding.UTF8.GetString(buff);
 		}

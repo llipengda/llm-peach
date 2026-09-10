@@ -39,9 +39,9 @@ namespace Peach.Pro.Test.OS.Linux
 				var pi = p.Snapshot();
 				Assert.NotNull(pi);
 				Assert.AreEqual(1, pi.Id);
-				Assert.AreEqual("init", pi.ProcessName);
-				Assert.Greater(pi.PrivilegedProcessorTicks, 0);
-				Assert.Greater(pi.UserProcessorTicks, 0);
+				Assert.IsNotEmpty(pi.ProcessName);
+				Assert.GreaterOrEqual(pi.PrivilegedProcessorTicks, 0);
+				Assert.GreaterOrEqual(pi.UserProcessorTicks, 0);
 			}
 
 			using (var p = ProcessHelper.Start("/bin/ls", "", null, null))

@@ -152,6 +152,18 @@ namespace Peach.Pro.Core.Agent.Monitors
 				_data = MakeFault("ExitedEarly", "Process '{0}' exited early.".Fmt(Executable));
 				_process.Stop(WaitForExitTimeout);
 			}
+			else if (StartOnCall != null)
+			{
+				if (!NoCpuKill)
+					_process.WaitForIdle(WaitForExitTimeout);
+				else
+					_process.WaitForExit(WaitForExitTimeout);
+			}
+			else if (RestartOnEachTest)
+			{
+				_process.Stop(WaitForExitTimeout);
+			}
+
 			return _data != null;
 		}
 
@@ -162,26 +174,6 @@ namespace Peach.Pro.Core.Agent.Monitors
 
 		public override void IterationFinished()
 		{
-			// Complete per-iteration process handling before DetectedFault(). This
-			// preserves the monitor lifecycle contract and lets early-exit/ASAN
-			// detection inspect the final process state immediately afterwards.
-			if (StartOnCall != null)
-			{
-				if (!NoCpuKill)
-					_process.WaitForIdle(WaitForExitTimeout);
-				else
-					_process.WaitForExit(WaitForExitTimeout);
-
-				// A process started on demand is allowed to finish unless the model
-				// explicitly requires a WaitForExitOnCall acknowledgement.
-				if (WaitForExitOnCall == null)
-					_messageExit = true;
-			}
-			else if (RestartOnEachTest)
-			{
-				_messageExit = true;
-				_process.Stop(WaitForExitTimeout);
-			}
 		}
 
 		public override void Message(string msg)

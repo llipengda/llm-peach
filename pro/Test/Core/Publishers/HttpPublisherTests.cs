@@ -61,7 +61,7 @@ namespace Peach.Pro.Test.Core.Publishers
 					if (request.ContentLength64 > 0)
 					{
 						var buf = new byte[request.ContentLength64];
-						request.InputStream.Read(buf, 0, buf.Length);
+						request.InputStream.ReadExactly(buf, 0, buf.Length);
 					}
 
 					var response = context.Response;

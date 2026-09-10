@@ -119,7 +119,7 @@ namespace Peach.Pro.Core.Agent.Channels.Rest
 					var pos = bs.PositionBits;
 
 					bs.SeekBits(0, SeekOrigin.Begin);
-					bs.Read(buf, 0, buf.Length);
+					bs.ReadExactly(buf, 0, buf.Length);
 					bs.SeekBits(pos, SeekOrigin.Begin);
 
 					ret.Type = VariantMessage.ValueType.Bytes;

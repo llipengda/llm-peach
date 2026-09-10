@@ -229,7 +229,7 @@ namespace Peach.Core.Agent
 			var buf = new byte[strm.Length];
 
 			strm.Seek(0, SeekOrigin.Begin);
-			strm.Read(buf, 0, buf.Length);
+			strm.ReadExactly(buf, 0, buf.Length);
 
 			return buf;
 		}

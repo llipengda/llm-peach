@@ -27,14 +27,29 @@
     <ProjectReference Include="..\..\..\core\Test\Peach.Core.Test.csproj" />
     <ProjectReference Include="..\..\Core\Peach.Pro.csproj" />
     <ProjectReference Include="..\..\PitTester\Peach.Pro.PitTester.csproj" />
-    <ProjectReference Include="..\Apps\CrashTest\CrashTest.csproj" />
-    <ProjectReference Include="..\Apps\CrashableServer\CrashableServer.csproj" />
-    <ProjectReference Include="..\Apps\CrashingFileConsumer\CrashingFileConsumer.csproj" />
     <ProjectReference Include="..\Apps\UseAfterFree\UseAfterFree.csproj" />
     <ProjectReference Include="..\Apps\CrashTestDummy\CrashTestDummy.csproj" />
     <ProjectReference Include="..\..\Worker\PeachWorker.csproj" />
     <ProjectReference Include="..\..\PeachAgent\PeachAgent.csproj" />
   </ItemGroup>
+
+  <Target Name="BuildNativeTestFixtures" AfterTargets="Build">
+    <MSBuild Projects="..\Apps\CrashTest\CrashTest.csproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+    <MSBuild Projects="..\Apps\CrashableServer\CrashableServer.csproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+    <MSBuild Projects="..\Apps\CrashingFileConsumer\CrashingFileConsumer.csproj"
+             Targets="Build"
+             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
+    <Copy SourceFiles="..\Apps\CrashTest\bin\$(Configuration)\$(TargetFramework)\CrashTest"
+          DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="..\Apps\CrashableServer\bin\$(Configuration)\$(TargetFramework)\CrashableServer"
+          DestinationFolder="$(OutDir)" />
+    <Copy SourceFiles="..\Apps\CrashingFileConsumer\bin\$(Configuration)\$(TargetFramework)\CrashingFileConsumer"
+          DestinationFolder="$(OutDir)" />
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.79" />

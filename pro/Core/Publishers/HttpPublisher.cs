@@ -115,13 +115,12 @@ namespace Peach.Pro.Core.Publishers
 					if (!File.Exists(ClientCertificate))
 						throw new PeachException(string.Format("Client certificate file '{0}' not found.", ClientCertificate));
 
-					_clientCertificate = X509Certificate.CreateFromCertFile(ClientCertificate);
+					#if NET9_0_OR_GREATER
+					_clientCertificate = X509CertificateLoader.LoadCertificateFromFile(ClientCertificate);
+					#else
+					_clientCertificate = new X509Certificate2(ClientCertificate);
+					#endif
 				}
-			}
-
-			if (IgnoreCertErrors)
-			{
-				ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
 			}
 
 			if (!string.IsNullOrEmpty(Proxy))
@@ -370,6 +369,8 @@ namespace Peach.Pro.Core.Publishers
 #pragma warning restore SYSLIB0014
 			request.Method = Method;
 			request.Proxy = _proxy;
+			if (IgnoreCertErrors)
+				request.ServerCertificateValidationCallback = delegate { return true; };
 
 			if (_clientCertificate != null)
 				request.ClientCertificates.Add(_clientCertificate);

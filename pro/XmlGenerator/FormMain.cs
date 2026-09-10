@@ -5,12 +5,14 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.IO;
+using System.Runtime.Versioning;
 using System.Xml;
 using System.Windows.Forms;
 using Peach.Pro.Core.Xml;
 
 namespace PeachXmlGenerator
 {
+	[SupportedOSPlatform("windows")]
 	public partial class FormMain : Form
 	{
 		public FormMain()

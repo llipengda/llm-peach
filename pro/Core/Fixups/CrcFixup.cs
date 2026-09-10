@@ -47,7 +47,7 @@ namespace Peach.Pro.Core.Fixups
 			if (type == CRCTool.CRCCode.DNP3)
 			{
 				var buff = new byte[data.Length];
-				data.Read(buff, 0, buff.Length);
+				data.ReadExactly(buff, 0, buff.Length);
 
 				return new Variant((ushort)Crc16Dnp3.ComputeChecksum(buff));
 			}

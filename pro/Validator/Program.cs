@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Versioning;
 using System.Windows.Forms;
 using Peach.Core;
 using Peach.Core.Runtime;
@@ -8,6 +9,7 @@ using Peach.Pro.Core.Runtime;
 
 namespace PeachValidator
 {
+	[SupportedOSPlatform("windows")]
 	class Program : BaseProgram
 	{
 		string _pitLibraryPath;

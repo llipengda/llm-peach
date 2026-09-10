@@ -41,9 +41,10 @@ namespace Peach.Pro.OS.Linux.Agent.Monitors
 define log_if_crash
  if ($_thread != 0x00)
   printf ""Crash detected, running exploitable.\n""
+  set logging file {{gdbLog}}
   set logging overwrite on
   set logging redirect on
-  set logging on {{gdbLog}}
+  set logging enabled on
   exploitable -v
   printf ""\n--- Info Frame ---\n\n""
   info frame
@@ -51,7 +52,7 @@ define log_if_crash
   info registers
   printf ""\n--- Backtrace ---\n\n""
   thread apply all bt full
-  set logging off
+  set logging enabled off
  end
 end
 ";
@@ -249,24 +250,6 @@ quit
 
 		public override bool DetectedFault()
 		{
-			if (!_messageExit && FaultOnEarlyExit && !_gdb.IsRunning)
-			{
-				_Stop(); // Stop 1st so stdout/stderr logs are closed
-				_fault = MakeFault("ExitedEarly", "Process exited early.");
-			}
-			else if (StartOnCall != null)
-			{
-				if (!NoCpuKill)
-					_inferior.WaitForIdle(WaitForExitTimeout);
-				else
-					_inferior.WaitForExit(WaitForExitTimeout);
-				_gdb.Stop(WaitForExitTimeout);
-			}
-			else if (RestartOnEachTest)
-			{
-				_Stop();
-			}
-
 			if (!File.Exists(_gdbLog))
 				return _fault != null;
 
@@ -371,6 +354,23 @@ quit
 
 		public override void IterationFinished()
 		{
+			if (!_messageExit && FaultOnEarlyExit && !_gdb.IsRunning)
+			{
+				_Stop(); // Stop 1st so stdout/stderr logs are closed
+				_fault = MakeFault("ExitedEarly", "Process exited early.");
+			}
+			else if (StartOnCall != null)
+			{
+				if (!NoCpuKill)
+					_inferior.WaitForIdle(WaitForExitTimeout);
+				else
+					_inferior.WaitForExit(WaitForExitTimeout);
+				_gdb.Stop(WaitForExitTimeout);
+			}
+			else if (RestartOnEachTest)
+			{
+				_Stop();
+			}
 		}
 
 		public override void Message(string msg)

@@ -697,7 +697,7 @@ namespace Peach.Pro.Test.Core.Publishers
 			var xml = @"
 <Peach>
 	<DataModel name='output'>
-		<String length='1000000'/>
+		<String length='10000000'/>
 	</DataModel>
 
 	<StateModel name=""SM"" initialState=""InitialState"">

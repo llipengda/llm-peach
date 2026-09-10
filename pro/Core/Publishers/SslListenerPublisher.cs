@@ -49,9 +49,21 @@ namespace Peach.Pro.Core.Publishers
 			{
 				//Mono fix. If the password is empty and still provided it will explode trying to decrypt.
 				if (String.IsNullOrEmpty(ServerCertPass))
+				{
+					#if NET9_0_OR_GREATER
+					_serverCertificate = X509CertificateLoader.LoadCertificateFromFile(ServerCertPath);
+					#else
 					_serverCertificate = new X509Certificate2(ServerCertPath);
+					#endif
+				}
 				else
+				{
+					#if NET9_0_OR_GREATER
+					_serverCertificate = X509CertificateLoader.LoadPkcs12FromFile(ServerCertPath, ServerCertPass);
+					#else
 					_serverCertificate = new X509Certificate2(ServerCertPath, ServerCertPass);
+					#endif
+				}
 			}
 			catch (Exception ex)
 			{

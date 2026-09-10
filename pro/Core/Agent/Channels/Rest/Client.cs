@@ -118,7 +118,7 @@ namespace Peach.Pro.Core.Agent.Channels.Rest
 					};
 
 					arg.Seek(0, SeekOrigin.Begin);
-					arg.Read(param.Value, 0, param.Value.Length);
+					arg.ReadExactly(param.Value, 0, param.Value.Length);
 
 					req.Args.Add(param);
 				}

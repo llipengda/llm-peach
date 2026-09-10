@@ -71,12 +71,15 @@ namespace Peach.Pro.Test.Core.Monitors
 			var macAddr = NetworkInterface.GetAllNetworkInterfaces()
 				.Where(n => n.GetIPProperties().UnicastAddresses.Any(a => a.Address.Equals(_localEp.Address)))
 				.Select(n => n.GetPhysicalAddress())
-				.First();
+				.FirstOrDefault();
+
+			if (macAddr == null || macAddr.GetAddressBytes().Length == 0)
+				Assert.Ignore("Could not find a network interface with a physical address for testing.");
 
 			_iface = CaptureDeviceList.Instance
 				.OfType<LibPcapLiveDevice>()
 				.Select(p => p.Interface)
-				.Where(i => i.MacAddress.Equals(macAddr))
+				.Where(i => i != null && i.MacAddress != null && i.MacAddress.Equals(macAddr))
 				.Select(i => i.FriendlyName)
 				.FirstOrDefault();
 

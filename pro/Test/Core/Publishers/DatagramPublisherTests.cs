@@ -263,6 +263,8 @@ namespace Peach.Pro.Test.Core.Publishers
 			{
 				if (ex.SocketErrorCode == SocketError.AccessDenied)
 					Assert.Ignore("Test requires administrator access.");
+				if (ex.SocketErrorCode == SocketError.ProtocolNotSupported)
+					Assert.Ignore("The host kernel does not support the raw-socket protocol used by this test.");
 
 				throw;
 			}

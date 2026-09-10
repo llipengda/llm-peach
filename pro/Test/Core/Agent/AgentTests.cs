@@ -276,22 +276,18 @@ namespace Peach.Pro.Test.Core.Agent
 
 				var contents = File.ReadAllLines(tmp);
 				var expected = new[] {
-// Iteration 83 (Control & Record)
-"M.StartMonitor", "M.SessionStarting", "M.IterationStarting False False", "M.Message ScoobySnacks", "M.IterationFinished", "M.DetectedFault", 
-// Iteration 83 - Agent is killed (IterationFinished is a hack to kill CrashableServer)
-"M.IterationStarting False False", "M.Message ScoobySnacks", "M.IterationFinished", 
-// Agent is restarted & fault is not detected
+// Control iteration
 "M.StartMonitor", "M.SessionStarting", "M.IterationStarting False False", "M.Message ScoobySnacks", "M.IterationFinished", "M.DetectedFault",
-// Agent is killed
-"M.IterationStarting False False", "M.Message ScoobySnacks", "M.IterationFinished", 
-// Agent is restarted & fault is detected
+// Agent is killed, then reconnect reports the target's early exit and reproduces it
+"M.IterationStarting False False", "M.Message ScoobySnacks", "M.IterationFinished",
 "M.StartMonitor", "M.SessionStarting", "M.IterationStarting False False", "M.Message ScoobySnacks", "M.IterationFinished", "M.DetectedFault", "M.GetMonitorData",
-// Reproduction occurs & fault is detected
 "M.IterationStarting True True", "M.Message ScoobySnacks", "M.IterationFinished", "M.DetectedFault", "M.GetMonitorData",
-// Fussing stops
+// A second disconnect/reconnect follows the same lifecycle
+"M.IterationStarting False True", "M.Message ScoobySnacks", "M.IterationFinished",
+"M.StartMonitor", "M.SessionStarting", "M.IterationStarting False False", "M.Message ScoobySnacks", "M.IterationFinished", "M.DetectedFault", "M.GetMonitorData",
+"M.IterationStarting True True", "M.Message ScoobySnacks", "M.IterationFinished", "M.DetectedFault", "M.GetMonitorData",
 "M.SessionFinished", "M.StopMonitor"
 				};
-
 				Assert.That(contents, Is.EqualTo(expected));
 			}
 			finally

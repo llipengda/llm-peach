@@ -2,11 +2,13 @@
 using System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Versioning;
 using Aga.Controls.Tree;
 using Peach.Core.Dom;
 
 namespace PeachValidator
 {
+	[SupportedOSPlatform("windows")]
 	public class CrackModel : ITreeModel
 	{
 		public CrackNode Root = null;
@@ -109,7 +111,8 @@ namespace PeachValidator
 			return node;
 		}
 	}
-
+	
+	[SupportedOSPlatform("windows")]
 	public class CrackNode
 	{
 		public List<CrackNode> Children = new List<CrackNode>();
