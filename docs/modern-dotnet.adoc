@@ -6,7 +6,7 @@ maintain a duplicate source tree or the former Waf build system.
 
 == Requirements
 
-Install a .NET 8 or .NET 10 SDK. Every maintained project multi-targets
+Install a .NET 8 or .NET 10 SDK and CMake 3.20 or newer. Every maintained project multi-targets
 `net8.0` and `net10.0`; the Windows GUI projects use `net8.0-windows` and
 `net10.0-windows`. `build/install.sh` prefers the .NET 10 SDK and falls back to
 .NET 8, publishing the matching target. Building every target at once requires
@@ -43,7 +43,9 @@ collects coverage traces. The migration preserves the former layout: extract a
 compatible Pin kit under any direct child directory of `3rdParty/pin/`.
 MSBuild discovers it automatically and copies its
 runtime and binaries to the published `pin/` directory. Both native Pin tools,
-`bblocks` and `cedge`, are built automatically.
+`bblocks` and `cedge`, are built automatically. CMake is the common build
+entry point; the Intel Pin kit's supported Makefile rules remain the compiler
+backend for those two Pin tools.
 
 [source,shell]
 ----
@@ -60,8 +62,9 @@ dotnet build Peach.Build.csproj --configuration Release
 * Linux and macOS implementations plus portable Windows implementations
 * LLM core and all four validation assemblies
 * The bundled Bouncy Castle, Google CityHash, and Managed ADB source trees
-* .NET 8 and .NET 10 test apphosts for CrashTest and CrashableServer, plus
-  direct Unix process launching without Mono's debugger agent
+* CMake-built native test fixtures for CrashTest, CrashableServer, and
+  CrashingFileConsumer, plus direct Unix process launching without Mono's
+  debugger agent
 * Cross-platform code-page registration, modern .NET-compatible deep cloning, and
   cooperative cancellation in place of unsupported thread termination
 

@@ -1,0 +1,19 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition="'$(Configuration)' == ''">Debug</Configuration>
+    <NativeFixturesSourceDir>$(MSBuildProjectDirectory)</NativeFixturesSourceDir>
+    <NativeFixturesBuildDir Condition="'$(NativeFixturesBuildDir)' == ''">$(MSBuildProjectDirectory)/obj/cmake/$(Configuration)</NativeFixturesBuildDir>
+    <NativeFixturesOutputDir Condition="'$(NativeFixturesOutputDir)' == ''">$(MSBuildProjectDirectory)/artifacts/$(Configuration)</NativeFixturesOutputDir>
+    <NativeFixtureExtension Condition="'$(OS)' == 'Windows_NT'">.exe</NativeFixtureExtension>
+  </PropertyGroup>
+
+  <Target Name="Build">
+    <MakeDir Directories="$(NativeFixturesOutputDir)" />
+    <Exec Command="cmake -S &quot;$(NativeFixturesSourceDir)&quot; -B &quot;$(NativeFixturesBuildDir)&quot; -DPEACH_FIXTURES_OUTPUT_DIR=&quot;$(NativeFixturesOutputDir)&quot;" />
+    <Exec Command="cmake --build &quot;$(NativeFixturesBuildDir)&quot; --config $(Configuration)" />
+  </Target>
+
+  <Target Name="Clean">
+    <RemoveDir Directories="$(NativeFixturesBuildDir);$(NativeFixturesOutputDir)" />
+  </Target>
+</Project>

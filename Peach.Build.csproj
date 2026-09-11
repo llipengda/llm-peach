@@ -20,9 +20,6 @@
     <ProjectReference Include="pro/PitTool/PitTool.csproj" />
     <ProjectReference Include="pro/OS/UnixTrampoline/PeachTrampoline.csproj" />
     <ProjectReference Include="pro/Test/Core/Peach.Pro.Test.csproj" />
-    <ProjectReference Include="pro/Test/Apps/CrashTest/CrashTest.csproj" />
-    <ProjectReference Include="pro/Test/Apps/CrashableServer/CrashableServer.csproj" />
-    <ProjectReference Include="pro/Test/Apps/CrashingFileConsumer/CrashingFileConsumer.csproj" />
     <ProjectReference Include="pro/Test/Apps/UseAfterFree/UseAfterFree.csproj" />
     <ProjectReference Include="pro/Test/Apps/CrashTestDummy/CrashTestDummy.csproj" />
     <ProjectReference Include="pro/Test/OS/Linux/Peach.Pro.Test.OS.Linux.csproj" />

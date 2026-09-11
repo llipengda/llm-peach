@@ -12,7 +12,8 @@
     <BasicBlocksOutputName Condition="'$(OS)' != 'Windows_NT' and '$(PinTarget)' == 'ia32'">bblocks32.so</BasicBlocksOutputName>
     <BasicBlocksOutputName Condition="'$(OS)' != 'Windows_NT' and '$(PinTarget)' == 'intel64'">bblocks64.so</BasicBlocksOutputName>
     <BasicBlocksOutputName Condition="'$(IsMacPin)' == 'True'">bblocks.dylib</BasicBlocksOutputName>
-    <BasicBlocksBuiltTool>$(MSBuildProjectDirectory)/obj-$(PinTarget)/bblocks.$(BasicBlocksExtension)</BasicBlocksBuiltTool>
+    <BasicBlocksCmakeBuildDir Condition="'$(BasicBlocksCmakeBuildDir)' == ''">$(MSBuildProjectDirectory)/obj/cmake-$(PinTarget)</BasicBlocksCmakeBuildDir>
+    <BasicBlocksBuiltTool>$(BasicBlocksCmakeBuildDir)/bblocks.$(BasicBlocksExtension)</BasicBlocksBuiltTool>
     <BasicBlocksOutputFile>$(BasicBlocksOutputDir)/$(BasicBlocksOutputName)</BasicBlocksOutputFile>
   </PropertyGroup>
 
@@ -31,26 +32,17 @@
     <Error Condition="'$(PinTarget)' != 'ia32' and '$(PinTarget)' != 'intel64'" Text="PinTarget must be ia32 or intel64; got '$(PinTarget)'." />
   </Target>
 
-  <Target Name="Build" DependsOnTargets="Validate;BuildUnix;BuildWindows" />
-
-  <Target Name="BuildUnix" Condition="'$(OS)' != 'Windows_NT'">
+  <Target Name="Build" DependsOnTargets="Validate">
     <MakeDir Directories="$(BasicBlocksOutputDir)" />
-    <Exec Command="make -C &quot;$(MSBuildProjectDirectory)&quot; PIN_ROOT=&quot;$(PinRoot)&quot; TARGET=$(PinTarget)" />
-    <Error Condition="!Exists('$(BasicBlocksBuiltTool)')" Text="Intel Pin did not produce $(BasicBlocksBuiltTool)." />
-    <Copy SourceFiles="$(BasicBlocksBuiltTool)" DestinationFiles="$(BasicBlocksOutputFile)" />
-    <Message Importance="high" Text="Installed BasicBlocks tool: $(BasicBlocksOutputFile)" />
-  </Target>
-
-  <Target Name="BuildWindows" Condition="'$(OS)' == 'Windows_NT'">
-    <MakeDir Directories="$(BasicBlocksOutputDir)" />
-    <Exec Command="make -C &quot;$(MSBuildProjectDirectory)&quot; PIN_ROOT=&quot;$(PinRoot)&quot; TARGET=$(PinTarget)" />
+    <Exec Command="cmake -S &quot;$(MSBuildProjectDirectory)&quot; -B &quot;$(BasicBlocksCmakeBuildDir)&quot; -DPIN_ROOT=&quot;$(PinRoot)&quot; -DPIN_TARGET=$(PinTarget)" />
+    <Exec Command="cmake --build &quot;$(BasicBlocksCmakeBuildDir)&quot; --target bblocks" />
     <Error Condition="!Exists('$(BasicBlocksBuiltTool)')" Text="Intel Pin did not produce $(BasicBlocksBuiltTool)." />
     <Copy SourceFiles="$(BasicBlocksBuiltTool)" DestinationFiles="$(BasicBlocksOutputFile)" />
     <Message Importance="high" Text="Installed BasicBlocks tool: $(BasicBlocksOutputFile)" />
   </Target>
 
   <Target Name="Clean">
-    <RemoveDir Directories="$(BasicBlocksOutputDir)" />
+    <RemoveDir Directories="$(BasicBlocksCmakeBuildDir);$(BasicBlocksOutputDir)" />
   </Target>
 
   <Target Name="CopyPinRuntime" AfterTargets="Build">

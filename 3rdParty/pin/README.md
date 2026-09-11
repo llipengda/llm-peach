@@ -13,5 +13,10 @@ MSBuild discovers the extracted kit automatically and includes the required Pin
 runtime files in the Peach installation. No build argument or environment
 variable is required.
 
+CMake is the build entry point for Peach's Pin tools. Intel Pin distributes its
+own supported Makefile rules, so CMake delegates the final compile and link
+step to those rules. Ensure a `make` implementation is available alongside
+CMake.
+
 The kit must contain `source/tools/Config/makefile.config`; that file is used
 to identify a valid Pin installation.

@@ -9,6 +9,7 @@
     <Nullable>disable</Nullable>
     <LangVersion>latestMajor</LangVersion>
     <IsTestProject>true</IsTestProject>
+    <NativeFixtureExtension Condition="'$(OS)' == 'Windows_NT'">.exe</NativeFixtureExtension>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,21 +34,19 @@
     <ProjectReference Include="..\..\PeachAgent\PeachAgent.csproj" />
   </ItemGroup>
 
-  <Target Name="BuildNativeTestFixtures" AfterTargets="Build">
-    <MSBuild Projects="..\Apps\CrashTest\CrashTest.csproj"
+  <Target Name="BuildNativeTestFixtures" AfterTargets="Build" Condition="'$(TargetFramework)' != ''">
+    <PropertyGroup>
+      <NativeFixturesOutputDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/$(IntermediateOutputPath)native-fixtures'))</NativeFixturesOutputDir>
+    </PropertyGroup>
+    <MSBuild Projects="..\Apps\NativeFixtures.proj"
              Targets="Build"
-             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
-    <MSBuild Projects="..\Apps\CrashableServer\CrashableServer.csproj"
-             Targets="Build"
-             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
-    <MSBuild Projects="..\Apps\CrashingFileConsumer\CrashingFileConsumer.csproj"
-             Targets="Build"
-             Properties="Configuration=$(Configuration);TargetFramework=$(TargetFramework)" />
-    <Copy SourceFiles="..\Apps\CrashTest\bin\$(Configuration)\$(TargetFramework)\CrashTest"
-          DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="..\Apps\CrashableServer\bin\$(Configuration)\$(TargetFramework)\CrashableServer"
-          DestinationFolder="$(OutDir)" />
-    <Copy SourceFiles="..\Apps\CrashingFileConsumer\bin\$(Configuration)\$(TargetFramework)\CrashingFileConsumer"
+             Properties="Configuration=$(Configuration);NativeFixturesBuildDir=$(NativeFixturesOutputDir)/cmake;NativeFixturesOutputDir=$(NativeFixturesOutputDir)" />
+    <ItemGroup>
+      <NativeFixture Include="$(NativeFixturesOutputDir)/CrashTest$(NativeFixtureExtension)" />
+      <NativeFixture Include="$(NativeFixturesOutputDir)/CrashableServer$(NativeFixtureExtension)" />
+      <NativeFixture Include="$(NativeFixturesOutputDir)/CrashingFileConsumer$(NativeFixtureExtension)" />
+    </ItemGroup>
+    <Copy SourceFiles="@(NativeFixture)"
           DestinationFolder="$(OutDir)" />
   </Target>
 

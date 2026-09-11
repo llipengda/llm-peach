@@ -12,7 +12,8 @@
     <CoveredEdgeOutputName Condition="'$(OS)' != 'Windows_NT' and '$(PinTarget)' == 'ia32'">cedge32.so</CoveredEdgeOutputName>
     <CoveredEdgeOutputName Condition="'$(OS)' != 'Windows_NT' and '$(PinTarget)' == 'intel64'">cedge64.so</CoveredEdgeOutputName>
     <CoveredEdgeOutputName Condition="'$(IsMacPin)' == 'True'">cedge.dylib</CoveredEdgeOutputName>
-    <CoveredEdgeBuiltTool>$(MSBuildProjectDirectory)/obj-$(PinTarget)/cedge.$(CoveredEdgeExtension)</CoveredEdgeBuiltTool>
+    <CoveredEdgeCmakeBuildDir Condition="'$(CoveredEdgeCmakeBuildDir)' == ''">$(MSBuildProjectDirectory)/obj/cmake-$(PinTarget)</CoveredEdgeCmakeBuildDir>
+    <CoveredEdgeBuiltTool>$(CoveredEdgeCmakeBuildDir)/cedge.$(CoveredEdgeExtension)</CoveredEdgeBuiltTool>
     <CoveredEdgeOutputFile>$(CoveredEdgeOutputDir)/$(CoveredEdgeOutputName)</CoveredEdgeOutputFile>
   </PropertyGroup>
 
@@ -33,13 +34,14 @@
 
   <Target Name="Build" DependsOnTargets="Validate">
     <MakeDir Directories="$(CoveredEdgeOutputDir)" />
-    <Exec Command="make -C &quot;$(MSBuildProjectDirectory)&quot; PIN_ROOT=&quot;$(PinRoot)&quot; TARGET=$(PinTarget)" />
+    <Exec Command="cmake -S &quot;$(MSBuildProjectDirectory)&quot; -B &quot;$(CoveredEdgeCmakeBuildDir)&quot; -DPIN_ROOT=&quot;$(PinRoot)&quot; -DPIN_TARGET=$(PinTarget)" />
+    <Exec Command="cmake --build &quot;$(CoveredEdgeCmakeBuildDir)&quot; --target cedge" />
     <Error Condition="!Exists('$(CoveredEdgeBuiltTool)')" Text="Intel Pin did not produce $(CoveredEdgeBuiltTool)." />
     <Copy SourceFiles="$(CoveredEdgeBuiltTool)" DestinationFiles="$(CoveredEdgeOutputFile)" />
     <Message Importance="high" Text="Installed CoveredEdge tool: $(CoveredEdgeOutputFile)" />
   </Target>
 
   <Target Name="Clean">
-    <RemoveDir Directories="$(CoveredEdgeOutputDir)" />
+    <RemoveDir Directories="$(CoveredEdgeCmakeBuildDir);$(CoveredEdgeOutputDir)" />
   </Target>
 </Project>
